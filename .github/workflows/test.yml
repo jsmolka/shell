@@ -1,0 +1,54 @@
+name: Build
+
+on: push
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build tests
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          msbuild /property:Configuration=Release eggcpt.sln
+        shell: cmd
+
+      - name: Run tests
+        run: bin\Release\eggcpt.exe
+        shell: cmd
+
+  test-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build tests
+        run: |
+          mkdir eggcpt/build
+          cd eggcpt/build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          make
+
+      - name: Run tests
+        run: ./eggcpt/build/eggcpt
+
+  test-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: actions/checkout@master
+
+      - name: Build tests
+        run: |
+          mkdir eggcpt/build
+          cd eggcpt/build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          make
+
+      - name: Run tests
+        run: ./eggcpt/build/eggcpt
