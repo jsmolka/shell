@@ -22,19 +22,17 @@ T ror(T value, uint amount)
 
     if constexpr (kCompilerMsvc)
     {
-             if constexpr (sizeof(T) == 1) return _rotr8 (value, amount);
-        else if constexpr (sizeof(T) == 2) return _rotr16(value, amount);
-        else if constexpr (sizeof(T) == 4) return _rotr  (value, amount);
-        else if constexpr (sizeof(T) == 8) return _rotr64(value, amount);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 1) return _rotr8 (value, amount);
+        if constexpr (sizeof(T) == 2) return _rotr16(value, amount);
+        if constexpr (sizeof(T) == 4) return _rotr  (value, amount);
+        if constexpr (sizeof(T) == 8) return _rotr64(value, amount);
     }
     else if constexpr (kCompilerClang)
     {
-             if constexpr (sizeof(T) == 1) return __builtin_rotateright8 (value, amount);
-        else if constexpr (sizeof(T) == 2) return __builtin_rotateright16(value, amount);
-        else if constexpr (sizeof(T) == 4) return __builtin_rotateright32(value, amount);
-        else if constexpr (sizeof(T) == 8) return __builtin_rotateright64(value, amount);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 1) return __builtin_rotateright8 (value, amount);
+        if constexpr (sizeof(T) == 2) return __builtin_rotateright16(value, amount);
+        if constexpr (sizeof(T) == 4) return __builtin_rotateright32(value, amount);
+        if constexpr (sizeof(T) == 8) return __builtin_rotateright64(value, amount);
     }
     else
     {
@@ -52,19 +50,17 @@ T rol(T value, uint amount)
 
     if constexpr (kCompilerMsvc)
     {
-             if constexpr (sizeof(T) == 1) return _rotl8 (value, amount);
-        else if constexpr (sizeof(T) == 2) return _rotl16(value, amount);
-        else if constexpr (sizeof(T) == 4) return _rotl  (value, amount);
-        else if constexpr (sizeof(T) == 8) return _rotl64(value, amount);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 1) return _rotl8 (value, amount);
+        if constexpr (sizeof(T) == 2) return _rotl16(value, amount);
+        if constexpr (sizeof(T) == 4) return _rotl  (value, amount);
+        if constexpr (sizeof(T) == 8) return _rotl64(value, amount);
     }
     else if constexpr (kCompilerClang)
     {
-             if constexpr (sizeof(T) == 1) return __builtin_rotateleft8 (value, amount);
-        else if constexpr (sizeof(T) == 2) return __builtin_rotateleft16(value, amount);
-        else if constexpr (sizeof(T) == 4) return __builtin_rotateleft32(value, amount);
-        else if constexpr (sizeof(T) == 8) return __builtin_rotateleft64(value, amount);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 1) return __builtin_rotateleft8 (value, amount);
+        if constexpr (sizeof(T) == 2) return __builtin_rotateleft16(value, amount);
+        if constexpr (sizeof(T) == 4) return __builtin_rotateleft32(value, amount);
+        if constexpr (sizeof(T) == 8) return __builtin_rotateleft64(value, amount);
     }
     else
     {
@@ -130,10 +126,9 @@ uint popcnt(T value)
 
     if constexpr (kCompilerMsvc)
     {
-             if constexpr (sizeof(T) <= 2) return __popcnt16(value);
-        else if constexpr (sizeof(T) == 4) return __popcnt  (value);
-        else if constexpr (sizeof(T) == 8) return __popcnt64(value);
-        else static_assert(false);
+        if constexpr (sizeof(T) <= 2) return __popcnt16(value);
+        if constexpr (sizeof(T) == 4) return __popcnt  (value);
+        if constexpr (sizeof(T) == 8) return __popcnt64(value);
     }
     else
     {
@@ -153,17 +148,15 @@ T bswap(T value)
 
     if constexpr (kCompilerMsvc)
     {
-             if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);
-        else if constexpr (sizeof(T) == 4) return _byteswap_ulong (value);
-        else if constexpr (sizeof(T) == 8) return _byteswap_uint64(value);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);
+        if constexpr (sizeof(T) == 4) return _byteswap_ulong (value);
+        if constexpr (sizeof(T) == 8) return _byteswap_uint64(value);
     }
     else
     {
-             if constexpr (sizeof(T) == 2) return __builtin_bswap16(value);
-        else if constexpr (sizeof(T) == 4) return __builtin_bswap32(value);
-        else if constexpr (sizeof(T) == 8) return __builtin_bswap64(value);
-        else static_assert(false);
+        if constexpr (sizeof(T) == 2) return __builtin_bswap16(value);
+        if constexpr (sizeof(T) == 4) return __builtin_bswap32(value);
+        if constexpr (sizeof(T) == 8) return __builtin_bswap64(value);
     }
 }
 
