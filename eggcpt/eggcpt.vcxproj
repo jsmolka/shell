@@ -119,6 +119,7 @@
     <ClCompile Include="tests\main.cpp" />
     <ClCompile Include="tests\tests.cpp" />
     <ClCompile Include="tests\tests_bits.cpp" />
+    <ClCompile Include="tests\tests_traits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
@@ -130,6 +131,8 @@
     <ClInclude Include="src\base\macros\platform.h" />
     <ClInclude Include="src\bits.h" />
     <ClInclude Include="src\bits\intrin.h" />
+    <ClInclude Include="src\traits.h" />
+    <ClInclude Include="src\traits\traits.h" />
     <ClInclude Include="tests\tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

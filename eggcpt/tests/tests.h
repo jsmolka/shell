@@ -20,6 +20,7 @@ private:
 
     void add(const std::string& name, const std::function<bool(void)>& func);
     void addTestsBits();
+    void addTestsTraits();
 
     std::vector<Test> tests;
 };

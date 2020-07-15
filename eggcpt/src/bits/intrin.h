@@ -1,9 +1,9 @@
 #pragma once
 
 #include <climits>
-#include <type_traits>
 
 #include "base.h"
+#include "traits.h"
 
 #if EGGCPT_COMPILER_MSVC
 #include <intrin.h>
@@ -17,7 +17,8 @@ namespace eggcpt::bits
 template<typename T>
 T ror(T value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
@@ -46,7 +47,8 @@ T ror(T value, uint amount)
 template<typename T>
 T rol(T value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
@@ -75,7 +77,8 @@ T rol(T value, uint amount)
 template<typename T>
 uint clz(T value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
@@ -98,7 +101,8 @@ uint clz(T value)
 template<typename T>
 uint ctz(T value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
@@ -121,7 +125,8 @@ uint ctz(T value)
 template<typename T>
 uint popcnt(T value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
@@ -142,7 +147,9 @@ uint popcnt(T value)
 template<typename T>
 T bswap(T value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(traits::is_integer_v<T>);
+    static_assert(traits::is_size_min_v<T, 2>);
+    static_assert(traits::is_size_max_v<T, 8>);
 
     if constexpr (kCompilerMsvc)
     {
