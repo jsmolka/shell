@@ -5,6 +5,7 @@
 Tests::Tests()
 {
     addTestsBits();
+    addTestsTraits();
 }
 
 int Tests::run() const

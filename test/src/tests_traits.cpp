@@ -1,6 +1,6 @@
 #include "tests.h"
 
-#include "traits.h"
+#include <eggcpt/traits.h>
 
 using namespace eggcpt;
 

@@ -15,48 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="tests\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\tests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\tests_bits.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\tests_traits.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\bits\intrin.h">
+    <ClInclude Include="include\eggcpt\base\macros\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\integer.h">
+    <ClInclude Include="include\eggcpt\bits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\macros\compiler.h">
+    <ClInclude Include="include\eggcpt\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\macros\platform.h">
+    <ClInclude Include="eggcpt\base\macros\compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base.h">
+    <ClInclude Include="eggcpt\base\macros\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\bits.h">
+    <ClInclude Include="eggcpt\base\integer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tests\tests.h">
+    <ClInclude Include="eggcpt\bits\intrin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\traits.h">
+    <ClInclude Include="eggcpt\traits\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\traits\traits.h">
+    <ClInclude Include="eggcpt\base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\bits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

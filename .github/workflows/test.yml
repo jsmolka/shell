@@ -1,4 +1,4 @@
-name: Build
+name: Test
 
 on: push
 
@@ -16,7 +16,7 @@ jobs:
         shell: cmd
 
       - name: Run tests
-        run: bin\Release\eggcpt.exe
+        run: bin\Release\test.exe
         shell: cmd
 
   test-linux:
@@ -27,13 +27,13 @@ jobs:
 
       - name: Build tests
         run: |
-          mkdir eggcpt/build
-          cd eggcpt/build
+          mkdir test/build
+          cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make
 
       - name: Run tests
-        run: ./eggcpt/build/eggcpt
+        run: ./test/build/test
 
   test-macos:
     runs-on: macos-latest
@@ -45,10 +45,10 @@ jobs:
 
       - name: Build tests
         run: |
-          mkdir eggcpt/build
-          cd eggcpt/build
+          mkdir test/build
+          cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make
 
       - name: Run tests
-        run: ./eggcpt/build/eggcpt
+        run: ./test/build/test

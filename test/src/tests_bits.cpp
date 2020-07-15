@@ -1,6 +1,6 @@
 #include "tests.h"
 
-#include "bits.h"
+#include <eggcpt/bits.h>
 
 using namespace eggcpt;
 

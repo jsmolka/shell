@@ -1,9 +1,8 @@
 #pragma once
 
 #include <climits>
-
-#include "base.h"
-#include "traits.h"
+#include <eggcpt/base.h>
+#include <eggcpt/traits.h>
 
 #if EGGCPT_COMPILER_MSVC
 #include <intrin.h>
