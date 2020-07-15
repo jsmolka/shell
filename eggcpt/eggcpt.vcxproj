@@ -117,12 +117,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="tests\main.cpp" />
+    <ClCompile Include="tests\tests.cpp" />
+    <ClCompile Include="tests\tests_bits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\dummy.h" />
+    <ClInclude Include="src\base.h" />
+    <ClInclude Include="src\base\integer.h" />
+    <ClInclude Include="src\base\macros\compiler.h" />
+    <ClInclude Include="src\base\macros\platform.h" />
+    <ClInclude Include="src\bits.h" />
+    <ClInclude Include="src\bits\intrin.h" />
+    <ClInclude Include="tests\tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
