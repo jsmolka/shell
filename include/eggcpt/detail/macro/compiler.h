@@ -1,8 +1,5 @@
 #pragma once
 
-namespace eggcpt
-{
-
 #ifdef _MSC_VER
 #define EGGCPT_COMPILER_MSVC 1
 #else
@@ -27,9 +24,6 @@ namespace eggcpt
 #define EGGCPT_COMPILER_EMSCRIPTEN 0
 #endif
 
-constexpr bool kCompilerMsvc       = static_cast<bool>(EGGCPT_COMPILER_MSVC);
-constexpr bool kCompilerGcc        = static_cast<bool>(EGGCPT_COMPILER_GCC);
-constexpr bool kCompilerClang      = static_cast<bool>(EGGCPT_COMPILER_CLANG);
-constexpr bool kCompilerEmscripten = static_cast<bool>(EGGCPT_COMPILER_EMSCRIPTEN);
-
-}  // namespace eggcpt
+#if !(EGGCPT_COMPILER_MSVC || EGGCPT_COMPILER_GCC || EGGCPT_COMPILER_CLANG || EGGCPT_COMPILER_EMSCRIPTEN)
+#error Unsupported compiler
+#endif

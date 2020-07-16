@@ -1,3 +1,3 @@
 #pragma once
 
-#include <eggcpt/traits/traits.h>
+#include <eggcpt/detail/traits/traits.h>

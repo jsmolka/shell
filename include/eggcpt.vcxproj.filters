@@ -15,11 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="include\eggcpt\base\macros\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -29,28 +24,37 @@
     <ClInclude Include="include\eggcpt\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\base\macros\compiler.h">
+    <ClInclude Include="eggcpt\detail\traits\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\base\macros\platform.h">
+    <ClInclude Include="eggcpt\detail\bit\intrin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\base\integer.h">
+    <ClInclude Include="eggcpt\bit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\bits\intrin.h">
+    <ClInclude Include="eggcpt\detail\macro\compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\traits\traits.h">
+    <ClInclude Include="eggcpt\detail\macro\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\base.h">
+    <ClInclude Include="eggcpt\detail\macro\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\bits.h">
+    <ClInclude Include="eggcpt\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\detail\bit\storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\detail\base\int.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

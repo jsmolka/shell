@@ -1,8 +1,5 @@
 #pragma once
 
-namespace eggcpt
-{
-
 #ifdef _WIN32
 #define EGGCPT_PLATFORM_WINDOWS 1
 #else
@@ -21,8 +18,6 @@ namespace eggcpt
 #define EGGCPT_PLATFORM_DARWIN 0
 #endif
 
-constexpr bool kPlatformWindows = static_cast<bool>(EGGCPT_PLATFORM_WINDOWS);
-constexpr bool kPlatformLinux   = static_cast<bool>(EGGCPT_PLATFORM_LINUX);
-constexpr bool kPlatformDarwin  = static_cast<bool>(EGGCPT_PLATFORM_DARWIN);
-
-}  // namespace eggcpt
+#if !(EGGCPT_PLATFORM_WINDOWS || EGGCPT_PLATFORM_LINUX || EGGCPT_PLATFORM_DARWIN)
+#error Unsupported platform
+#endif

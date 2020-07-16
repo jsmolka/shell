@@ -19,15 +19,15 @@ template<typename T, typename... Ts>
 struct is_any_of : std::bool_constant<is_any_of_v<T, Ts...>> {};
 
 template<typename T, std::size_t N>
-constexpr bool is_size_min_v = sizeof(T) >= N;
+constexpr bool is_size_least_v = sizeof(T) >= N;
 
 template<typename T, std::size_t N>
-struct is_size_min : std::bool_constant<is_size_min_v<T, N>> {};
+struct is_size_least : std::bool_constant<is_size_least_v<T, N>> {};
 
 template<typename T, std::size_t N>
-constexpr bool is_size_max_v = sizeof(T) <= N;
+constexpr bool is_size_most_v = sizeof(T) <= N;
 
 template<typename T, std::size_t N>
-struct is_size_max : std::bool_constant<is_size_max_v<T, N>> {};
+struct is_size_most : std::bool_constant<is_size_most_v<T, N>> {};
 
-}
+}  // namespace eggcpt::traits
