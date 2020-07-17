@@ -8,6 +8,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
+        with:
+          submodules: 'true'
 
       - name: Build tests
         run: |
@@ -24,6 +26,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
+        with:
+          submodules: 'true'
 
       - name: Build tests
         run: |
@@ -40,6 +44,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
+        with:
+          submodules: 'true'
 
       - name: Build tests
         run: |
