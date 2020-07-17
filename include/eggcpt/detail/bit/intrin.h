@@ -87,7 +87,7 @@ base::uint clz(T value)
         _BitScanReverse64(&index, value);
     return bits<T>() - static_cast<base::uint>(index) - 1;
     #else
-    if constexpr (sizeof(T) <= sizeof(unsigned int)
+    if constexpr (sizeof(T) <= sizeof(unsigned int))
         return __builtin_clz(value);
     else
         return __builtin_clzll(value);
