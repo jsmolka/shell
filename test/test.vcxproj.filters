@@ -22,4 +22,12 @@
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\tests_bit.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\tests_traits.inl">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

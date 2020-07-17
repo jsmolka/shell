@@ -30,4 +30,10 @@ constexpr bool is_size_most_v = sizeof(T) <= N;
 template<typename T, std::size_t N>
 struct is_size_most : std::bool_constant<is_size_most_v<T, N>> {};
 
+template<typename T, std::size_t Least, std::size_t Most>
+constexpr bool is_size_range_v = is_size_least_v<T, Least> && is_size_most_v<T, Most>;
+
+template<typename T, std::size_t Least, std::size_t Most>
+struct is_size_range : std::bool_constant<is_size_range_v<T, Least, Most>> {};
+
 }  // namespace eggcpt::traits

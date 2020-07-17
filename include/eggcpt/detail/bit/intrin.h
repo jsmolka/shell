@@ -65,8 +65,7 @@ template<typename T>
 T bswap(T value)
 {
     static_assert(traits::is_integer_v<T>);
-    static_assert(traits::is_size_most_v<T, 8>);
-    static_assert(traits::is_size_least_v<T, 2>);
+    static_assert(traits::is_size_range_v<T, 2, 8>;
 
     #if EGGCPT_COMPILER_MSVC
     if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);
@@ -141,4 +140,4 @@ base::uint popcnt(T value)
     #endif
 }
 
-}  // namespace eggcpt::bits
+}  // namespace eggcpt::bit
