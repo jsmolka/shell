@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <eggcpt/bit.h>
-#include <eggcpt/traits.h>
+#include <eggcpt/trait.h>
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
@@ -12,6 +12,6 @@
 using namespace eggcpt;
 
 #include "tests_bit.inl"
-#include "tests_traits.inl"
+#include "tests_trait.inl"
 
 #pragma warning(pop)

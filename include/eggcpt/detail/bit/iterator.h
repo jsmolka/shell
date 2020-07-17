@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iterator>
+#include <type_traits>
 
 #include <eggcpt/detail/bit/intrin.h>
-#include <eggcpt/detail/traits/traits.h>
 #include <eggcpt/detail/utility/iterator.h>
 
 namespace eggcpt::bit
@@ -12,7 +12,7 @@ namespace eggcpt::bit
 template<typename T>
 class bit_iterator
 {
-    static_assert(traits::is_integer_v<T>);
+    static_assert(std::is_integral_v<T>);
 
 public:
     using pointer = T*;
@@ -45,7 +45,7 @@ private:
 template<typename T>
 utility::iterator_range<bit_iterator<T>> iterate(T value)
 {
-    static_assert(traits::is_integer_v<T>);
+    static_assert(std::is_integral_v<T>);
 
     return { bit_iterator<T>(value), bit_iterator<T>(0) };
 }

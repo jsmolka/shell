@@ -1,3 +1,10 @@
+TEST_CASE("bit::bits")
+{
+    REQUIRE(bit::bits<base::u8 >() == 8 );
+    REQUIRE(bit::bits<base::u16>() == 16);
+    REQUIRE(bit::bits<base::u32>() == 32);
+}
+
 TEST_CASE("bit::ror")
 {
     REQUIRE(bit::ror(0x0000'00FF,  0) == 0x0000'00FF);

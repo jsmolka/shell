@@ -19,8 +19,6 @@ public:
     const_iterator cbegin() const { return begin_; }
     const_iterator cend() const { return end_; }
 
-    bool empty() const { return cbegin() == cend(); }
-
 private:
     const_iterator begin_{};
     const_iterator end_{};

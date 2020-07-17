@@ -26,7 +26,7 @@
     <None Include="src\tests_bit.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_traits.inl">
+    <None Include="src\tests_trait.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
