@@ -41,8 +41,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - uses: actions/checkout@master
-
       - name: Build tests
         run: |
           mkdir test/build
