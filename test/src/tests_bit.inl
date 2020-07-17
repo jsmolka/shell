@@ -47,3 +47,18 @@ TEST_CASE("bit::storage_type")
     REQUIRE(std::is_same_v<bit::storage_type_t<4>, base::u32>);
     REQUIRE(std::is_same_v<bit::storage_type_t<8>, base::u64>);
 }
+
+template<typename T>
+bool compare(T value, const std::vector<base::uint>& expected)
+{
+    auto iterator = bit::iterate(value);
+
+    return std::vector<base::uint>(iterator.begin(), iterator.end()) == expected;
+}
+
+TEST_CASE("bit::iterate")
+{
+    REQUIRE(compare(0x0000'0001, { 0 }));
+    REQUIRE(compare(0x0001'0001, { 0, 16 }));
+    REQUIRE(compare(0x8001'0001, { 0, 16, 31 }));
+}

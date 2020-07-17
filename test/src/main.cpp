@@ -2,10 +2,12 @@
 #pragma warning(disable:6319)
 #pragma warning(disable:6237)
 
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <vector>
 #include <eggcpt/bit.h>
 #include <eggcpt/traits.h>
+
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 using namespace eggcpt;
 
