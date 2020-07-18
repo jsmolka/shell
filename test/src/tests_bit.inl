@@ -1,8 +1,36 @@
 TEST_CASE("bit::bits")
 {
-    REQUIRE(bit::bits<base::u8 >() == 8 );
-    REQUIRE(bit::bits<base::u16>() == 16);
-    REQUIRE(bit::bits<base::u32>() == 32);
+    REQUIRE(bit::bits_v<base::u8 > == 8 );
+    REQUIRE(bit::bits_v<base::u16> == 16);
+    REQUIRE(bit::bits_v<base::u32> == 32);
+}
+
+TEST_CASE("bit::subset")
+{
+    REQUIRE(bit::subset< 0, 8>(0x0000'00FF) == 0xFF);
+    REQUIRE(bit::subset< 8, 8>(0x0000'FF00) == 0xFF);
+    REQUIRE(bit::subset<16, 8>(0x00FF'0000) == 0xFF);
+}
+
+TEST_CASE("bit::signEx")
+{
+    REQUIRE(bit::signEx< 1>(0x0000'0001) == 0xFFFF'FFFF);
+    REQUIRE(bit::signEx<16>(0x0000'8000) == 0xFFFF'8000);
+    REQUIRE(bit::signEx<32>(0x0000'0001) == 0x0000'0001);
+}
+
+TEST_CASE("bit::sar")
+{
+    REQUIRE(bit::sar(0x8000'0000,  3) == 0xF000'0000);
+    REQUIRE(bit::sar(0x8000'0000,  7) == 0xFF00'0000);
+    REQUIRE(bit::sar(0x8000'0000, 31) == 0xFFFF'FFFF);
+}
+
+TEST_CASE("bit::shr")
+{
+    REQUIRE(bit::shr(0x8000'0000,  3) == 0x1000'0000);
+    REQUIRE(bit::shr(0x8000'0000,  7) == 0x0100'0000);
+    REQUIRE(bit::shr(0x8000'0000, 31) == 0x0000'0001);
 }
 
 TEST_CASE("bit::ror")

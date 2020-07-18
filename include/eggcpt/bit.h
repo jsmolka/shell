@@ -4,3 +4,4 @@
 #include <eggcpt/detail/bit/intrin.h>
 #include <eggcpt/detail/bit/iterator.h>
 #include <eggcpt/detail/bit/storage.h>
+#include <eggcpt/detail/bit/trait.h>

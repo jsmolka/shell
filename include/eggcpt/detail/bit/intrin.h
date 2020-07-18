@@ -1,6 +1,6 @@
 #pragma once
 
-#include <eggcpt/detail/bit/bit.h>
+#include <eggcpt/detail/bit/trait.h>
 #include <eggcpt/detail/macro/compiler.h>
 #include <eggcpt/detail/macro/macro.h>
 
@@ -14,7 +14,7 @@ namespace eggcpt::bit
 {
 
 template<typename T>
-T ror(T value, base::uint amount)
+T ror(T value, unsigned amount)
 {
     static_assert(std::is_integral_v<T>);
 
@@ -29,14 +29,14 @@ T ror(T value, base::uint amount)
     if constexpr (sizeof(T) == 4) return __builtin_rotateright32(value, amount);
     if constexpr (sizeof(T) == 8) return __builtin_rotateright64(value, amount);
     #else
-    constexpr T kMask = bits<T>() - 1;
+    constexpr T kMask = bits_v<T> - 1;
     amount &= kMask;
     return (value >> amount) | (value << (-amount & kMask));   
     #endif
 }
 
 template<typename T>
-T rol(T value, base::uint amount)
+T rol(T value, unsigned amount)
 {
     static_assert(std::is_integral_v<T>);
 
@@ -51,7 +51,7 @@ T rol(T value, base::uint amount)
     if constexpr (sizeof(T) == 4) return __builtin_rotateleft32(value, amount);
     if constexpr (sizeof(T) == 8) return __builtin_rotateleft64(value, amount);
     #else
-    constexpr T kMask = bits<T>() - 1;
+    constexpr T kMask = bits_v<T> - 1;
     amount &= kMask;
     return (value << amount) | (value >> (-amount & kMask));
     #endif
@@ -60,7 +60,8 @@ T rol(T value, base::uint amount)
 template<typename T>
 T bswap(T value)
 {
-    static_assert(std::is_integral_v<T> && sizeof(T) > 1);
+    static_assert(std::is_integral_v<T>);
+    static_assert(sizeof(T) > 1);
 
     #if EGGCPT_COMPILER_MSVC
     if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);
@@ -74,7 +75,7 @@ T bswap(T value)
 }
 
 template<typename T>
-base::uint clz(T value)
+unsigned clz(T value)
 {
     static_assert(std::is_integral_v<T>);
     EGGCPT_ASSERT(value != 0, "Undefined");
@@ -85,7 +86,7 @@ base::uint clz(T value)
         _BitScanReverse(&index, value);
     else
         _BitScanReverse64(&index, value);
-    return bits<T>() - static_cast<base::uint>(index) - 1;
+    return bits_v<T> - static_cast<unsigned>(index) - 1;
     #else
     if constexpr (sizeof(T) <= sizeof(unsigned int))
         return __builtin_clz(value);
@@ -95,7 +96,7 @@ base::uint clz(T value)
 }
 
 template<typename T>
-base::uint ctz(T value)
+unsigned ctz(T value)
 {
     static_assert(std::is_integral_v<T>);
     EGGCPT_ASSERT(value != 0, "Undefined");
@@ -106,7 +107,7 @@ base::uint ctz(T value)
         _BitScanForward(&index, value);
     else
         _BitScanForward64(&index, value);
-    return static_cast<base::uint>(index);
+    return static_cast<unsigned>(index);
     #else
     if constexpr (sizeof(T) <= sizeof(unsigned int))
         return __builtin_ctz(value);
@@ -116,7 +117,7 @@ base::uint ctz(T value)
 }
 
 template<typename T>
-base::uint popcnt(T value)
+unsigned popcnt(T value)
 {
     static_assert(std::is_integral_v<T>);
 

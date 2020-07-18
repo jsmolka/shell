@@ -24,7 +24,7 @@ public:
     explicit bit_iterator(T value)
         : value(value) {}
 
-    base::uint operator*() const
+    unsigned operator*() const
     {
         return ctz(value);
     }
