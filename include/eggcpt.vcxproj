@@ -126,11 +126,9 @@
     <ClInclude Include="eggcpt\detail\macro\platform.h" />
     <ClInclude Include="eggcpt\detail\bit\intrin.h" />
     <ClInclude Include="eggcpt\detail\macro\macro.h" />
-    <ClInclude Include="eggcpt\detail\trait\trait.h" />
     <ClInclude Include="eggcpt\detail\utility\iterator.h" />
     <ClInclude Include="eggcpt\detail\utility\reconstruct.h" />
     <ClInclude Include="eggcpt\macro.h" />
-    <ClInclude Include="eggcpt\trait.h" />
     <ClInclude Include="eggcpt\utility.h" />
     <ClInclude Include="include\eggcpt\base\macros\platform.h" />
     <ClInclude Include="include\eggcpt\bits.h" />

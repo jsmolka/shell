@@ -66,11 +66,5 @@
     <ClInclude Include="eggcpt\detail\macro\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\trait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\trait\trait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
