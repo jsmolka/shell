@@ -17,7 +17,7 @@ constexpr T subset(T value)
 }
 
 template<unsigned Size, typename T>
-constexpr T signEx(T value)
+constexpr T sign_ex(T value)
 {
     static_assert(std::is_integral_v<T>);
     static_assert(Size > 0 && Size <= bits_v<T>);

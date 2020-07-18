@@ -1,6 +1,6 @@
 #pragma once
 
-#include <limits>
+#include <climits>
 #include <type_traits>
 
 namespace eggcpt::bit

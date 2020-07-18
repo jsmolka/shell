@@ -21,7 +21,7 @@ public:
     using difference_type = std::ptrdiff_t;
     using iterator_category = std::forward_iterator_tag;
 
-    explicit bit_iterator(T value)
+    bit_iterator(T value)
         : value(value) {}
 
     unsigned operator*() const
@@ -43,11 +43,11 @@ private:
 };
 
 template<typename T>
-utility::iterator_range<bit_iterator<T>> iterate(T value)
+auto iterate(T value)
 {
     static_assert(std::is_integral_v<T>);
 
-    return { bit_iterator<T>(value), bit_iterator<T>(0) };
+    return utility::make_iterator_range<bit_iterator<T>>(value, 0);
 }
 
 }  // namespace eggcpt::bit

@@ -12,11 +12,11 @@ TEST_CASE("bit::subset")
     REQUIRE(bit::subset<16, 8>(0x00FF'0000) == 0xFF);
 }
 
-TEST_CASE("bit::signEx")
+TEST_CASE("bit::sign_ex")
 {
-    REQUIRE(bit::signEx< 1>(0x0000'0001) == 0xFFFF'FFFF);
-    REQUIRE(bit::signEx<16>(0x0000'8000) == 0xFFFF'8000);
-    REQUIRE(bit::signEx<32>(0x0000'0001) == 0x0000'0001);
+    REQUIRE(bit::sign_ex< 1>(0x0000'0001) == 0xFFFF'FFFF);
+    REQUIRE(bit::sign_ex<16>(0x0000'8000) == 0xFFFF'8000);
+    REQUIRE(bit::sign_ex<32>(0x0000'0001) == 0x0000'0001);
 }
 
 TEST_CASE("bit::sar")

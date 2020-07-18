@@ -24,4 +24,10 @@ private:
     const_iterator end_{};
 };
 
+template<typename T>
+auto make_iterator_range(T begin, T end)
+{
+    return iterator_range<T>(begin, end);
+}
+
 }  // namespace eggcpt::utility
