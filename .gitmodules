@@ -1,3 +1,7 @@
 [submodule "test/catch2"]
     path = test/catch2
     url = https://github.com/catchorg/Catch2
+
+[submodule "include/eggcpt/detail/fmt"]
+    path = include/eggcpt/detail/fmt
+    url = https://github.com/fmtlib/fmt

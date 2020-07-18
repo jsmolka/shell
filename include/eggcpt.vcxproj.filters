@@ -75,5 +75,8 @@
     <ClInclude Include="eggcpt\detail\mpl\array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eggcpt\fmt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,11 +15,11 @@ class bit_iterator
     static_assert(std::is_integral_v<T>);
 
 public:
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
     using pointer = T*;
     using reference = T&;
     using value_type = T;
-    using difference_type = std::ptrdiff_t;
-    using iterator_category = std::forward_iterator_tag;
 
     bit_iterator(T value)
         : value(value) {}
