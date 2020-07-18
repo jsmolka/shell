@@ -61,7 +61,7 @@ template<typename T>
 T bswap(T value)
 {
     static_assert(std::is_integral_v<T>);
-    static_assert(sizeof(T) > 1);
+    static_assert(sizeof(T) >= 2);
 
     #if EGGCPT_COMPILER_MSVC
     if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);

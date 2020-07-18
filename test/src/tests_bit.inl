@@ -33,6 +33,14 @@ TEST_CASE("bit::shr")
     REQUIRE(bit::shr(0x8000'0000, 31) == 0x0000'0001);
 }
 
+TEST_CASE("bit::isolate_nibbles")
+{
+    REQUIRE(bit::isolate_nibbles(0x0000'0001) == 0x0000'0001);
+    REQUIRE(bit::isolate_nibbles(0x0000'0012) == 0x0000'0102);
+    REQUIRE(bit::isolate_nibbles(0x0000'1234) == 0x0102'0304);
+    REQUIRE(bit::isolate_nibbles<char>(0xAB) == 0x0A0B);
+}
+
 TEST_CASE("bit::ror")
 {
     REQUIRE(bit::ror(0x0000'00FF,  0) == 0x0000'00FF);
@@ -84,11 +92,11 @@ TEST_CASE("bit::storage_type")
 }
 
 template<typename T>
-bool compare(T value, const std::vector<base::uint>& expected)
+bool compare(T value, const std::vector<unsigned>& expected)
 {
     auto iterator = bit::iterate(value);
 
-    return std::vector<base::uint>(iterator.begin(), iterator.end()) == expected;
+    return std::vector<unsigned>(iterator.begin(), iterator.end()) == expected;
 }
 
 TEST_CASE("bit::iterate")
