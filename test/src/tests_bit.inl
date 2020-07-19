@@ -38,7 +38,6 @@ TEST_CASE("bit::isolate_nibbles")
     REQUIRE(bit::isolate_nibbles(0x0000'0001) == 0x0000'0001);
     REQUIRE(bit::isolate_nibbles(0x0000'0012) == 0x0000'0102);
     REQUIRE(bit::isolate_nibbles(0x0000'1234) == 0x0102'0304);
-    REQUIRE(bit::isolate_nibbles<char>(0xAB) == 0x0A0B);
 }
 
 TEST_CASE("bit::ror")

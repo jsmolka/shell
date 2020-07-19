@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\tests_bit.inl" />
+    <None Include="src\tests_logging.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tests_mpl.inl" />

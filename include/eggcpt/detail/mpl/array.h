@@ -23,4 +23,4 @@ constexpr std::array<T, N> array(Func&& func)
     return detail::array_impl<T>(std::forward<Func>(func), std::make_index_sequence<N>{});
 }
 
-}  // namespace egcpt::mpl
+}  // namespace eggcpt::mpl
