@@ -81,19 +81,10 @@
     <ClInclude Include="eggcpt\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\detail\logging\logger.h">
+    <ClInclude Include="eggcpt\singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\detail\utility\singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\windows.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\logging\level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\logging\log.h">
+    <ClInclude Include="eggcpt\windows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

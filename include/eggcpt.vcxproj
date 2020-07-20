@@ -123,11 +123,7 @@
     <ClInclude Include="eggcpt\detail\bit\iterator.h" />
     <ClInclude Include="eggcpt\detail\bit\storage.h" />
     <ClInclude Include="eggcpt\detail\bit\trait.h" />
-    <ClInclude Include="eggcpt\detail\logging\log.h" />
-    <ClInclude Include="eggcpt\detail\logging\level.h" />
-    <ClInclude Include="eggcpt\detail\logging\logger.h" />
-    <ClInclude Include="eggcpt\detail\utility\singleton.h" />
-    <ClInclude Include="eggcpt\detail\windows.h" />
+    <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\fmt.h" />
     <ClInclude Include="eggcpt\detail\macro\compiler.h" />
     <ClInclude Include="eggcpt\detail\macro\platform.h" />
@@ -139,6 +135,7 @@
     <ClInclude Include="eggcpt\detail\utility\iterator.h" />
     <ClInclude Include="eggcpt\detail\utility\reconstruct.h" />
     <ClInclude Include="eggcpt\macro.h" />
+    <ClInclude Include="eggcpt\singleton.h" />
     <ClInclude Include="eggcpt\utility.h" />
     <ClInclude Include="include\eggcpt\base\macros\platform.h" />
     <ClInclude Include="include\eggcpt\bits.h" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <eggcpt/detail/macro/platform.h>
+#include <eggcpt/macro.h>
 
 #if EGGCPT_PLATFORM_WINDOWS
 #  if !defined(NOMINMAX) && !defined(WIN32_LEAN_AND_MEAN)

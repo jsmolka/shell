@@ -1,6 +1,6 @@
 #pragma once
 
-namespace eggcpt::utility
+namespace eggcpt
 {
 
 template<typename T>
@@ -23,4 +23,4 @@ protected:
     virtual ~singleton() = default;
 };
 
-}  // namespace eggcpt::utility
+}  // namespace eggcpt

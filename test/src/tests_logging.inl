@@ -1,24 +1,15 @@
-TEST_CASE("logging::debug")
+TEST_CASE("logging::sinks")
 {
-    EGGCPT_LOG_DEBUG("debug");
+    using namespace eggcpt::logging;
+
+    set_default_sink(multi_sink{ console_sink{}, colored_console_sink{} });
 }
 
-TEST_CASE("logging::info")
+TEST_CASE("logging::functions")
 {
-    EGGCPT_LOG_INFO("info");
-}
-
-TEST_CASE("logging::warn")
-{
-    EGGCPT_LOG_WARN("warn");
-}
-
-TEST_CASE("logging::error")
-{
-    EGGCPT_LOG_ERROR("error");
-}
-
-TEST_CASE("logging::fatal")
-{
-    EGGCPT_LOG_FATAL("fatal");
+    EGGCPT_LOG_DEBUG("test");
+    EGGCPT_LOG_INFO ("test");
+    EGGCPT_LOG_WARN ("test");
+    EGGCPT_LOG_ERROR("test");
+    EGGCPT_LOG_FATAL("test");
 }

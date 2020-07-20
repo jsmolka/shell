@@ -12,6 +12,7 @@
 #endif
 
 #define EGGCPT_ASSERT(condition, message) assert((condition) && message)
+#define EGGCPT_UNUSED(argument) static_cast<void>(argument)
 
 #if EGGCPT_COMPILER_MSVC
 #define EGGCPT_INLINE __forceinline
