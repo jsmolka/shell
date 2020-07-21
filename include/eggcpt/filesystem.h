@@ -43,7 +43,7 @@ inline path executable()
     #if EGGCPT_PLATFORM_DARWIN
     char buffer[PATH_MAX];
     uint32_t size = sizeof(buffer);
-    _NSGetExecutablePath(path, &size);
+    _NSGetExecutablePath(buffer, &size);
     return buffer;
     #endif
 }
