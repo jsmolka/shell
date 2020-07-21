@@ -26,7 +26,6 @@ class console_sink : public basic_sink
 public:
     virtual void sink(const std::string& message, level) override
     {
-        EGGCPT_UNUSED(level);
         fmt::print(message);
     }
 };
