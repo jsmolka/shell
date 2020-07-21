@@ -123,6 +123,7 @@
     <ClInclude Include="eggcpt\detail\bit\iterator.h" />
     <ClInclude Include="eggcpt\detail\bit\storage.h" />
     <ClInclude Include="eggcpt\detail\bit\trait.h" />
+    <ClInclude Include="eggcpt\filesystem.h" />
     <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\fmt.h" />
     <ClInclude Include="eggcpt\detail\macro\compiler.h" />

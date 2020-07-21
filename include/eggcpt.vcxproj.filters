@@ -87,5 +87,8 @@
     <ClInclude Include="eggcpt\windows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eggcpt\filesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

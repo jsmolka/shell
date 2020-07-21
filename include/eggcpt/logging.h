@@ -1,23 +1,17 @@
 #pragma once
 
 #include <array>
+#include <fstream>
 #include <memory>
 #include <type_traits>
+#include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 #include <eggcpt/windows.h>
 
 namespace eggcpt::logging
 {
 
-enum class level
-{
-    debug,
-    info,
-    warn,
-    error,
-    fatal,
-    none
-};
+enum class level { debug, info, warn, error, fatal };
 
 class basic_sink
 {
@@ -30,10 +24,9 @@ public:
 class console_sink : public basic_sink
 {
 public:
-    virtual void sink(const std::string& message, level level) override
+    virtual void sink(const std::string& message, level) override
     {
         EGGCPT_UNUSED(level);
-
         fmt::print(message);
     }
 };
@@ -75,10 +68,18 @@ public:
 class file_sink : public basic_sink
 {
 public:
-    virtual void sink(const std::string& message, level level) override
+    file_sink(const filesystem::path& file, bool trunc = false)
+        : stream(filesystem::make_absolute(file),
+            trunc ? std::ios::trunc : std::ios::app) {}
+
+    virtual void sink(const std::string& message, level) override
     {
-        fmt::print("file: {}\n", message);
+        if (stream.is_open())
+            stream << message;
     }
+
+private:
+    std::ofstream stream;
 };
 
 template<typename... Ts>

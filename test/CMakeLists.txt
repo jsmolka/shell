@@ -15,3 +15,7 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_link_libraries(${CMAKE_PROJECT_NAME} stdc++fs)
+endif()
