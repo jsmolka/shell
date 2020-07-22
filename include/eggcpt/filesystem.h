@@ -14,7 +14,7 @@
 #elif EGGCPT_PLATFORM_LINUX
 #include <unistd.h>
 #elif EGGCPT_PLATFORM_DARWIN
-#include <sys/syslimits.h>
+#include <mach-o/dyld.h>
 #endif
 
 namespace eggcpt::filesystem
