@@ -30,12 +30,6 @@
     <ClInclude Include="eggcpt\bit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\detail\macro\compiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\macro\platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -61,9 +55,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\detail\bit\bit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\macro\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\detail\bit\trait.h">

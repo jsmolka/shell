@@ -9,11 +9,11 @@
 #include <experimental/filesystem>
 #endif
 
-#if EGGCPT_PLATFORM_WINDOWS
+#if EGGCPT_OS_WINDOWS
 #include <eggcpt/windows.h>
-#elif EGGCPT_PLATFORM_LINUX
+#elif EGGCPT_OS_LINUX
 #include <unistd.h>
-#elif EGGCPT_PLATFORM_DARWIN
+#elif EGGCPT_OS_DARWIN
 #include <mach-o/dyld.h>
 #endif
 
@@ -28,19 +28,19 @@ using namespace std::experimental::filesystem;
 
 inline path executable()
 {
-    #if EGGCPT_PLATFORM_WINDOWS
+    #if EGGCPT_OS_WINDOWS
     wchar_t buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, sizeof(buffer) / sizeof(wchar_t));
     return buffer;
     #endif
     
-    #if EGGCPT_PLATFORM_LINUX
+    #if EGGCPT_OS_LINUX
     char buffer[PATH_MAX];
     readlink("/proc/self/exe", buffer, sizeof(buffer));
     return buffer;
     #endif
 
-    #if EGGCPT_PLATFORM_DARWIN
+    #if EGGCPT_OS_DARWIN
     char buffer[PATH_MAX];
     uint32_t size = sizeof(buffer);
     _NSGetExecutablePath(buffer, &size);

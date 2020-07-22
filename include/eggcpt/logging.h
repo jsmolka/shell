@@ -36,7 +36,7 @@ class colored_console_sink : public console_sink
 public:
     colored_console_sink()
     {
-        #if EGGCPT_PLATFORM_WINDOWS
+        #if EGGCPT_OS_WINDOWS
         auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
         if (handle != INVALID_HANDLE_VALUE)
         {
@@ -134,12 +134,6 @@ void set_default_sink(const T& sink)
 #  define EGGCPT_LOG_LEVEL 4
 #else
 #  define EGGCPT_LOG_LEVEL 5
-#endif
-
-#if EGGCPT_COMPILER_MSVC
-#  define EGGCPT_FUNCTION __FUNCSIG__
-#else
-#  define EGGCPT_FUNCTION __PRETTY_FUNCTION__
 #endif
 
 #define EGGCPT_LOG(prefix, value, ...)                                  \
