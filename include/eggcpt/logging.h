@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 #include <type_traits>
+
 #include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 #include <eggcpt/windows.h>
@@ -59,6 +60,10 @@ public:
         case logging::level::warn:  escape = "\033[93m"; break;
         case logging::level::error: escape = "\033[91m"; break;
         case logging::level::fatal: escape = "\033[95m"; break;
+
+        default:
+            EGGCPT_UNREACHABLE;
+            break;
         }
         console_sink::sink(fmt::format("{}{}\033[0m", escape, message), level);
     }
@@ -68,8 +73,8 @@ class file_sink : public basic_sink
 {
 public:
     file_sink(const filesystem::path& file, bool trunc = false)
-        : stream(filesystem::make_absolute(file),
-            trunc ? std::ios::trunc : std::ios::app) {}
+        : stream{ filesystem::make_absolute(file),
+            trunc ? std::ios::trunc : std::ios::app } {}
 
     virtual void sink(const std::string& message, level) override
     {
@@ -84,9 +89,11 @@ private:
 template<typename... Ts>
 class multi_sink : public basic_sink
 {
+    static_assert(sizeof...(Ts) > 0);
+
 public:
     multi_sink(Ts&&... sinks)
-        : sinks{ std::make_shared<Ts>(sinks)... } {}
+        : sinks{ std::make_shared<Ts>(std::move(sinks))... } {}
 
     virtual void sink(const std::string& message, level level) override
     {
@@ -135,10 +142,10 @@ void set_default_sink(const T& sink)
 #  define EGGCPT_FUNCTION __PRETTY_FUNCTION__
 #endif
 
-#define EGGCPT_LOG(prefix, name, ...)                                   \
+#define EGGCPT_LOG(prefix, value, ...)                                  \
     eggcpt::logging::default_sink()->sink(                              \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
-            fmt::format(__VA_ARGS__)), eggcpt::logging::level::name)
+            fmt::format(__VA_ARGS__)), eggcpt::logging::level::value)
 
 #if EGGCPT_LOG_LEVEL <= 0
 #  define EGGCPT_LOG_DEBUG(...) EGGCPT_LOG("[D]", debug, __VA_ARGS__)

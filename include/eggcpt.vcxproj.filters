@@ -84,10 +84,10 @@
     <ClInclude Include="eggcpt\singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\windows.h">
+    <ClInclude Include="eggcpt\filesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\filesystem.h">
+    <ClInclude Include="eggcpt\windows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
