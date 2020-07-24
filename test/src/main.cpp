@@ -4,8 +4,11 @@
 
 #define EGGCPT_LOG_LEVEL_DEBUG
 
+#include <iostream>
 #include <vector>
+
 #include <eggcpt/bit.h>
+#include <eggcpt/filesystem.h>
 #include <eggcpt/logging.h>
 #include <eggcpt/mpl.h>
 
@@ -17,5 +20,6 @@ using namespace eggcpt;
 #include "tests_bit.inl"
 #include "tests_mpl.inl"
 #include "tests_logging.inl"
+#include "tests_filesystem.inl"
 
 #pragma warning(pop)

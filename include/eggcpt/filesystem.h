@@ -1,13 +1,18 @@
 #pragma once
 
+#include <array>
+#include <fstream>
 #include <cstddef>
-#include <eggcpt/macro.h>
+#include <vector>
 
 #ifdef __cpp_lib_filesystem
 #include <filesystem>
 #else
 #include <experimental/filesystem>
 #endif
+
+#include <eggcpt/macro.h>
+#include <eggcpt/traits.h>
 
 #if EGGCPT_OS_WINDOWS
 #include <eggcpt/windows.h>
@@ -19,6 +24,20 @@
 
 namespace eggcpt::filesystem
 {
+
+namespace detail
+{
+
+template<typename T>
+using data_func_t = decltype(std::declval<T>().data());
+
+template<typename T>
+using size_func_t = decltype(std::declval<T>().size());
+
+template<typename T>
+using resize_func_t = decltype(std::declval<T>().resize(0));
+
+}  // namespace detail
 
 #ifdef __cpp_lib_filesystem
 using namespace std::filesystem;
@@ -58,6 +77,70 @@ inline path make_absolute(const path& path)
     return path.is_relative()
         ? executable_dir() / path
         : path;
+}
+
+template<typename T, std::enable_if_t<detect_v<T, detail::resize_func_t>, int> = 0>
+bool read(const path& file, T& dst)
+{
+    using value_type = typename T::value_type;
+
+    static_assert(detect_v<T, detail::data_func_t>);
+    static_assert(detect_v<T, detail::size_func_t>);
+
+    auto stream = std::ifstream(file, std::ios::binary);
+    if (!stream.is_open())
+        return false;
+
+    stream.seekg(0, std::ios::end);
+    std::size_t size = stream.tellg();
+    stream.seekg(0, std::ios::beg);
+
+    dst.resize((size + sizeof(value_type) - 1) / sizeof(value_type));
+
+    stream.read(reinterpret_cast<char*>(dst.data()), size);
+
+    return true;
+}
+
+template<typename T, std::enable_if_t<!detect_v<T, detail::resize_func_t>, int> = 0>
+bool read(const path& file, T& dst)
+{
+    using value_type = typename T::value_type;
+
+    static_assert(detect_v<T, detail::data_func_t>);
+    static_assert(detect_v<T, detail::size_func_t>);
+
+    auto stream = std::ifstream(file, std::ios::binary);
+    if (!stream.is_open())
+        return false;
+
+    stream.seekg(0, std::ios::end);
+    std::size_t size = stream.tellg();
+    stream.seekg(0, std::ios::beg);
+
+    if (size != (dst.size() * sizeof(value_type)))
+        return false;
+
+    stream.read(reinterpret_cast<char*>(dst.data()), size);
+
+    return true;
+}
+
+template<typename T>
+bool write(const path& file, const T& src)
+{
+    using value_type = typename T::value_type;
+
+    static_assert(detect_v<T, detail::data_func_t>);
+    static_assert(detect_v<T, detail::size_func_t>);
+
+    auto stream = std::ofstream(file, std::ios::binary);
+    if (!stream.is_open())
+        return false;
+
+    stream.write(reinterpret_cast<const char*>(src.data()), src.size() * sizeof(value_type));
+
+    return true;
 }
 
 }  // namespace eggcpt::filesystem
