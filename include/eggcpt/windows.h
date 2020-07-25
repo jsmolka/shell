@@ -1,6 +1,6 @@
 #pragma once
 
-#include <eggcpt/macro.h>
+#include <eggcpt/macros.h>
 
 #if EGGCPT_OS_WINDOWS
 #  ifndef WIN32_LEAN_AND_MEAN

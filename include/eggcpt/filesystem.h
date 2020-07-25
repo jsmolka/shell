@@ -11,7 +11,7 @@
 #include <experimental/filesystem>
 #endif
 
-#include <eggcpt/macro.h>
+#include <eggcpt/macros.h>
 #include <eggcpt/traits.h>
 
 #if EGGCPT_OS_WINDOWS

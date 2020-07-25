@@ -1,8 +1,8 @@
 TEST_CASE("bit::bits")
 {
-    REQUIRE(bit::bits_v<base::u8 > == 8 );
-    REQUIRE(bit::bits_v<base::u16> == 16);
-    REQUIRE(bit::bits_v<base::u32> == 32);
+    REQUIRE(bit::bits_v<u8 > == 8 );
+    REQUIRE(bit::bits_v<u16> == 16);
+    REQUIRE(bit::bits_v<u32> == 32);
 }
 
 TEST_CASE("bit::subset")
@@ -84,10 +84,10 @@ TEST_CASE("bit::popcnt")
 
 TEST_CASE("bit::storage_type")
 {
-    REQUIRE(std::is_same_v<bit::storage_type_t<1>, base::u8> );
-    REQUIRE(std::is_same_v<bit::storage_type_t<2>, base::u16>);
-    REQUIRE(std::is_same_v<bit::storage_type_t<4>, base::u32>);
-    REQUIRE(std::is_same_v<bit::storage_type_t<8>, base::u64>);
+    REQUIRE(std::is_same_v<bit::storage_type_t<1>,  u8>);
+    REQUIRE(std::is_same_v<bit::storage_type_t<2>, u16>);
+    REQUIRE(std::is_same_v<bit::storage_type_t<4>, u32>);
+    REQUIRE(std::is_same_v<bit::storage_type_t<8>, u64>);
 }
 
 template<typename T>

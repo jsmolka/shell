@@ -1,6 +1,6 @@
 #pragma once
 
-namespace eggcpt::utility
+namespace eggcpt
 {
 
 template<typename T>
@@ -30,4 +30,4 @@ auto make_iterator_range(T begin, T end)
     return iterator_range<T>(begin, end);
 }
 
-}  // namespace eggcpt::utility
+}  // namespace eggcpt

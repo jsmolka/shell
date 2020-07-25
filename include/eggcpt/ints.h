@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace eggcpt::base
+namespace eggcpt
 {
 
 using s8   = std::int8_t;
@@ -15,4 +15,4 @@ using s64  = std::int64_t;
 using u64  = std::uint64_t;
 using uint = unsigned int;
 
-}  // namespace eggcpt::base
+}  // namespace eggcpt

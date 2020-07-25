@@ -116,24 +116,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="eggcpt\base.h" />
     <ClInclude Include="eggcpt\bit.h" />
-    <ClInclude Include="eggcpt\detail\base\int.h" />
-    <ClInclude Include="eggcpt\detail\bit\bit.h" />
-    <ClInclude Include="eggcpt\detail\bit\iterator.h" />
-    <ClInclude Include="eggcpt\detail\bit\storage.h" />
-    <ClInclude Include="eggcpt\detail\bit\trait.h" />
+    <ClInclude Include="eggcpt\ints.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
+    <ClInclude Include="eggcpt\iterator.h" />
     <ClInclude Include="eggcpt\traits.h" />
     <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\fmt.h" />
-    <ClInclude Include="eggcpt\detail\bit\intrin.h" />
-    <ClInclude Include="eggcpt\detail\mpl\array.h" />
     <ClInclude Include="eggcpt\logging.h" />
     <ClInclude Include="eggcpt\mpl.h" />
-    <ClInclude Include="eggcpt\detail\utility\iterator.h" />
-    <ClInclude Include="eggcpt\detail\utility\reconstruct.h" />
-    <ClInclude Include="eggcpt\macro.h" />
+    <ClInclude Include="eggcpt\macros.h" />
     <ClInclude Include="eggcpt\singleton.h" />
     <ClInclude Include="eggcpt\utility.h" />
     <ClInclude Include="include\eggcpt\base\macros\platform.h" />

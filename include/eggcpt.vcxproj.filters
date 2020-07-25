@@ -24,46 +24,13 @@
     <ClInclude Include="include\eggcpt\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\detail\bit\intrin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\bit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\macro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\bit\storage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\base\int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\utility\reconstruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\utility\iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\bit\iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\detail\bit\bit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\bit\trait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\mpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\detail\mpl\array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\fmt.h">
@@ -82,6 +49,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\ints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
