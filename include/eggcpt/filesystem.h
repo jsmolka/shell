@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <fstream>
 #ifdef __cpp_lib_filesystem
 #include <filesystem>
@@ -22,14 +23,9 @@ namespace eggcpt::filesystem
 namespace detail
 {
 
-template<typename T>
-using has_data_t = decltype(std::declval<T>().data());
-
-template<typename T>
-using has_size_t = decltype(std::declval<T>().size());
-
-template<typename T>
-using has_resize_t = decltype(std::declval<T>().resize(0));
+template<typename T> using has_data_t   = decltype(std::declval<T>().data());
+template<typename T> using has_size_t   = decltype(std::declval<T>().size());
+template<typename T> using has_resize_t = decltype(std::declval<T>().resize(0));
 
 }  // namespace detail
 

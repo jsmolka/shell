@@ -15,13 +15,4 @@ using s64  = std::int64_t;
 using u64  = std::uint64_t;
 using uint = unsigned int;
 
-static_assert(sizeof( s8) == 1);
-static_assert(sizeof( u8) == 1);
-static_assert(sizeof(s16) == 2);
-static_assert(sizeof(u16) == 2);
-static_assert(sizeof(s32) == 4);
-static_assert(sizeof(u32) == 4);
-static_assert(sizeof(s64) == 8);
-static_assert(sizeof(u64) == 8);
-
 }  // namespace eggcpt
