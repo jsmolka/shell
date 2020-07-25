@@ -1,5 +1,13 @@
 #pragma once
 
-#define FMT_HEADER_ONLY
+#ifndef FMT_HEADER_ONLY
+#  define FMT_HEADER_ONLY
+#  define FMT_HEADER_ONLY_DEFINED
+#endif
+
 #include <eggcpt/detail/fmt/include/fmt/format.h>
-#undef FMT_HEADER_ONLY
+
+#ifdef FMT_HEADER_ONLY_DEFINED
+#  undef FMT_HEADER_ONLY
+#  undef FMT_HEADER_ONLY_DEFINED
+#endif

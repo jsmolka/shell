@@ -1,22 +1,16 @@
 #pragma once
 
-#include <array>
 #include <fstream>
-#include <cstddef>
-#include <vector>
-
 #ifdef __cpp_lib_filesystem
 #include <filesystem>
 #else
 #include <experimental/filesystem>
 #endif
 
-#include <eggcpt/macros.h>
 #include <eggcpt/traits.h>
-
-#if EGGCPT_OS_WINDOWS
 #include <eggcpt/windows.h>
-#elif EGGCPT_OS_LINUX
+
+#if EGGCPT_OS_LINUX
 #include <unistd.h>
 #elif EGGCPT_OS_DARWIN
 #include <mach-o/dyld.h>
@@ -45,37 +39,33 @@ using namespace std::filesystem;
 using namespace std::experimental::filesystem;
 #endif
 
-inline path executable()
+inline path executable_path()
 {
     #if EGGCPT_OS_WINDOWS
     wchar_t buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, sizeof(buffer) / sizeof(wchar_t));
-    return buffer;
-    #endif
-    
-    #if EGGCPT_OS_LINUX
+    return path(buffer).parent_path();
+
+    #elif EGGCPT_OS_LINUX
     char buffer[PATH_MAX];
     readlink("/proc/self/exe", buffer, sizeof(buffer));
-    return buffer;
-    #endif
+    return path(buffer).parent_path();
 
-    #if EGGCPT_OS_DARWIN
+    #elif EGGCPT_OS_DARWIN
     char buffer[PATH_MAX];
     uint32_t size = sizeof(buffer);
     _NSGetExecutablePath(buffer, &size);
-    return buffer;
-    #endif
-}
+    return path(buffer).parent_path();
 
-inline path executable_dir()
-{
-    return executable().parent_path();
+    #else
+    return current_path();
+    #endif
 }
 
 inline path make_absolute(const path& path)
 {
     return path.is_relative()
-        ? executable_dir() / path
+        ? executable_path() / path
         : path;
 }
 

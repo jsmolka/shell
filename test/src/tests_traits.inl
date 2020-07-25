@@ -22,28 +22,16 @@ template<typename T> using has_test4_t = decltype(std::declval<T>().test4(""));
 
 TEST_CASE("traits::is_detected")
 {
-    struct Test1
+    struct test
     {
         void test1() {}
-        void test2() {}
-        void test3() {}
-        void test4() {}
-    };
-
-    struct Test2
-    {
-        void test1(int) {}
         void test2(int) {}
         void test3(int) {}
-        void test4(const char*) {}
+        void test4(int) {}
     };
 
-    REQUIRE( is_detected_v<Test1, has_test1_t>);
-    REQUIRE( is_detected_v<Test1, has_test2_t>);
-    REQUIRE(!is_detected_v<Test1, has_test3_t>);
-    REQUIRE(!is_detected_v<Test1, has_test4_t>);
-    REQUIRE(!is_detected_v<Test2, has_test1_t>);
-    REQUIRE(!is_detected_v<Test2, has_test2_t>);
-    REQUIRE( is_detected_v<Test2, has_test3_t>);
-    REQUIRE( is_detected_v<Test2, has_test4_t>);
+    REQUIRE( is_detected_v<test, has_test1_t>);
+    REQUIRE(!is_detected_v<test, has_test2_t>);
+    REQUIRE( is_detected_v<test, has_test3_t>);
+    REQUIRE(!is_detected_v<test, has_test4_t>);
 }

@@ -1,7 +1,7 @@
 TEST_CASE("mpl::array")
 {
-    static constexpr auto squares = mpl::array<int, 10>([](auto x) {
-        return static_cast<int>(x * x);
+    static constexpr auto squares = mpl::array<uint, 10>([](auto x) {
+        return static_cast<uint>(x * x);
     });
 
     REQUIRE(squares[0] == 0);

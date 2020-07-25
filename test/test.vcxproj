@@ -125,6 +125,7 @@
     <None Include="src\tests_bit.inl" />
     <None Include="src\tests_filesystem.inl" />
     <None Include="src\tests_logging.inl" />
+    <None Include="src\tests_singleton.inl" />
     <None Include="src\tests_traits.inl" />
     <None Include="src\tests_utility.inl" />
   </ItemGroup>

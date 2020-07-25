@@ -32,30 +32,22 @@
 #  define EGGCPT_CC_EMSCRIPTEN 0
 #endif
 
-#if !(EGGCPT_CC_MSVC || EGGCPT_CC_GCC || EGGCPT_CC_MINGW || EGGCPT_CC_CLANG || EGGCPT_CC_EMSCRIPTEN)
-#  error Unsupported compiler
-#endif
-
 #ifdef _WIN32
-#define EGGCPT_OS_WINDOWS 1
+#  define EGGCPT_OS_WINDOWS 1
 #else
-#define EGGCPT_OS_WINDOWS 0
+#  define EGGCPT_OS_WINDOWS 0
 #endif
 
 #ifdef __linux__
-#define EGGCPT_OS_LINUX 1
+#  define EGGCPT_OS_LINUX 1
 #else
-#define EGGCPT_OS_LINUX 0
+#  define EGGCPT_OS_LINUX 0
 #endif
 
 #ifdef __APPLE__
-#define EGGCPT_OS_DARWIN 1
+#  define EGGCPT_OS_DARWIN 1
 #else
-#define EGGCPT_OS_DARWIN 0
-#endif
-
-#if !(EGGCPT_OS_WINDOWS || EGGCPT_OS_LINUX || EGGCPT_OS_DARWIN)
-#error Unsupported platform
+#  define EGGCPT_OS_DARWIN 0
 #endif
 
 #ifdef NDEBUG
@@ -88,4 +80,3 @@
 #else
 #  define EGGCPT_UNREACHABLE EGGCPT_ASSERT(false, "Unreachable")
 #endif
-
