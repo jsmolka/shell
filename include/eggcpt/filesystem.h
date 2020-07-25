@@ -8,8 +8,8 @@
 #include <experimental/filesystem>
 #endif
 
-#include <eggcpt/traits.h>
-#include <eggcpt/windows.h>
+#include "traits.h"
+#include "windows.h"
 
 #if EGGCPT_OS_LINUX
 #include <unistd.h>

@@ -4,9 +4,9 @@
 #include <iterator>
 #include <type_traits>
 
-#include <eggcpt/ints.h>
-#include <eggcpt/iterator.h>
-#include <eggcpt/macros.h>
+#include "ints.h"
+#include "iterator.h"
+#include "macros.h"
 
 #if EGGCPT_CC_MSVC
 #include <intrin.h>

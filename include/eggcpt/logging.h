@@ -5,9 +5,9 @@
 #include <memory>
 #include <type_traits>
 
-#include <eggcpt/filesystem.h>
-#include <eggcpt/fmt.h>
-#include <eggcpt/windows.h>
+#include "filesystem.h"
+#include "fmt.h"
+#include "windows.h"
 
 namespace eggcpt::logging
 {
