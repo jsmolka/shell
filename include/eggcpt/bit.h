@@ -24,7 +24,7 @@ template<typename T>
 constexpr auto bits_v = bits<T>::value;
 
 template<uint Size> struct storage_type {};
-template<> struct storage_type<sizeof( u8)> { using type = u8;  };
+template<> struct storage_type<sizeof( u8)> { using type =  u8; };
 template<> struct storage_type<sizeof(u16)> { using type = u16; };
 template<> struct storage_type<sizeof(u32)> { using type = u32; };
 template<> struct storage_type<sizeof(u64)> { using type = u64; };

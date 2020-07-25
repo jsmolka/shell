@@ -25,3 +25,14 @@ TEST_CASE("filesystem::read/write array")
 
     REQUIRE(src == dst);
 }
+
+TEST_CASE("filesystem::read/write string")
+{
+    std::string src = "test";
+    std::string dst;
+
+    filesystem::write("out3.bin", src);
+    filesystem::read ("out3.bin", dst);
+
+    REQUIRE(src == dst);
+}
