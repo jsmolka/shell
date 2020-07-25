@@ -29,13 +29,13 @@ namespace detail
 {
 
 template<typename T>
-using data_func_t = decltype(std::declval<T>().data());
+using has_data_t = decltype(std::declval<T>().data());
 
 template<typename T>
-using size_func_t = decltype(std::declval<T>().size());
+using has_size_t = decltype(std::declval<T>().size());
 
 template<typename T>
-using resize_func_t = decltype(std::declval<T>().resize(0));
+using has_resize_t = decltype(std::declval<T>().resize(0));
 
 }  // namespace detail
 
@@ -79,13 +79,13 @@ inline path make_absolute(const path& path)
         : path;
 }
 
-template<typename T, std::enable_if_t<detect_v<T, detail::resize_func_t>, int> = 0>
+template<typename T, std::enable_if_t<is_detected_v<T, detail::has_resize_t>, int> = 0>
 bool read(const path& file, T& dst)
 {
     using value_type = typename T::value_type;
 
-    static_assert(detect_v<T, detail::data_func_t>);
-    static_assert(detect_v<T, detail::size_func_t>);
+    static_assert(is_detected_v<T, detail::has_data_t>);
+    static_assert(is_detected_v<T, detail::has_size_t>);
 
     auto stream = std::ifstream(file, std::ios::binary);
     if (!stream.is_open())
@@ -102,13 +102,13 @@ bool read(const path& file, T& dst)
     return true;
 }
 
-template<typename T, std::enable_if_t<!detect_v<T, detail::resize_func_t>, int> = 0>
+template<typename T, std::enable_if_t<!is_detected_v<T, detail::has_resize_t>, int> = 0>
 bool read(const path& file, T& dst)
 {
     using value_type = typename T::value_type;
 
-    static_assert(detect_v<T, detail::data_func_t>);
-    static_assert(detect_v<T, detail::size_func_t>);
+    static_assert(is_detected_v<T, detail::has_data_t>);
+    static_assert(is_detected_v<T, detail::has_size_t>);
 
     auto stream = std::ifstream(file, std::ios::binary);
     if (!stream.is_open())
@@ -131,8 +131,8 @@ bool write(const path& file, const T& src)
 {
     using value_type = typename T::value_type;
 
-    static_assert(detect_v<T, detail::data_func_t>);
-    static_assert(detect_v<T, detail::size_func_t>);
+    static_assert(is_detected_v<T, detail::has_data_t>);
+    static_assert(is_detected_v<T, detail::has_size_t>);
 
     auto stream = std::ofstream(file, std::ios::binary);
     if (!stream.is_open())

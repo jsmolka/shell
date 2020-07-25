@@ -20,13 +20,13 @@ constexpr bool is_specialization_v<Template<T...>, Template> = true;
 template<typename T, template <typename...> typename Template>
 struct is_specialization : std::bool_constant<is_specialization_v<T, Template>> {};
 
-template<typename T, template<typename> typename Operation, typename Void = std::void_t<>>
-struct detect : std::false_type {};
+template<typename T, template<typename> typename Operation, typename = std::void_t<>>
+constexpr bool is_detected_v = false;
 
 template<typename T, template<typename> typename Operation>
-struct detect<T, Operation, std::void_t<Operation<T>>> : std::true_type {};
+constexpr bool is_detected_v<T, Operation, std::void_t<Operation<T>>> = true;
 
-template<typename T, template<typename> typename Operation, typename Void = std::void_t<>>
-constexpr bool detect_v = detect<T, Operation, Void>::value;
+template<typename T, template<typename> typename Operation>
+struct is_detected : std::bool_constant<is_detected_v<T, Operation>> {};
 
 }  // namespace eggcpt

@@ -15,12 +15,12 @@ TEST_CASE("traits::is_specialization")
     REQUIRE(is_specialization_v<std::vector<u64>, std::vector>);
 }
 
-template<typename T> using test1_func_t = decltype(std::declval<T>().test1());
-template<typename T> using test2_func_t = decltype(std::declval<T>().test2());
-template<typename T> using test3_func_t = decltype(std::declval<T>().test3(0));
-template<typename T> using test4_func_t = decltype(std::declval<T>().test4(""));
+template<typename T> using has_test1_t = decltype(std::declval<T>().test1());
+template<typename T> using has_test2_t = decltype(std::declval<T>().test2());
+template<typename T> using has_test3_t = decltype(std::declval<T>().test3(0));
+template<typename T> using has_test4_t = decltype(std::declval<T>().test4(""));
 
-TEST_CASE("traits::detect")
+TEST_CASE("traits::is_detected")
 {
     struct Test1
     {
@@ -38,12 +38,12 @@ TEST_CASE("traits::detect")
         void test4(const char*) {}
     };
 
-    REQUIRE( detect_v<Test1, test1_func_t>);
-    REQUIRE( detect_v<Test1, test2_func_t>);
-    REQUIRE(!detect_v<Test1, test3_func_t>);
-    REQUIRE(!detect_v<Test1, test4_func_t>);
-    REQUIRE(!detect_v<Test2, test1_func_t>);
-    REQUIRE(!detect_v<Test2, test2_func_t>);
-    REQUIRE( detect_v<Test2, test3_func_t>);
-    REQUIRE( detect_v<Test2, test4_func_t>);
+    REQUIRE( is_detected_v<Test1, has_test1_t>);
+    REQUIRE( is_detected_v<Test1, has_test2_t>);
+    REQUIRE(!is_detected_v<Test1, has_test3_t>);
+    REQUIRE(!is_detected_v<Test1, has_test4_t>);
+    REQUIRE(!is_detected_v<Test2, has_test1_t>);
+    REQUIRE(!is_detected_v<Test2, has_test2_t>);
+    REQUIRE( is_detected_v<Test2, has_test3_t>);
+    REQUIRE( is_detected_v<Test2, has_test4_t>);
 }
