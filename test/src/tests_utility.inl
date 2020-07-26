@@ -7,7 +7,7 @@ TEST_CASE("utility::reconstruct")
     };
         
     test test{ 1, 1 };
-    reconstruct(&test);
+    reconstruct(test);
 
     REQUIRE(test.x == 0);
     REQUIRE(test.y == 0);
@@ -25,7 +25,7 @@ TEST_CASE("utility::reconstruct<Args>")
     };
 
     test test(1, 1);
-    reconstruct(&test, 0, 0);
+    reconstruct(test, 0, 0);
 
     REQUIRE(test.x == 0);
     REQUIRE(test.y == 0);
