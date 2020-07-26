@@ -30,4 +30,10 @@ auto make_iterator_range(T begin, T end)
     return iterator_range<T>(begin, end);
 }
 
+template<typename T>
+auto reversed(T& range)
+{
+    return make_iterator_range(std::rbegin(range), std::rend(range));
+}
+
 }  // namespace eggcpt
