@@ -44,3 +44,12 @@ TEST_CASE("traits::is_iterable")
     REQUIRE( is_iterable_v<std::string>);
     REQUIRE(!is_iterable_v<test>);
 }
+
+TEST_CASE("traits::is_reverse_iterable")
+{
+    struct test {};
+
+    REQUIRE( is_iterable_v<std::vector<int>>);
+    REQUIRE( is_iterable_v<std::string>);
+    REQUIRE(!is_iterable_v<test>);
+}

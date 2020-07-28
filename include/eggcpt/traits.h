@@ -38,4 +38,13 @@ constexpr bool is_iterable_v<T, std::void_t<decltype(std::begin(std::declval<T>(
 template<typename T>
 struct is_interable : std::bool_constant<is_iterable_v<T>> {};
 
+template<typename T, typename = std::void_t<>>
+constexpr bool is_reverse_iterable_v = false;
+
+template<typename T>
+constexpr bool is_reverse_iterable_v<T, std::void_t<decltype(std::rbegin(std::declval<T>())), decltype(std::rend(std::declval<T>()))>> = true;
+
+template<typename T>
+struct is_reverse_interable : std::bool_constant<is_reverse_iterable_v<T>> {};
+
 }  // namespace eggcpt
