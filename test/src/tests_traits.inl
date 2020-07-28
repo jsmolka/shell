@@ -35,3 +35,12 @@ TEST_CASE("traits::is_detected")
     REQUIRE( is_detected_v<test, has_test3_t>);
     REQUIRE(!is_detected_v<test, has_test4_t>);
 }
+
+TEST_CASE("traits::is_iterable")
+{
+    struct test {};
+
+    REQUIRE( is_iterable_v<std::vector<int>>);
+    REQUIRE( is_iterable_v<std::string>);
+    REQUIRE(!is_iterable_v<test>);
+}

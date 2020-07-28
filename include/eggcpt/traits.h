@@ -29,4 +29,13 @@ constexpr bool is_detected_v<T, Operation, std::void_t<Operation<T>>> = true;
 template<typename T, template<typename> typename Operation>
 struct is_detected : std::bool_constant<is_detected_v<T, Operation>> {};
 
+template<typename T, typename = std::void_t<>>
+constexpr bool is_iterable_v = false;
+
+template<typename T>
+constexpr bool is_iterable_v<T, std::void_t<decltype(std::begin(std::declval<T>())), decltype(std::end(std::declval<T>()))>> = true;
+
+template<typename T>
+struct is_interable : std::bool_constant<is_iterable_v<T>> {};
+
 }  // namespace eggcpt
