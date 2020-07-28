@@ -7,6 +7,7 @@
 
 #define EGGCPT_LOG_LEVEL_DEBUG
 #include <eggcpt/bit.h>
+#include <eggcpt/config.h>
 #include <eggcpt/filesystem.h>
 #include <eggcpt/logging.h>
 #include <eggcpt/mpl.h>
@@ -20,6 +21,7 @@
 using namespace eggcpt;
 
 #include "tests_bit.inl"
+#include "tests_config.inl"
 #include "tests_filesystem.inl"
 #include "tests_logging.inl"
 #include "tests_mpl.inl"
