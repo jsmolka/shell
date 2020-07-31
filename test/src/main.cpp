@@ -6,6 +6,7 @@
 #include <vector>
 
 #define EGGCPT_LOG_LEVEL_DEBUG
+#include <eggcpt/algorithm.h>
 #include <eggcpt/bit.h>
 #include <eggcpt/config.h>
 #include <eggcpt/filesystem.h>
@@ -20,6 +21,7 @@
 
 using namespace eggcpt;
 
+#include "tests_algorithm.inl"
 #include "tests_bit.inl"
 #include "tests_config.inl"
 #include "tests_filesystem.inl"

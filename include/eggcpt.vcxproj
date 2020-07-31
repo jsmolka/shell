@@ -116,6 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="eggcpt\algorithm.h" />
     <ClInclude Include="eggcpt\bit.h" />
     <ClInclude Include="eggcpt\config.h" />
     <ClInclude Include="eggcpt\ints.h" />

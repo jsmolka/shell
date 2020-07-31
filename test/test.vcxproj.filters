@@ -44,6 +44,9 @@
     <None Include="src\tests_config.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_algorithm.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tests_mpl.inl">

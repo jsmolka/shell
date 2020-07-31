@@ -122,6 +122,7 @@
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\tests_algorithm.inl" />
     <None Include="src\tests_bit.inl" />
     <None Include="src\tests_config.inl" />
     <None Include="src\tests_filesystem.inl" />
