@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iterator>
 #include <tuple>
 
 #include "iterator.h"
@@ -11,12 +10,14 @@ namespace eggcpt
 namespace pythonic
 {
 
-template<typename T,
+template<typename Range,
          typename Integral,
-         typename Iterator = decltype(std::begin(std::declval<T>())),
-         typename          = decltype(std::end(std::declval<T>()))>
-auto enumerate(T&& iterable, Integral start = 0)
+         typename Iterator = decltype(std::begin(std::declval<Range>())),
+         typename          = decltype(std::end(std::declval<Range>()))>
+auto enumerate(Range&& range, Integral start = 0)
 {
+    static_assert(std::is_integral_v<Integral>);
+
     struct iterator
     {
         using iterator_category = std::forward_iterator_tag;
@@ -34,8 +35,8 @@ auto enumerate(T&& iterable, Integral start = 0)
     };
 
     return make_iterator_range<iterator>(
-        { start, std::begin(iterable) },
-        { start, std::end(iterable)   }
+        { start, std::begin(range) },
+        { start, std::end(range)   }
     );
 }
 

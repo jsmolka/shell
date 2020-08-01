@@ -3,15 +3,17 @@
 namespace eggcpt
 {
 
-template<typename T>
+namespace iterator
+{
+
+template<typename ForwardIterator>
 class iterator_range
 {
 public:
-    using iterator = T;
-    using const_iterator = const T;
+    using iterator = ForwardIterator;
+    using const_iterator = const ForwardIterator;
 
-    iterator_range() = default;
-    iterator_range(T begin, T end)
+    iterator_range(iterator begin, iterator end)
         : begin_(begin), end_(end) {}
 
     iterator begin() { return begin_; }
@@ -20,20 +22,26 @@ public:
     const_iterator cend() const { return end_; }
 
 private:
-    const_iterator begin_{};
-    const_iterator end_{};
+    iterator begin_;
+    iterator end_;
 };
 
-template<typename T>
-auto make_iterator_range(T begin, T end)
+template<typename ForwardIterator>
+auto make_iterator_range(ForwardIterator begin, ForwardIterator end)
 {
-    return iterator_range<T>(begin, end);
+    return iterator_range<ForwardIterator>(begin, end);
 }
 
-template<typename T>
-auto reversed(T& range)
+template<typename Range>
+auto reversed(Range&& range)
 {
     return make_iterator_range(std::rbegin(range), std::rend(range));
 }
+
+}  // namespace iterator
+
+using iterator::iterator_range;
+using iterator::make_iterator_range;
+using iterator::reversed;
 
 }  // namespace eggcpt
