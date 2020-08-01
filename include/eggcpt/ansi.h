@@ -22,7 +22,7 @@ enum class color
 };
 
 template<typename String>
-auto escape(const String& str, color color)
+inline auto escape(const String& str, color color)
 {
     #if EGGCPT_OS_WINDOWS
     static bool init = false;
@@ -41,7 +41,6 @@ auto escape(const String& str, color color)
         init = true;
     }
     #endif
-
     return fmt::format("\033[{}m{}\033[0m", color, str);
 }
 
