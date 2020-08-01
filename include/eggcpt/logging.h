@@ -5,10 +5,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "ansi.h"
 #include "filesystem.h"
-#include "fmt.h"
-#include "ints.h"
-#include "windows.h"
 
 namespace eggcpt
 {
@@ -38,38 +36,22 @@ public:
 class colored_console_sink : public console_sink
 {
 public:
-    colored_console_sink()
-    {
-        #if EGGCPT_OS_WINDOWS
-        auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (handle != INVALID_HANDLE_VALUE)
-        {
-            DWORD mode;
-            if (GetConsoleMode(handle, &mode))
-            {
-                mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-                SetConsoleMode(handle, mode);
-            }
-        }
-        #endif
-    }
-
     virtual void sink(const std::string& message, level level) override
     {
-        uint color = 0;
+        color color = color::white;
         switch (level)
         {
-        case logging::level::debug: color = 96; break;
-        case logging::level::info:  color = 92; break;
-        case logging::level::warn:  color = 93; break;
-        case logging::level::error: color = 91; break;
-        case logging::level::fatal: color = 95; break;
+        case logging::level::debug: color = color::cyan;    break;
+        case logging::level::info:  color = color::green;   break;
+        case logging::level::warn:  color = color::yellow;  break;
+        case logging::level::error: color = color::red;     break;
+        case logging::level::fatal: color = color::magenta; break;
 
         default:
             EGGCPT_UNREACHABLE;
             break;
         }
-        console_sink::sink(fmt::format("\033[{}m{}\033[0m", color, message), level);
+        console_sink::sink(escape(message, color), level);
     }
 };
 
@@ -126,13 +108,11 @@ void set_default_sink(const T& sink)
 
 }  // namespace logging
 
-using logging::level;
 using logging::basic_sink;
 using logging::console_sink;
 using logging::colored_console_sink;
 using logging::file_sink;
 using logging::multi_sink;
-using logging::default_sink;
 using logging::set_default_sink;
 
 }  // namespace eggcpt
@@ -152,9 +132,9 @@ using logging::set_default_sink;
 #endif
 
 #define EGGCPT_LOG(prefix, value, ...)                                  \
-    eggcpt::default_sink()->sink(                                       \
+    eggcpt::logging::default_sink()->sink(                              \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
-            fmt::format(__VA_ARGS__)), eggcpt::level::value)
+            fmt::format(__VA_ARGS__)), eggcpt::logging::level::value)
 
 #if EGGCPT_LOG_LEVEL <= 0
 #  define EGGCPT_LOG_DEBUG(...) EGGCPT_LOG("[D]", debug, __VA_ARGS__)
