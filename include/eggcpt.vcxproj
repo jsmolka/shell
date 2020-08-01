@@ -122,6 +122,7 @@
     <ClInclude Include="eggcpt\ints.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
     <ClInclude Include="eggcpt\iterator.h" />
+    <ClInclude Include="eggcpt\pythonic.h" />
     <ClInclude Include="eggcpt\traits.h" />
     <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\fmt.h" />

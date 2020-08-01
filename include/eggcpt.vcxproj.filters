@@ -66,5 +66,8 @@
     <ClInclude Include="eggcpt\algorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eggcpt\pythonic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
