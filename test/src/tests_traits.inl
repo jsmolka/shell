@@ -1,3 +1,6 @@
+namespace tests_traits
+{
+
 TEST_CASE("traits::is_any_of")
 {
     REQUIRE( is_any_of_v<u16, u16, u32, u64>);
@@ -35,3 +38,5 @@ TEST_CASE("traits::is_detected")
     REQUIRE( is_detected_v<test, test3_t>);
     REQUIRE(!is_detected_v<test, test4_t>);
 }
+
+}  // namespace tests_traits

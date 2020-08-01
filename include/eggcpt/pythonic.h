@@ -14,7 +14,7 @@ template<typename Range,
          typename Integral,
          typename Iterator = decltype(std::begin(std::declval<Range>())),
          typename          = decltype(std::end(std::declval<Range>()))>
-auto enumerate(Range&& range, Integral start = 0)
+auto enumerate(Range& range, Integral start = 0)
 {
     static_assert(std::is_integral_v<Integral>);
 

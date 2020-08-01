@@ -1,3 +1,6 @@
+namespace tests_utility
+{
+
 TEST_CASE("utility::reconstruct")
 {
     struct test
@@ -5,7 +8,7 @@ TEST_CASE("utility::reconstruct")
         int x{};
         int y{};
     };
-        
+
     test test{ 1, 1 };
     reconstruct(test);
 
@@ -30,3 +33,5 @@ TEST_CASE("utility::reconstruct<Args>")
     REQUIRE(test.x == 0);
     REQUIRE(test.y == 0);
 }
+
+}  // namespace tests_utility

@@ -1,3 +1,6 @@
+namespace tests_singleton
+{
+
 TEST_CASE("singleton")
 {
     struct test : singleton<test>
@@ -13,3 +16,5 @@ TEST_CASE("singleton")
     test::instance().x = 1;
     REQUIRE(test::instance().x == 1);
 }
+
+}  // namespace tests_singleton

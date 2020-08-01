@@ -7,9 +7,13 @@
 
 #include "filesystem.h"
 #include "fmt.h"
+#include "ints.h"
 #include "windows.h"
 
-namespace eggcpt::logging
+namespace eggcpt
+{
+
+namespace logging
 {
 
 enum class level { debug, info, warn, error, fatal };
@@ -52,20 +56,20 @@ public:
 
     virtual void sink(const std::string& message, level level) override
     {
-        std::string escape;
+        uint color = 0;
         switch (level)
         {
-        case logging::level::debug: escape = "\033[96m"; break;
-        case logging::level::info:  escape = "\033[92m"; break;
-        case logging::level::warn:  escape = "\033[93m"; break;
-        case logging::level::error: escape = "\033[91m"; break;
-        case logging::level::fatal: escape = "\033[95m"; break;
+        case logging::level::debug: color = 96; break;
+        case logging::level::info:  color = 92; break;
+        case logging::level::warn:  color = 93; break;
+        case logging::level::error: color = 91; break;
+        case logging::level::fatal: color = 95; break;
 
         default:
             EGGCPT_UNREACHABLE;
             break;
         }
-        console_sink::sink(fmt::format("{}{}\033[0m", escape, message), level);
+        console_sink::sink(fmt::format("\033[{}m{}\033[0m", color, message), level);
     }
 };
 
@@ -120,7 +124,18 @@ void set_default_sink(const T& sink)
     default_sink() = std::make_shared<T>(sink);
 }
 
-}  // namespace eggcpt::logging
+}  // namespace logging
+
+using logging::level;
+using logging::basic_sink;
+using logging::console_sink;
+using logging::colored_console_sink;
+using logging::file_sink;
+using logging::multi_sink;
+using logging::default_sink;
+using logging::set_default_sink;
+
+}  // namespace eggcpt
 
 #ifdef EGGCPT_LOG_LEVEL_DEBUG
 #  define EGGCPT_LOG_LEVEL 0
@@ -137,9 +152,9 @@ void set_default_sink(const T& sink)
 #endif
 
 #define EGGCPT_LOG(prefix, value, ...)                                  \
-    eggcpt::logging::default_sink()->sink(                              \
+    eggcpt::default_sink()->sink(                                       \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
-            fmt::format(__VA_ARGS__)), eggcpt::logging::level::value)
+            fmt::format(__VA_ARGS__)), eggcpt::level::value)
 
 #if EGGCPT_LOG_LEVEL <= 0
 #  define EGGCPT_LOG_DEBUG(...) EGGCPT_LOG("[D]", debug, __VA_ARGS__)

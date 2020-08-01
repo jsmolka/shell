@@ -33,7 +33,7 @@ auto make_iterator_range(ForwardIterator begin, ForwardIterator end)
 }
 
 template<typename Range>
-auto reversed(Range&& range)
+auto reversed(Range& range)
 {
     return make_iterator_range(std::rbegin(range), std::rend(range));
 }

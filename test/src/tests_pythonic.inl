@@ -1,4 +1,4 @@
-namespace
+namespace tests_pythonic
 {
 
 TEST_CASE("pythonic::enumerate")
@@ -9,4 +9,4 @@ TEST_CASE("pythonic::enumerate")
         REQUIRE(index == value);
 }
 
-}  // namespace
+}  // namespace tests_pythonic
