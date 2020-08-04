@@ -67,6 +67,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\tests_algorithm.inl" />
+    <None Include="src\tests_argparse.inl" />
     <None Include="src\tests_bit.inl" />
     <None Include="src\tests_config.inl" />
     <None Include="src\tests_filesystem.inl" />
