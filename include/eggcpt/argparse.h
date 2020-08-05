@@ -78,15 +78,8 @@ public:
     template<typename T>
     void add(const std::vector<std::string>& keys, const std::string& description, const std::optional<T>& data)
     {
-        auto value = std::make_shared<Value>(data);
-
-        for (const auto& key : keys)
-        {
-            if (values.find(key) != values.end())
-                throw std::invalid_argument("duplicate key");
-
-            values[key] = value;
-        }
+        arguments.push_back({ keys, description, Value(data) });
+        //throw std::invalid_argument("duplicate key");  ???
     }
 
     void parse(int argc, char* argv[])
@@ -98,20 +91,20 @@ public:
 
             if (auto value = find(key))
             {
-                if (i < argc && !isKey(argv[i]))
+                if (i < argc && !find(argv[i]))
                 {
-                    switch ((*value)->type)
+                    switch (value->type)
                     {
-                    case Value::Type::Bool: (*value)->data = Converter<bool>()(argv[i++]); break;
-                    case Value::Type::Integer: (*value)->data = Converter<int>()(argv[i++]); break;
-                    case Value::Type::Decimal: (*value)->data = Converter<double>()(argv[i++]); break;
-                    case Value::Type::String: (*value)->data = Converter<std::string>()(argv[i++]); break;
+                    case Value::Type::Bool: value->data = Converter<bool>()(argv[i++]); break;
+                    case Value::Type::Integer: value->data = Converter<int>()(argv[i++]); break;
+                    case Value::Type::Decimal: value->data = Converter<double>()(argv[i++]); break;
+                    case Value::Type::String: value->data = Converter<std::string>()(argv[i++]); break;
                     }
                 }
                 else
                 {
-                    if ((*value)->type == Value::Type::Bool)
-                        (*value)->data = std::optional(true);
+                    if (value->type == Value::Type::Bool)
+                        value->data = std::optional(true);
                 }
             }
             else
@@ -125,29 +118,31 @@ public:
     T get(const std::string& key)
     {
         if (auto value = find(key))
-            return *std::get<std::optional<T>>((*value)->data);
+            return *std::get<std::optional<T>>(value->data);
 
         throw std::out_of_range("Invalid key");
     }
 
 private:
-    bool isKey(const std::string& key) const
+    struct Argument
     {
-        return values.find(key) != values.end();
+        std::vector<std::string> keys;
+        std::string description;
+        Value value;
+    };
+
+    Value* find(const std::string& key)
+    {
+        for (auto& [keys, description, value] : arguments)
+        {
+            if (std::find(keys.begin(), keys.end(), key) != keys.end())
+                return &value;
+        }
+        return nullptr;
     }
 
-    std::optional<std::shared_ptr<Value>> find(const std::string& key)
-    {
-        auto iter = values.find(key);
-
-        if (iter != values.end())
-            return iter->second;
-        else
-            return std::nullopt;
-    }
-
+    std::vector<Argument> arguments;
     std::vector<std::string> unbound;
-    std::unordered_map<std::string, std::shared_ptr<Value>> values;
 };
 
 }  // namespace argparse
