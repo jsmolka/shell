@@ -186,4 +186,16 @@ TEST_CASE("algorithm::implode")
     REQUIRE(implode<std::vector<std::string>, std::string>(std::vector<std::string>{ "te", "st" }, "..") == "te..st");
 }
 
+TEST_CASE("algorithm::contains")
+{
+    std::vector<int> v1 = { 1, 2, 3, 4 };
+
+    REQUIRE( contains(v1, 1));
+    REQUIRE( contains(v1, 2));
+    REQUIRE( contains(v1, 3));
+    REQUIRE( contains(v1, 4));
+    REQUIRE(!contains(v1, 5));
+    REQUIRE(!contains(v1, 6));
+}
+
 }

@@ -190,6 +190,12 @@ inline Sequence implode(const Container& tokens, const Sequence& delim)
     return stream.str();
 }
 
+template<typename Container, typename Value>
+inline bool contains(const Container& container, const Value& value)
+{
+    return std::find(container.begin(), container.end(), value) != container.end();
+}
+
 }  // namespace algorithm
 
 using algorithm::trim_left_if;
@@ -212,5 +218,6 @@ using algorithm::replace;
 using algorithm::replace_copy;
 using algorithm::explode;
 using algorithm::implode;
+using algorithm::contains;
 
 }  // namespace eggcpt

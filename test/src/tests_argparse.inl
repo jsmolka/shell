@@ -3,7 +3,7 @@ namespace tests_argparse
 
 TEST_CASE("argparse::test")
 {
-    char* argv[] = { 
+    const char* argv[] = { 
         "program.exe",
         "-b1",
         "-b2", "true",

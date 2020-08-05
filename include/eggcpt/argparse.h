@@ -8,6 +8,7 @@
 #include <variant>
 #include <vector>
 
+#include "algorithm.h"
 #include "utility.h"
 
 namespace eggcpt
@@ -78,11 +79,11 @@ public:
     template<typename T>
     void add(const std::vector<std::string>& keys, const std::string& description, const std::optional<T>& data)
     {
-        arguments.push_back({ keys, description, Value(data) });
+        args.push_back({ keys, description, Value(data) });
         //throw std::invalid_argument("duplicate key");  ???
     }
 
-    void parse(int argc, char* argv[])
+    void parse(int argc, const char* argv[])
     {
         int i = 0;
         while (i < argc)
@@ -133,15 +134,15 @@ private:
 
     Value* find(const std::string& key)
     {
-        for (auto& [keys, description, value] : arguments)
+        for (auto& arg : args)
         {
-            if (std::find(keys.begin(), keys.end(), key) != keys.end())
-                return &value;
+            if (contains(arg.keys, key))
+                return &arg.value;
         }
         return nullptr;
     }
 
-    std::vector<Argument> arguments;
+    std::vector<Argument> args;
     std::vector<std::string> unbound;
 };
 
