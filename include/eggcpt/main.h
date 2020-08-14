@@ -17,6 +17,7 @@ int wmain(int argc, wchar_t* argv[])
     static_assert(sizeof(wchar_t) == sizeof(char16_t));
 
     std::vector<char*> args;
+    args.reserve(argc);
 
     for (int x = 0; x < argc; ++x)
         args.push_back(strdup(
