@@ -17,62 +17,58 @@ namespace eggcpt
 namespace argparse
 {
 
-struct Value
+template<typename... Ts>
+class Value
 {
-    enum class Type { Bool, Integer, Decimal, String };
+public:
+    using Variant = std::variant<std::optional<Ts>...>;
 
-    template<typename... Ts>
-    using OptionalVariant = std::variant<std::optional<Ts>...>;
+    template<typename T>
+    explicit Value(const std::optional<T>& value)
+        : variant(value) {}
 
-    Value(const std::optional<bool>& data) : data(data), type(Type::Bool) {}
-    Value(const std::optional<int>& data) : data(data), type(Type::Integer) {}
-    Value(const std::optional<double>& data) : data(data), type(Type::Decimal) {}
-    Value(const std::optional<std::string>& data) : data(data), type(Type::String) {}
+    template<typename T>
+    explicit Value(const T& value)
+        : Value(std::optional<T>(value)) {}
 
-    Type type;
-    OptionalVariant<bool, int, double, std::string> data;
+    Variant variant;
 };
 
 template<typename T>
-struct Converter {};
+std::optional<T> convert(const std::string& data)
+{
+    return string_to<T>(data);
+}
 
 template<>
-struct Converter<bool>
+std::optional<bool> convert(const std::string& data)
 {
-    inline std::optional<bool> operator()(const std::string& data) const
-    {
-        return data.empty() || data == "true";
-    }
-};
+    return data.empty() || data == "true";
+}
 
 template<>
-struct Converter<int>
+std::optional<std::string> convert(const std::string& data)
 {
-    inline std::optional<int> operator()(const std::string& data) const
+    return data;
+}
+
+class BasicConverter
+{
+public:
+    BasicConverter(const std::string& data)
+        : data(data) {}
+
+    template<typename T>
+    void operator()(std::optional<T>& value)
     {
-        return string_to<int>(data);
+        value = convert<T>(data);
     }
+
+protected:
+    const std::string& data;
 };
 
-template<>
-struct Converter<double>
-{
-    inline std::optional<double> operator()(const std::string& data) const
-    {
-        return string_to<double>(data);
-    }
-};
-
-template<>
-struct Converter<std::string>
-{
-    inline std::optional<std::string> operator()(const std::string& data) const
-    {
-        return data;
-    }
-};
-
-
+template<typename Value = Value<bool, int, double, std::string>>
 class ArgumentParser
 {
 public:
@@ -94,18 +90,13 @@ public:
             {
                 if (i < argc && !find(argv[i]))
                 {
-                    switch (value->type)
-                    {
-                    case Value::Type::Bool: value->data = Converter<bool>()(argv[i++]); break;
-                    case Value::Type::Integer: value->data = Converter<int>()(argv[i++]); break;
-                    case Value::Type::Decimal: value->data = Converter<double>()(argv[i++]); break;
-                    case Value::Type::String: value->data = Converter<std::string>()(argv[i++]); break;
-                    }
+                    std::visit(BasicConverter(argv[i++]), value->variant);
                 }
                 else
                 {
-                    if (value->type == Value::Type::Bool)
-                        value->data = std::optional(true);
+                    // Booleans can be enabled by just passing the key
+                    if (std::holds_alternative<std::optional<bool>>(value->variant))
+                        value->variant = std::optional(true);
                 }
             }
             else
@@ -119,7 +110,7 @@ public:
     T get(const std::string& key)
     {
         if (auto value = find(key))
-            return *std::get<std::optional<T>>(value->data);
+            return *std::get<std::optional<T>>(value->variant);
 
         throw std::out_of_range("Invalid key");
     }
