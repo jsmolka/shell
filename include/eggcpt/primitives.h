@@ -33,7 +33,7 @@ template<> struct stdint<8, 0> { using type = s64; };
 template<> struct stdint<8, 1> { using type = u64; };
 
 template<uint Size, uint Unsigned>
-using stdint_t = stdint<Size, Unsigned>::type;
+using stdint_t = typename stdint<Size, Unsigned>::type;
 
 }  // namespace primitives
 
