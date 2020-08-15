@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <type_traits>
 
 namespace eggcpt
 {
@@ -21,16 +20,20 @@ using f32  = float;
 using f64  = double;
 using uint = unsigned int;
 
-static_assert(sizeof( s8) == 1 && std::is_signed_v<s8>);
-static_assert(sizeof( u8) == 1 && std::is_unsigned_v<u8>);
-static_assert(sizeof(s16) == 2 && std::is_signed_v<s16>);
-static_assert(sizeof(u16) == 2 && std::is_unsigned_v<u16>);
-static_assert(sizeof(s32) == 4 && std::is_signed_v<s32>);
-static_assert(sizeof(u32) == 4 && std::is_unsigned_v<u32>);
-static_assert(sizeof(s64) == 8 && std::is_signed_v<s64>);
-static_assert(sizeof(u64) == 8 && std::is_unsigned_v<u64>);
-static_assert(sizeof(f32) == 4 && std::is_signed_v<f32>);
-static_assert(sizeof(f64) == 8 && std::is_signed_v<f64>);
+template<uint Size, uint Unsigned>
+struct stdint {};
+
+template<> struct stdint<1, 0> { using type =  s8; };
+template<> struct stdint<1, 1> { using type =  u8; };
+template<> struct stdint<2, 0> { using type = s16; };
+template<> struct stdint<2, 1> { using type = u16; };
+template<> struct stdint<4, 0> { using type = s32; };
+template<> struct stdint<4, 1> { using type = u32; };
+template<> struct stdint<8, 0> { using type = s64; };
+template<> struct stdint<8, 1> { using type = u64; };
+
+template<uint Size, uint Unsigned>
+using stdint_t = stdint<Size, Unsigned>::type;
 
 }  // namespace primitives
 
@@ -45,5 +48,7 @@ using primitives::u64;
 using primitives::f32;
 using primitives::f64;
 using primitives::uint;
+using primitives::stdint;
+using primitives::stdint_t;
 
 }  // namespace eggcpt
