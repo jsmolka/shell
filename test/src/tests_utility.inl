@@ -1,38 +1,34 @@
 TEST_CASE("reconstruct")
 {
-    struct Test
+    struct Test1
     {
         int x = 0;
         int y = 0;
     };
 
-    Test test{1, 1};
-    REQUIRE(test.x == 1);
-    REQUIRE(test.y == 1);
+    Test1 test1{1, 1};
+    REQUIRE(test1.x == 1);
+    REQUIRE(test1.y == 1);
 
-    reconstruct(test);
-    REQUIRE(test.x == 0);
-    REQUIRE(test.y == 0);
-}
+    reconstruct(test1);
+    REQUIRE(test1.x == 0);
+    REQUIRE(test1.y == 0);
 
-TEST_CASE("reconstruct<Args>")
-{
-    struct Test
+    struct Test2
     {
-        Test(int x, int y)
-            : x(x), y(y) {}
+        Test2(int x, int y) : x(x), y(y) {}
 
         int x = 0;
         int y = 0;
     };
 
-    Test test(1, 1);
-    REQUIRE(test.x == 1);
-    REQUIRE(test.y == 1);
+    Test2 test2(1, 1);
+    REQUIRE(test2.x == 1);
+    REQUIRE(test2.y == 1);
 
-    reconstruct(test, 0, 0);
-    REQUIRE(test.x == 0);
-    REQUIRE(test.y == 0);
+    reconstruct(test2, 0, 0);
+    REQUIRE(test2.x == 0);
+    REQUIRE(test2.y == 0);
 }
 
 TEST_CASE("parse_primitive")
