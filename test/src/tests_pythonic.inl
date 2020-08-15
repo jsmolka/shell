@@ -3,7 +3,7 @@ TEST_CASE("enumerate")
     std::vector<int> x1 = { 0, 1, 2, 3, 4 };
     std::vector<int> y1 = { 1, 2, 3, 4, 5 };
 
-    for (const auto [index, value] : enumerate(x1))
+    for (auto [index, value] : enumerate(x1))
     {
         REQUIRE(value == index);
         REQUIRE(value == x1[index]);
@@ -14,7 +14,7 @@ TEST_CASE("enumerate")
     int x2[5] = { 1, 2, 3, 4, 5 };
     int y2[5] = { 2, 3, 4, 5, 6 };
 
-    for (const auto [index, value] : enumerate(x2, 1))
+    for (auto [index, value] : enumerate(x2, 1))
     {
         REQUIRE(value == index);
         REQUIRE(value == x2[index - 1]);
