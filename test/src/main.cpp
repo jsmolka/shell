@@ -3,6 +3,7 @@
 #pragma warning(disable:6237)
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #define EGGCPT_LOG_LEVEL_DEBUG
@@ -22,6 +23,7 @@
 #include <catch2/catch.hpp>
 
 using namespace eggcpt;
+using namespace std::string_literals;
 
 #include "tests_algorithm.inl"
 #include "tests_argparse.inl"

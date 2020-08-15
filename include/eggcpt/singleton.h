@@ -4,23 +4,23 @@ namespace eggcpt
 {
 
 template<typename T>
-class singleton
+class Singleton
 {
 public:
-    singleton(const singleton&) = delete;
-    singleton& operator=(const singleton&) = delete;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
 
     static T& instance()
     {
-        static T instance{ token{} };
+        static T instance{ Token{} };
         return instance;
     }
 
 protected:
-    struct token {};
+    struct Token {};
 
-    singleton() = default;
-    virtual ~singleton() = default;
+    Singleton() = default;
+    virtual ~Singleton() = default;
 };
 
 }  // namespace eggcpt

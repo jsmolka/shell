@@ -1,20 +1,17 @@
-namespace tests_singleton
-{
-
 TEST_CASE("singleton")
 {
-    struct test : singleton<test>
+    struct Test : Singleton<Test>
     {
-        test(token) {};
+        Test(Token) {};
 
-        int x{};
+        int x = 0;
     };
 
-    test::instance().x = 0;
-    REQUIRE(test::instance().x == 0);
+    REQUIRE(&Test::instance() == &Test::instance());
 
-    test::instance().x = 1;
-    REQUIRE(test::instance().x == 1);
+    Test::instance().x = 0;
+    REQUIRE(Test::instance().x == 0);
+
+    Test::instance().x = 1;
+    REQUIRE(Test::instance().x == 1);
 }
-
-}  // namespace tests_singleton

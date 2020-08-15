@@ -25,7 +25,7 @@ std::optional<T> convert(const std::string& data)
     else if constexpr (std::is_same_v<T, bool>)
         return data != "false" && data != "0";
     else
-        return string_to<T>(data);
+        return parse_primitive<T>(data);
 }
 
 template<typename... Ts>
@@ -117,7 +117,7 @@ private:
     std::vector<std::string> unbound;
 };
 
-using ArgumentParser = BasicArgumentParser<bool, int, long, long long, unsigned long, unsigned long long, float, double, long double, std::string>;
+using ArgumentParser = BasicArgumentParser<bool, s32, u32, s64, u64, f32, f64, std::string>;
 
 }  // namespace argparse
 

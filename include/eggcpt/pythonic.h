@@ -1,13 +1,11 @@
 #pragma once
 
 #include <tuple>
+#include <type_traits>
 
 #include "iterator.h"
 
 namespace eggcpt
-{
-
-namespace pythonic
 {
 
 template<typename Range,
@@ -28,7 +26,7 @@ auto enumerate(Range& range, Integral start = 0)
 
         bool operator!=(const iterator& other) const { return iter != other.iter; }
         void operator++() { ++index; ++iter; }
-        auto operator *() const { return std::tie(index, *iter); }
+        auto operator *() { return std::tie(index, *iter); }
 
         Integral index;
         Iterator iter;
@@ -39,9 +37,5 @@ auto enumerate(Range& range, Integral start = 0)
         { start, std::end(range)   }
     );
 }
-
-}  // namespace pythonic
-
-using pythonic::enumerate;
 
 }  // namespace eggcpt

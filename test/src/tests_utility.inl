@@ -1,51 +1,50 @@
-namespace tests_utility
+TEST_CASE("reconstruct")
 {
-
-using namespace std::string_literals;
-
-TEST_CASE("utility::reconstruct")
-{
-    struct test
+    struct Test
     {
-        int x{};
-        int y{};
+        int x = 0;
+        int y = 0;
     };
 
-    test test{ 1, 1 };
-    reconstruct(test);
+    Test test{1, 1};
+    REQUIRE(test.x == 1);
+    REQUIRE(test.y == 1);
 
+    reconstruct(test);
     REQUIRE(test.x == 0);
     REQUIRE(test.y == 0);
 }
 
-TEST_CASE("utility::reconstruct<Args>")
+TEST_CASE("reconstruct<Args>")
 {
-    struct test
+    struct Test
     {
-        test(int x, int y)
+        Test(int x, int y)
             : x(x), y(y) {}
 
-        int x{};
-        int y{};
+        int x = 0;
+        int y = 0;
     };
 
-    test test(1, 1);
-    reconstruct(test, 0, 0);
+    Test test(1, 1);
+    REQUIRE(test.x == 1);
+    REQUIRE(test.y == 1);
 
+    reconstruct(test, 0, 0);
     REQUIRE(test.x == 0);
     REQUIRE(test.y == 0);
 }
 
-TEST_CASE("utility::string_to")
+TEST_CASE("parse_primitive")
 {
-    REQUIRE(*string_to<int>("1"s) == 1);
-    REQUIRE(*string_to<long>("1"s) == 1l);
-    REQUIRE(*string_to<long long>("1"s) == 1ll);
-    REQUIRE(*string_to<unsigned long>("1"s) == 1ul);
-    REQUIRE(*string_to<unsigned long long>("1"s) == 1ull);
-    REQUIRE(*string_to<float>("1.1"s) == 1.1f);
-    REQUIRE(*string_to<double>("1.1"s) == 1.1);
-    REQUIRE(*string_to<long double>("1.1"s) == 1.1l);
+    REQUIRE(*parse_primitive<s32>("            -2147483648"s) ==             -2147483648 );
+    REQUIRE(*parse_primitive<s32>("             2147483647"s) ==              2147483647 );
+    REQUIRE(*parse_primitive<u32>("             4294967295"s) ==              4294967295 );
+    REQUIRE(*parse_primitive<s64>("   -9223372036854775808"s) ==    -9223372036854775808 );
+    REQUIRE(*parse_primitive<s64>("    9223372036854775807"s) ==     9223372036854775807 );
+    REQUIRE(*parse_primitive<u64>("   18446744073709551615"s) ==    18446744073709551615 );
+    REQUIRE(*parse_primitive<f32>("        1.175494351e-38"s) ==         1.175494351e-38f);
+    REQUIRE(*parse_primitive<f32>("        3.402823466e+38"s) ==         3.402823466e+38f);
+    REQUIRE(*parse_primitive<f64>("2.2250738585072014e-308"s) == 2.2250738585072014e-308 );
+    REQUIRE(*parse_primitive<f64>("1.7976931348623158e+308"s) == 1.7976931348623158e+308 );
 }
-
-}  // namespace tests_utility

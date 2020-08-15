@@ -5,9 +5,6 @@
 namespace eggcpt
 {
 
-namespace primitives
-{
-
 using s8   = std::int8_t;
 using u8   = std::uint8_t;
 using s16  = std::int16_t;
@@ -34,21 +31,5 @@ template<> struct stdint<8, 1> { using type = u64; };
 
 template<uint Size, uint Unsigned>
 using stdint_t = typename stdint<Size, Unsigned>::type;
-
-}  // namespace primitives
-
-using primitives::s8;
-using primitives::u8;
-using primitives::s16;
-using primitives::u16;
-using primitives::s32;
-using primitives::u32;
-using primitives::s64;
-using primitives::u64;
-using primitives::f32;
-using primitives::f64;
-using primitives::uint;
-using primitives::stdint;
-using primitives::stdint_t;
 
 }  // namespace eggcpt
