@@ -135,7 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tests_mpl.inl" />
-    <ClInclude Include="src\tests_pythonic.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

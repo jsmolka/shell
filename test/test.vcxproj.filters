@@ -55,8 +55,5 @@
     <ClInclude Include="src\tests_mpl.inl">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\tests_pythonic.inl">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
