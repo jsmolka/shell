@@ -1,6 +1,3 @@
-namespace tests_logging
-{
-
 TEST_CASE("logging::levels")
 {
     EGGCPT_LOG_DEBUG("debug");
@@ -12,11 +9,9 @@ TEST_CASE("logging::levels")
 
 TEST_CASE("logging::sinks")
 {
-    set_default_sink(multi_sink{ console_sink{}, colored_console_sink{} });
+    set_default_sink(MultiSink(ConsoleSink(), ColoredConsoleSink()));
 
-    EGGCPT_LOG_INFO("multi_sink");
+    EGGCPT_LOG_INFO("MultiSink");
 
-    set_default_sink(colored_console_sink{});
+    set_default_sink(ColoredConsoleSink());
 }
-
-}  // namespace tests_logging
