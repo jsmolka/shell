@@ -30,9 +30,6 @@
     <ClInclude Include="eggcpt\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\mpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\fmt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
