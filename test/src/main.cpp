@@ -10,7 +10,6 @@
 #include <eggcpt/algorithm.h>
 #include <eggcpt/argparse.h>
 #include <eggcpt/bit.h>
-#include <eggcpt/config.h>
 #include <eggcpt/filesystem.h>
 #include <eggcpt/logging.h>
 #include <eggcpt/singleton.h>
@@ -26,7 +25,6 @@ using namespace std::string_literals;
 #include "tests_algorithm.inl"
 #include "tests_argparse.inl"
 #include "tests_bit.inl"
-#include "tests_config.inl"
 #include "tests_filesystem.inl"
 #include "tests_logging.inl"
 #include "tests_singleton.inl"
