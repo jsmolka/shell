@@ -20,9 +20,12 @@ int wmain(int argc, wchar_t* argv[])
     args.reserve(argc);
 
     for (int x = 0; x < argc; ++x)
-        args.push_back(strdup(
-            std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>().to_bytes(
-                reinterpret_cast<char16_t*>(argv[x])).c_str()));
+    {
+        auto cvt = std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>();
+        auto utf = cvt.to_bytes(reinterpret_cast<char16_t*>(argv[x]));
+
+        args.push_back(strdup(utf.c_str()));
+    }
 
     int value = main(argc, args.data());
 
