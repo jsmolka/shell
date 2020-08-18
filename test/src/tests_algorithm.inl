@@ -1,122 +1,119 @@
-namespace tests_algorithm
-{
-
 bool issmall(int x)
 {
     return x < 3;
 }
 
-TEST_CASE("algorithm::trim_left_if")
+TEST_CASE("trimLeftIf")
 {
     std::string t0 = "  -";
     std::string t1 = "ab-";
     std::vector<int> t2 = { 1, 2, 3 };
 
-    trim_left_if(t0, isspace);
-    trim_left_if(t1, isalpha);
-    trim_left_if(t2, issmall);
+    trimLeftIf(t0, isspace);
+    trimLeftIf(t1, isalpha);
+    trimLeftIf(t2, issmall);
 
     REQUIRE(t0 == "-");
     REQUIRE(t1 == "-");
     REQUIRE(t2 == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim_left_if_copy")
+TEST_CASE("trimLeftIfCopy")
 {
     std::string t0 = "  -";
     std::string t1 = "ab-";
     std::vector<int> t2 = { 1, 2, 3 };
 
-    REQUIRE(trim_left_if_copy(t0, isspace) == "-");
-    REQUIRE(trim_left_if_copy(t1, isalpha) == "-");
-    REQUIRE(trim_left_if_copy(t2, issmall) == decltype(t2){ 3 });
+    REQUIRE(trimLeftIfCopy(t0, isspace) == "-");
+    REQUIRE(trimLeftIfCopy(t1, isalpha) == "-");
+    REQUIRE(trimLeftIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim_left")
+TEST_CASE("trimLeft")
 {
     std::string t0 = "  -";
 
-    trim_left(t0);
+    trimLeft(t0);
 
     REQUIRE(t0 == "-");
 }
 
-TEST_CASE("algorithm::trim_left_copy")
+TEST_CASE("trimLeftCopy")
 {
     std::string t0 = "  -";
 
-    REQUIRE(trim_left_copy(t0) == "-");
+    REQUIRE(trimLeftCopy(t0) == "-");
 }
 
-TEST_CASE("algorithm::trim_right_if")
+TEST_CASE("trimRightIf")
 {
     std::string t0 = "-  ";
     std::string t1 = "-ba";
     std::vector<int> t2 = { 3, 2, 1 };
 
-    trim_right_if(t0, isspace);
-    trim_right_if(t1, isalpha);
-    trim_right_if(t2, issmall);
+    trimRightIf(t0, isspace);
+    trimRightIf(t1, isalpha);
+    trimRightIf(t2, issmall);
 
     REQUIRE(t0 == "-");
     REQUIRE(t1 == "-");
     REQUIRE(t2 == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim_right_if_copy")
+TEST_CASE("trimRightIfCopy")
 {
     std::string t0 = "-  ";
     std::string t1 = "-ba";
     std::vector<int> t2 = { 3, 2, 1 };
 
-    REQUIRE(trim_right_if_copy(t0, isspace) == "-");
-    REQUIRE(trim_right_if_copy(t1, isalpha) == "-");
-    REQUIRE(trim_right_if_copy(t2, issmall) == decltype(t2){ 3 });
+    REQUIRE(trimRightIfCopy(t0, isspace) == "-");
+    REQUIRE(trimRightIfCopy(t1, isalpha) == "-");
+    REQUIRE(trimRightIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim_right")
+TEST_CASE("trimRight")
 {
     std::string t0 = "-  ";
 
-    trim_right(t0);
+    trimRight(t0);
 
     REQUIRE(t0 == "-");
 }
 
-TEST_CASE("algorithm::trim_right_copy")
+TEST_CASE("trimRightCopy")
 {
     std::string t0 = "-  ";
 
-    REQUIRE(trim_right_copy(t0) == "-");
+    REQUIRE(trimRightCopy(t0) == "-");
 }
 
-TEST_CASE("algorithm::trim_if")
+TEST_CASE("trimIf")
 {
     std::string t0 = "  -  ";
     std::string t1 = "ab-ba";
     std::vector<int> t2 = { 1, 2, 3, 2, 1 };
 
-    trim_if(t0, isspace);
-    trim_if(t1, isalpha);
-    trim_if(t2, issmall);
+    trimIf(t0, isspace);
+    trimIf(t1, isalpha);
+    trimIf(t2, issmall);
 
     REQUIRE(t0 == "-");
     REQUIRE(t1 == "-");
     REQUIRE(t2 == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim_if_copy")
+TEST_CASE("trimIfCopy")
 {
     std::string t0 = "  -  ";
     std::string t1 = "ab-ba";
     std::vector<int> t2 = { 1, 2, 3, 2, 1 };
 
-    REQUIRE(trim_if_copy(t0, isspace) == "-");
-    REQUIRE(trim_if_copy(t1, isalpha) == "-");
-    REQUIRE(trim_if_copy(t2, issmall) == decltype(t2){ 3 });
+    REQUIRE(trimIfCopy(t0, isspace) == "-");
+    REQUIRE(trimIfCopy(t1, isalpha) == "-");
+    REQUIRE(trimIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
-TEST_CASE("algorithm::trim")
+TEST_CASE("trim")
 {
     std::string t0 = "  -  ";
 
@@ -125,42 +122,42 @@ TEST_CASE("algorithm::trim")
     REQUIRE(t0 == "-");
 }
 
-TEST_CASE("algorithm::trim_copy")
+TEST_CASE("trimCopy")
 {
     std::string t0 = "  -  ";
 
-    REQUIRE(trim_copy(t0) == "-");
+    REQUIRE(trimCopy(t0) == "-");
 }
 
-TEST_CASE("algorithm::replace_left")
+TEST_CASE("replaceLeft")
 {
     std::string t0 = "test|test";
 
-    replace_left<std::string>(t0, "test", "");
+    replaceLeft<std::string>(t0, "test", "");
 
     REQUIRE(t0 == "|test");
 }
 
-TEST_CASE("algorithm::replace_left_copy")
+TEST_CASE("replaceLeftCopy")
 {
-    REQUIRE(replace_left_copy<std::string>("test|test", "test", "") == "|test");
+    REQUIRE(replaceLeftCopy<std::string>("test|test", "test", "") == "|test");
 }
 
-TEST_CASE("algorithm::replace_right")
+TEST_CASE("replaceRight")
 {
     std::string t0 = "test|test";
 
-    replace_right<std::string>(t0, "test", "");
+    replaceRight<std::string>(t0, "test", "");
 
     REQUIRE(t0 == "test|");
 }
 
-TEST_CASE("algorithm::replace_right_copy")
+TEST_CASE("replaceRightCopy")
 {
-    REQUIRE(replace_right_copy<std::string>("test|test", "test", "") == "test|");
+    REQUIRE(replaceRightCopy<std::string>("test|test", "test", "") == "test|");
 }
 
-TEST_CASE("algorithm::replace")
+TEST_CASE("replace")
 {
     std::string t0 = "test|test";
 
@@ -169,24 +166,24 @@ TEST_CASE("algorithm::replace")
     REQUIRE(t0 == "|");
 }
 
-TEST_CASE("algorithm::replace_copy")
+TEST_CASE("replaceCopy")
 {
-    REQUIRE(replace_copy<std::string>("test|test", "test", "") == "|");
+    REQUIRE(replaceCopy<std::string>("test|test", "test", "") == "|");
 }
 
-TEST_CASE("algorithm::explode")
+TEST_CASE("explode")
 {
     REQUIRE(explode<std::string>("t.e.s.t", ".") == std::vector<std::string>{ "t", "e", "s", "t" });
     REQUIRE(explode<std::string>("te..st", "..") == std::vector<std::string>{ "te", "st" });
 }
 
-TEST_CASE("algorithm::implode")
+TEST_CASE("implode")
 {
     REQUIRE(implode<std::vector<std::string>, std::string>(std::vector<std::string>{ "t", "e", "s", "t" }, ".") == "t.e.s.t");
     REQUIRE(implode<std::vector<std::string>, std::string>(std::vector<std::string>{ "te", "st" }, "..") == "te..st");
 }
 
-TEST_CASE("algorithm::contains")
+TEST_CASE("contains")
 {
     std::vector<int> v1 = { 1, 2, 3, 4 };
 
@@ -196,6 +193,4 @@ TEST_CASE("algorithm::contains")
     REQUIRE( contains(v1, 4));
     REQUIRE(!contains(v1, 5));
     REQUIRE(!contains(v1, 6));
-}
-
 }

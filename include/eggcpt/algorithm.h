@@ -5,96 +5,95 @@
 #include <string>
 #include <vector>
 
+#include "predicates.h"
+
 namespace eggcpt
 {
 
-namespace algorithm
-{
-
 template<typename Sequence, typename Predicate>
-inline void trim_left_if(Sequence& seq, Predicate pred)
+void trimLeftIf(Sequence& seq, Predicate pred)
 {
     seq.erase(seq.begin(), std::find_if_not(seq.begin(), seq.end(), pred));
 }
 
 template<typename Sequence, typename Predicate>
-inline Sequence trim_left_if_copy(const Sequence& seq, Predicate pred)
+Sequence trimLeftIfCopy(const Sequence& seq, Predicate pred)
 {
     Sequence copy(seq);
-    trim_left_if(copy, pred);
+    trimLeftIf(copy, pred);
 
     return copy;
 }
 
 template<typename Sequence>
-inline void trim_left(Sequence& seq)
+void trimLeft(Sequence& seq)
 {
-    trim_left_if(seq, isspace);
+    trimLeftIf(seq, isspace);
 }
 
 template<typename Sequence>
-inline Sequence trim_left_copy(const Sequence& seq)
+Sequence trimLeftCopy(const Sequence& seq)
 {
     Sequence copy(seq);
-    trim_left(copy);
+    trimLeft(copy);
 
     return copy;
 }
 
 template<typename Sequence, typename Predicate>
-inline void trim_right_if(Sequence& seq, Predicate pred)
+void trimRightIf(Sequence& seq, Predicate pred)
 {
     seq.erase(std::find_if_not(seq.rbegin(), seq.rend(), pred).base(), seq.end());
 }
 
 template<typename Sequence, typename Predicate>
-inline Sequence trim_right_if_copy(const Sequence& seq, Predicate pred)
+Sequence trimRightIfCopy(const Sequence& seq, Predicate pred)
 {
     Sequence copy(seq);
-    trim_right_if(copy, pred);
+    trimRightIf(copy, pred);
 
     return copy;
 }
 
 template<typename Sequence>
-inline void trim_right(Sequence& seq)
+void trimRight(Sequence& seq)
 {
-    trim_right_if(seq, isspace);
+    trimRightIf(seq, isspace);
 }
 
 template<typename Sequence>
-inline Sequence trim_right_copy(const Sequence& seq)
+Sequence trimRightCopy(const Sequence& seq)
 {
     Sequence copy(seq);
-    trim_right(copy);
+    trimRight(copy);
 
     return copy;
 }
 
 template<typename Sequence, typename Predicate>
-inline void trim_if(Sequence& seq, Predicate pred)
+void trimIf(Sequence& seq, Predicate pred)
 {
-    trim_left_if(seq, pred);
-    trim_right_if(seq, pred);
+    trimLeftIf(seq, pred);
+    trimRightIf(seq, pred);
 }
 
 template<typename Sequence, typename Predicate>
-inline Sequence trim_if_copy(const Sequence& seq, Predicate pred)
+Sequence trimIfCopy(const Sequence& seq, Predicate pred)
 {
     Sequence copy(seq);
-    trim_if(copy, pred);
+    trimIf(copy, pred);
 
     return copy;
 }
 
 template<typename Sequence>
-inline void trim(Sequence& seq)
+void trim(Sequence& seq)
 {
-    trim_if(seq, isspace);
+    trimIf(seq, isspace);
 }
 
 template<typename Sequence>
-inline Sequence trim_copy(const Sequence& seq)
+Sequence trimCopy(const Sequence& seq)
 {
     Sequence copy(seq);
     trim(copy);
@@ -103,7 +102,7 @@ inline Sequence trim_copy(const Sequence& seq)
 }
 
 template<typename Sequence>
-inline void replace_left(Sequence& seq, const Sequence& from, const Sequence& to)
+void replaceLeft(Sequence& seq, const Sequence& from, const Sequence& to)
 {
     auto pos = seq.find(from);
     if (pos != Sequence::npos)
@@ -111,16 +110,16 @@ inline void replace_left(Sequence& seq, const Sequence& from, const Sequence& to
 }
 
 template<typename Sequence>
-inline Sequence replace_left_copy(const Sequence& seq, const Sequence& from, const Sequence& to)
+Sequence replaceLeftCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
 {
     Sequence copy(seq);
-    replace_left(copy, from, to);
+    replaceLeft(copy, from, to);
     
     return copy;
 }
 
 template<typename Sequence>
-inline void replace_right(Sequence& seq, const Sequence& from, const Sequence& to)
+void replaceRight(Sequence& seq, const Sequence& from, const Sequence& to)
 {
     auto pos = seq.rfind(from);
     if (pos != Sequence::npos)
@@ -128,19 +127,18 @@ inline void replace_right(Sequence& seq, const Sequence& from, const Sequence& t
 }
 
 template<typename Sequence>
-inline Sequence replace_right_copy(const Sequence& seq, const Sequence& from, const Sequence& to)
+Sequence replaceRightCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
 {
     Sequence copy(seq);
-    replace_right(copy, from, to);
+    replaceRight(copy, from, to);
     
     return copy;
 }
 
 template<typename Sequence>
-inline void replace(Sequence& seq, const Sequence& from, const Sequence& to)
+void replace(Sequence& seq, const Sequence& from, const Sequence& to)
 {
     auto pos = 0ull;
-
     while ((pos = seq.find(from, pos)) != Sequence::npos)
     {
         seq.replace(pos, from.length(), to);
@@ -149,7 +147,7 @@ inline void replace(Sequence& seq, const Sequence& from, const Sequence& to)
 }
 
 template<typename Sequence>
-inline Sequence replace_copy(const Sequence& seq, const Sequence& from, const Sequence& to)
+Sequence replaceCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
 {
     Sequence copy(seq);
     replace(copy, from, to);
@@ -158,7 +156,7 @@ inline Sequence replace_copy(const Sequence& seq, const Sequence& from, const Se
 }
 
 template<typename Sequence>
-inline std::vector<Sequence> explode(const Sequence& str, const Sequence& delim)
+std::vector<Sequence> explode(const Sequence& str, const Sequence& delim)
 {
     auto pos = 0ull;
     auto end = str.find(delim);
@@ -175,49 +173,31 @@ inline std::vector<Sequence> explode(const Sequence& str, const Sequence& delim)
     return res;
 }
 
-template<typename Container, typename Sequence>
-inline Sequence implode(const Container& tokens, const Sequence& delim)
+template<typename Range, typename Sequence>
+Sequence implode(const Range& range, const Sequence& delim)
 {
     auto stream = std::ostringstream();
 
-    for (const auto& token : tokens)
+    for (const auto& value : range)
     {
-        if (&token != &*tokens.begin())
+        if (&value != &*range.begin())
             stream << delim;
 
-        stream << token;
+        stream << value;
     }
     return stream.str();
 }
 
-template<typename Container, typename Value>
-inline bool contains(const Container& container, const Value& value)
+template<typename Iterator, typename Value>
+bool contains(Iterator begin, Iterator end, const Value& value)
 {
-    return std::find(container.begin(), container.end(), value) != container.end();
+    return std::find(begin, end, value) != end;
 }
 
-}  // namespace algorithm
-
-using algorithm::trim_left_if;
-using algorithm::trim_left_if_copy;
-using algorithm::trim_left;
-using algorithm::trim_left_copy;
-using algorithm::trim_right_if;
-using algorithm::trim_right_if_copy;
-using algorithm::trim_right;
-using algorithm::trim_right_copy;
-using algorithm::trim_if;
-using algorithm::trim_if_copy;
-using algorithm::trim;
-using algorithm::trim_copy;
-using algorithm::replace_left;
-using algorithm::replace_left_copy;
-using algorithm::replace_right;
-using algorithm::replace_right_copy;
-using algorithm::replace;
-using algorithm::replace_copy;
-using algorithm::explode;
-using algorithm::implode;
-using algorithm::contains;
+template<typename Container, typename Value>
+bool contains(const Container& container, const Value& value)
+{
+    return contains(std::begin(container), std::end(container), value);
+}
 
 }  // namespace eggcpt

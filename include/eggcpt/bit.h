@@ -1,7 +1,6 @@
 #pragma once
 
 #include <climits>
-#include <iterator>
 #include <type_traits>
 
 #include "iterator.h"
@@ -23,203 +22,195 @@ struct bits : std::integral_constant<uint, CHAR_BIT * sizeof(T)> {};
 template<typename T>
 constexpr auto bits_v = bits<T>::value;
 
-template<uint Index, uint Size, typename T>
-constexpr T subset(T value)
+template<uint Index, uint Size, typename Integral>
+constexpr Integral seq(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
-    static_assert(Index + Size <= bits_v<T>);
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Index + Size <= bits_v<Integral>);
 
-    constexpr T kMask = ~static_cast<T>(0) >> (bits_v<T> - Size);
+    constexpr Integral kMask = ~static_cast<Integral>(0) >> (bits_v<Integral> - Size);
 
     return (value >> Index) & kMask;
 }
 
-template<uint Size, typename T>
-constexpr T sign_ex(T value)
+template<typename Integral>
+constexpr Integral sar(Integral value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
-    static_assert(Size > 0 && Size <= bits_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
-    constexpr T kAmount = bits_v<T> - Size;
+    using Signed = std::make_signed_t<Integral>;
 
-    return static_cast<std::make_signed_t<T>>(value << kAmount) >> kAmount;
+    return static_cast<Signed>(value) >> amount;
 }
 
-template<typename T>
-constexpr T sar(T value, uint amount)
+template<typename Integral>
+constexpr Integral shr(Integral value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
-    return static_cast<std::make_signed_t<T>>(value) >> amount;
+    using Unsigned = std::make_unsigned_t<Integral>;
+
+    return static_cast<Unsigned>(value) >> amount;
 }
 
-template<typename T>
-constexpr T shr(T value, uint amount)
+template<uint Size, typename Integral>
+constexpr Integral sign_ex(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Size > 0 && Size <= bits_v<Integral>);
 
-    return static_cast<std::make_unsigned_t<T>>(value) >> amount;
+    constexpr Integral kAmount = bits_v<Integral> - Size;
+
+    return sar(value << kAmount, kAmount);
 }
 
-template<typename T>
-T ror(T value, uint amount)
+template<typename Integral>
+Integral ror(Integral value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
     #if EGGCPT_CC_MSVC
-    if constexpr (sizeof(T) == 1) return _rotr8 (value, amount);
-    if constexpr (sizeof(T) == 2) return _rotr16(value, amount);
-    if constexpr (sizeof(T) == 4) return _rotr  (value, amount);
-    if constexpr (sizeof(T) == 8) return _rotr64(value, amount);
+    if (sizeof(Integral) == 1) return _rotr8 (value, amount);
+    if (sizeof(Integral) == 2) return _rotr16(value, amount);
+    if (sizeof(Integral) == 4) return _rotr  (value, amount);
+    if (sizeof(Integral) == 8) return _rotr64(value, amount);
     #elif EGGCPT_CC_CLANG
-    if constexpr (sizeof(T) == 1) return __builtin_rotateright8 (value, amount);
-    if constexpr (sizeof(T) == 2) return __builtin_rotateright16(value, amount);
-    if constexpr (sizeof(T) == 4) return __builtin_rotateright32(value, amount);
-    if constexpr (sizeof(T) == 8) return __builtin_rotateright64(value, amount);
+    if (sizeof(Integral) == 1) return __builtin_rotateright8 (value, amount);
+    if (sizeof(Integral) == 2) return __builtin_rotateright16(value, amount);
+    if (sizeof(Integral) == 4) return __builtin_rotateright32(value, amount);
+    if (sizeof(Integral) == 8) return __builtin_rotateright64(value, amount);
     #else
-    constexpr T kMask = bits_v<T> - 1;
+    constexpr Integral kMask = bits_v<Integral> - 1;
     amount &= kMask;
     return (value >> amount) | (value << (-amount & kMask));   
     #endif
 }
 
-template<typename T>
-T rol(T value, uint amount)
+template<typename Integral>
+Integral rol(Integral value, uint amount)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
     #if EGGCPT_CC_MSVC
-    if constexpr (sizeof(T) == 1) return _rotl8 (value, amount);
-    if constexpr (sizeof(T) == 2) return _rotl16(value, amount);
-    if constexpr (sizeof(T) == 4) return _rotl  (value, amount);
-    if constexpr (sizeof(T) == 8) return _rotl64(value, amount);
+    if (sizeof(Integral) == 1) return _rotl8 (value, amount);
+    if (sizeof(Integral) == 2) return _rotl16(value, amount);
+    if (sizeof(Integral) == 4) return _rotl  (value, amount);
+    if (sizeof(Integral) == 8) return _rotl64(value, amount);
     #elif EGGCPT_CC_CLANG
-    if constexpr (sizeof(T) == 1) return __builtin_rotateleft8 (value, amount);
-    if constexpr (sizeof(T) == 2) return __builtin_rotateleft16(value, amount);
-    if constexpr (sizeof(T) == 4) return __builtin_rotateleft32(value, amount);
-    if constexpr (sizeof(T) == 8) return __builtin_rotateleft64(value, amount);
+    if (sizeof(Integral) == 1) return __builtin_rotateleft8 (value, amount);
+    if (sizeof(Integral) == 2) return __builtin_rotateleft16(value, amount);
+    if (sizeof(Integral) == 4) return __builtin_rotateleft32(value, amount);
+    if (sizeof(Integral) == 8) return __builtin_rotateleft64(value, amount);
     #else
-    constexpr T kMask = bits_v<T> - 1;
+    constexpr Integral kMask = bits_v<Integral> - 1;
     amount &= kMask;
     return (value << amount) | (value >> (-amount & kMask));
     #endif
 }
 
-template<typename T>
-T bswap(T value)
+template<typename Integral>
+Integral bswap(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
-    static_assert(sizeof(T) >= 2);
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(sizeof(Integral) >= 2);
 
     #if EGGCPT_CC_MSVC
-    if constexpr (sizeof(T) == 2) return _byteswap_ushort(value);
-    if constexpr (sizeof(T) == 4) return _byteswap_ulong (value);
-    if constexpr (sizeof(T) == 8) return _byteswap_uint64(value);
+    if (sizeof(Integral) == 2) return _byteswap_ushort(value);
+    if (sizeof(Integral) == 4) return _byteswap_ulong (value);
+    if (sizeof(Integral) == 8) return _byteswap_uint64(value);
     #else
-    if constexpr (sizeof(T) == 2) return __builtin_bswap16(value);
-    if constexpr (sizeof(T) == 4) return __builtin_bswap32(value);
-    if constexpr (sizeof(T) == 8) return __builtin_bswap64(value);
+    if (sizeof(Integral) == 2) return __builtin_bswap16(value);
+    if (sizeof(Integral) == 4) return __builtin_bswap32(value);
+    if (sizeof(Integral) == 8) return __builtin_bswap64(value);
     #endif
 }
 
-template<typename T>
-uint clz(T value)
+template<typename Integral>
+uint clz(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
     EGGCPT_ASSERT(value != 0, "Undefined");
 
     #if EGGCPT_CC_MSVC
     unsigned long index;
-    if constexpr (sizeof(T) <= sizeof(unsigned long))
-        _BitScanReverse(&index, value);
-    else
-        _BitScanReverse64(&index, value);
-    return bits_v<T> - static_cast<unsigned>(index) - 1;
+    if (sizeof(Integral) <= 4) _BitScanReverse  (&index, value);
+    if (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
+    return bits_v<Integral> - static_cast<uint>(index) - 1;
     #else
-    if constexpr (sizeof(T) <= sizeof(unsigned int))
-        return __builtin_clz(value);
-    else
-        return __builtin_clzll(value);
+    if (sizeof(Integral) <= 4) return __builtin_clz  (value);
+    if (sizeof(Integral) == 8) return __builtin_clzll(value);
     #endif
 }
 
-template<typename T>
-uint ctz(T value)
+template<typename Integral>
+uint ctz(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
     EGGCPT_ASSERT(value != 0, "Undefined");
 
     #if EGGCPT_CC_MSVC
     unsigned long index;
-    if constexpr (sizeof(T) <= sizeof(unsigned long))
-        _BitScanForward(&index, value);
-    else
-        _BitScanForward64(&index, value);
-    return static_cast<unsigned>(index);
+    if (sizeof(Integral) <= 4) _BitScanForward  (&index, value);
+    if (sizeof(Integral) == 8) _BitScanForward64(&index, value);
+    return static_cast<uint>(index);
     #else
-    if constexpr (sizeof(T) <= sizeof(unsigned int))
-        return __builtin_ctz(value);
-    else
-        return __builtin_ctzll(value);
+    if (sizeof(Integral) <= 4) return __builtin_ctz  (value);
+    if (sizeof(Integral) == 8) return __builtin_ctzll(value);
     #endif
 }
 
-template<typename T>
-uint popcnt(T value)
+template<typename Integral>
+uint popcnt(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
     #if EGGCPT_CC_MSVC
-    if constexpr (sizeof(T) <= 2) return __popcnt16(value);
-    if constexpr (sizeof(T) == 4) return __popcnt  (value);
-    if constexpr (sizeof(T) == 8) return __popcnt64(value);
+    if (sizeof(Integral) <= 2) return __popcnt16(value);
+    if (sizeof(Integral) == 4) return __popcnt  (value);
+    if (sizeof(Integral) == 8) return __popcnt64(value);
     #else
-    if constexpr (sizeof(T) <= sizeof(unsigned int))
-        return __builtin_popcount(value);
-    else
-        return __builtin_popcountll(value);
+    if (sizeof(Integral) <= 4) return __builtin_popcount  (value);
+    if (sizeof(Integral) == 8) return __builtin_popcountll(value);
     #endif
 }
 
-template<typename T>
-class bit_iterator
+template<typename Integral>
+class BitIterator
 {
-    static_assert(std::is_integral_v<T>);
+    static_assert(std::is_integral_v<Integral>);
 
 public:
     using iterator_category = std::forward_iterator_tag;
-    using difference_type = std::ptrdiff_t;
-    using pointer = T*;
-    using reference = T&;
-    using value_type = T;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = uint;
+    using reference         = uint&;
+    using pointer           = uint*;
 
-    bit_iterator(T value)
+    BitIterator(Integral value)
         : value(value) {}
 
-    uint operator*() const
+    value_type operator*() const
     {
         return ctz(value);
     }
 
-    bit_iterator& operator++()
+    BitIterator& operator++()
     {
         value &= value - 1;
         return *this;
     }
 
-    bool operator==(bit_iterator other) const { return value == other.value; }
-    bool operator!=(bit_iterator other) const { return value != other.value; }
+    bool operator==(BitIterator other) const { return value == other.value; }
+    bool operator!=(BitIterator other) const { return value != other.value; }
 
 private:
-    T value;
+    Integral value;
 };
 
-template<typename T>
-auto iterate(T value)
+template<typename Integral>
+auto iterate(Integral value)
 {
-    static_assert(std::is_integral_v<T>);
-
-    return make_iterator_range<bit_iterator<T>>(value, 0);
+    return make_iterator_range<BitIterator<Integral>>(value, 0);
 }
 
 }  // namespace eggcpt::bit

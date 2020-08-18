@@ -1,14 +1,16 @@
 #pragma once
 
+#include <iterator>
+
 namespace eggcpt
 {
 
-template<typename ForwardIterator>
+template<typename Iterator>
 class IteratorRange
 {
 public:
-    using iterator = ForwardIterator;
-    using const_iterator = const ForwardIterator;
+    using iterator = Iterator;
+    using const_iterator = const Iterator;
 
     IteratorRange(iterator begin, iterator end)
         : begin_(begin), end_(end) {}
@@ -23,10 +25,10 @@ private:
     iterator end_;
 };
 
-template<typename ForwardIterator>
-auto make_iterator_range(ForwardIterator begin, ForwardIterator end)
+template<typename Iterator>
+auto make_iterator_range(Iterator begin, Iterator end)
 {
-    return IteratorRange<ForwardIterator>(begin, end);
+    return IteratorRange<Iterator>(begin, end);
 }
 
 template<typename Range>

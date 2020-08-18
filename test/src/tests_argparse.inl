@@ -35,7 +35,7 @@ enum class Value
 };
 
 template<>
-std::optional<Value> argparse::convert(const std::string& data)
+std::optional<Value> detail::convert(const std::string& data)
 {
     if (data == "one") return Value::Value1;
     if (data == "two") return Value::Value2;

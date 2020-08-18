@@ -119,10 +119,10 @@
     <ClInclude Include="eggcpt\algorithm.h" />
     <ClInclude Include="eggcpt\argparse.h" />
     <ClInclude Include="eggcpt\bit.h" />
-    <ClInclude Include="eggcpt\config.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
     <ClInclude Include="eggcpt\iterator.h" />
     <ClInclude Include="eggcpt\main.h" />
+    <ClInclude Include="eggcpt\predicates.h" />
     <ClInclude Include="eggcpt\primitives.h" />
     <ClInclude Include="eggcpt\traits.h" />
     <ClInclude Include="eggcpt\windows.h" />

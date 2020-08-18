@@ -54,9 +54,6 @@
     <ClInclude Include="eggcpt\macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\algorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -67,6 +64,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\primitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\predicates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -126,9 +126,9 @@
     <None Include="src\tests_algorithm.inl" />
     <None Include="src\tests_argparse.inl" />
     <None Include="src\tests_bit.inl" />
-    <None Include="src\tests_config.inl" />
     <None Include="src\tests_filesystem.inl" />
     <None Include="src\tests_logging.inl" />
+    <None Include="src\tests_predicates.inl" />
     <None Include="src\tests_singleton.inl" />
     <None Include="src\tests_traits.inl" />
     <None Include="src\tests_utility.inl" />

@@ -1,0 +1,11 @@
+TEST_CASE("predicate")
+{
+    REQUIRE(predicateEq(1)(1));
+    REQUIRE(predicateNe(1)(0));
+    REQUIRE(predicateLe(1)(1));
+    REQUIRE(predicateLe(1)(0));
+    REQUIRE(predicateLt(1)(0));
+    REQUIRE(predicateGe(1)(1));
+    REQUIRE(predicateGe(1)(2));
+    REQUIRE(predicateGt(1)(2));
+}

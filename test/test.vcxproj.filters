@@ -41,13 +41,13 @@
     <None Include="src\tests_singleton.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_config.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\tests_algorithm.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="src\tests_argparse.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\tests_predicates.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

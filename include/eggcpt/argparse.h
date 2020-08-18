@@ -14,7 +14,7 @@
 namespace eggcpt
 {
 
-namespace argparse
+namespace detail
 {
 
 template<typename T>
@@ -26,6 +26,8 @@ std::optional<T> convert(const std::string& data)
         return data != "false" && data != "0";
     else
         return parse_primitive<T>(data);
+}
+
 }
 
 template<typename... Ts>
@@ -68,7 +70,7 @@ public:
             }
             else
             {
-                unbound.push_back(key);
+                positional.push_back(key);
             }
         }
     }
@@ -97,7 +99,7 @@ private:
         template<typename T>
         void operator()(std::optional<T>& value)
         {
-            value = convert<T>(data);
+            value = detail::convert<T>(data);
         }
 
         std::string data;
@@ -114,14 +116,9 @@ private:
     }
 
     std::vector<Argument> args;
-    std::vector<std::string> unbound;
+    std::vector<std::string> positional;
 };
 
 using ArgumentParser = BasicArgumentParser<bool, s32, u32, s64, u64, f32, f64, std::string>;
-
-}  // namespace argparse
-
-using argparse::BasicArgumentParser;
-using argparse::ArgumentParser;
 
 }  // namespace eggcpt

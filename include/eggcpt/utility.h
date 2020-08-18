@@ -48,6 +48,8 @@ std::optional<Primitive> parse_primitive(const std::basic_string<Char>& data)
 template<typename Integral, typename Iterator>
 class EnumerateIterator
 {
+    static_assert(std::is_integral_v<Integral>);
+
 public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
@@ -81,8 +83,6 @@ private:
 template<typename Range, typename Integral = int>
 auto enumerate(Range& range, Integral start = 0)
 {
-    static_assert(std::is_integral_v<Integral>);
-
     using Iterator = decltype(std::begin(std::declval<Range&>()));
 
     return make_iterator_range(

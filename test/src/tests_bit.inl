@@ -1,15 +1,15 @@
 TEST_CASE("bit::bits")
 {
-    REQUIRE(bit::bits_v<u8 > == 8 );
+    REQUIRE(bit::bits_v< u8> ==  8);
     REQUIRE(bit::bits_v<u16> == 16);
     REQUIRE(bit::bits_v<u32> == 32);
 }
 
-TEST_CASE("bit::subset")
+TEST_CASE("bit::seq")
 {
-    REQUIRE(bit::subset< 0, 8>(0x0000'00FF) == 0xFF);
-    REQUIRE(bit::subset< 8, 8>(0x0000'FF00) == 0xFF);
-    REQUIRE(bit::subset<16, 8>(0x00FF'0000) == 0xFF);
+    REQUIRE(bit::seq< 0, 8>(0x0000'00FF) == 0xFF);
+    REQUIRE(bit::seq< 8, 8>(0x0000'FF00) == 0xFF);
+    REQUIRE(bit::seq<16, 8>(0x00FF'0000) == 0xFF);
 }
 
 TEST_CASE("bit::sign_ex")
