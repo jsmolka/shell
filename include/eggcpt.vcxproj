@@ -117,7 +117,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="eggcpt\algorithm.h" />
-    <ClInclude Include="eggcpt\argparse.h" />
+    <ClInclude Include="eggcpt\options.h" />
     <ClInclude Include="eggcpt\bit.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
     <ClInclude Include="eggcpt\iterator.h" />
