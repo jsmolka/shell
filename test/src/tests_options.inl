@@ -100,7 +100,7 @@ TEST_CASE("options::string")
     REQUIRE( result.get<std::string>( "e") == "test4");
 }
 
-TEST_CASE("options::OptionValueError")
+TEST_CASE("options::OptionError1")
 {
     const char* argv1[] = { "program.exe", "-x" };
     const char* argv2[] = { "program.exe", "-x", "wrong" };
@@ -114,12 +114,12 @@ TEST_CASE("options::OptionValueError")
     options2.add({ "-x" }, "", Options::value<int>());
     options3.add({ "-x" }, "", Options::value<bool>());
 
-    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionValueError);
-    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionValueError);
-    CHECK_THROWS_AS(options3.parse(ARGC(argv3), argv3), OptionValueError);
+    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionError);
+    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionError);
+    CHECK_THROWS_AS(options3.parse(ARGC(argv3), argv3), OptionError);
 }
 
-TEST_CASE("options::OptionMissingError")
+TEST_CASE("options::OptionError2")
 {
     const char* argv1[] = { "program.exe" };
     const char* argv2[] = { "program.exe" };
@@ -130,30 +130,30 @@ TEST_CASE("options::OptionMissingError")
     options1.add({ "-x" }, "", Options::value<int>());
     options2.add({  "x" }, "", Options::value<int>()->positional());
 
-    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionMissingError);
-    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionMissingError);
+    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionError);
+    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionError);
 }
 
-TEST_CASE("options::OptionDuplicateKeyError")
+TEST_CASE("options::OptionError3")
 {
     Options options("program");
     options.add({ "-x" }, "", Options::value<bool>());
     options.add({  "x" }, "", Options::value<bool>()->positional());
 
-    CHECK_THROWS_AS(options.add({ "-x" }, "", Options::value<bool>()), OptionDuplicateKeyError);
-    CHECK_THROWS_AS(options.add({  "x" }, "", Options::value<bool>()), OptionDuplicateKeyError);
+    CHECK_THROWS_AS(options.add({ "-x" }, "", Options::value<bool>()), OptionError);
+    CHECK_THROWS_AS(options.add({  "x" }, "", Options::value<bool>()), OptionError);
 }
 
-TEST_CASE("options::OptionInvalidKeyError")
+TEST_CASE("options::OptionError4")
 {
     const char* argv[] = { "program.exe" };
 
     Options options("program");
     OptionsResult result = options.parse(ARGC(argv), argv);
 
-    CHECK_THROWS_AS(result.get<int>("-x"), OptionInvalidKeyError);
-    CHECK_THROWS_AS(result.get<int>("-y"), OptionInvalidKeyError);
-    CHECK_THROWS_AS(result.get<int>("-z"), OptionInvalidKeyError);
+    CHECK_THROWS_AS(result.get<int>("-x"), OptionError);
+    CHECK_THROWS_AS(result.get<int>("-y"), OptionError);
+    CHECK_THROWS_AS(result.get<int>("-z"), OptionError);
 }
 
 TEST_CASE("options::help")

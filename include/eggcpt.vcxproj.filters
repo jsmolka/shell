@@ -69,5 +69,8 @@
     <ClInclude Include="eggcpt\options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eggcpt\errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
