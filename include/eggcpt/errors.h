@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "fmt.h"
+#include "format.h"
 
 namespace eggcpt
 {
@@ -10,9 +10,9 @@ namespace eggcpt
 class FormattedError : public std::exception
 {
 public:
-    template<typename T, typename... Args>
-    FormattedError(const T& format, Args&&... args)
-        : message(fmt::format(format, std::forward<Args>(args)...)) {}
+    template<typename String, typename... Args>
+    FormattedError(const String& format, Args&&... args)
+        : message(eggcpt::format(format, std::forward<Args>(args)...)) {}
 
     const char* what() const noexcept override
     {

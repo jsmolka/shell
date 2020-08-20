@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "filesystem.h"
-#include "fmt.h"
+#include "format.h"
 #include "primitives.h"
 #include "windows.h"
 
@@ -62,7 +62,7 @@ public:
         case Level::Error: color = 91; break;  // Red
         case Level::Fatal: color = 95; break;  // Magenta
         }
-        ConsoleSink::sink(fmt::format("\033[{}m{}\033[0m", color, message), level);
+        ConsoleSink::sink(format("\033[{}m{}\033[0m", color, message), level);
     }
 };
 
