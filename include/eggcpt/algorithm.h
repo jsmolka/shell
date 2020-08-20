@@ -182,8 +182,6 @@ OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::l
 template<typename Sequence>
 void replaceLeft(Sequence& seq, const Sequence& from, const Sequence& to)
 {
-    boost::replace_first
-
     auto pos = seq.find(from);
     if (pos != Sequence::npos)
         seq.replace(pos, from.length(), to);

@@ -267,18 +267,18 @@ public:
     std::string help() const
     {
         std::stringstream stream;
-        stream << fmt::format("Usage: {}", program);
+        stream << format("Usage: {}", program);
 
         for (const auto& options : { keyword, positional })
         {
             for (const auto& [keys, desc, value] : options)
-                stream << fmt::format(value->is_optional ? " [{}]" : " {}", keys.front());
+                stream << format(value->is_optional ? " [{}]" : " {}", keys.front());
         }
         stream << std::endl;
 
         for (const auto& [kind, options] : { Group{ "Keyword", keyword }, Group{ "Positional", positional } })
         {
-            stream << fmt::format("\n{} arguments\n", kind);
+            stream << format("\n{} arguments\n", kind);
 
             std::size_t padding = 0;
             for (const auto& [keys, desc, value] : options)
@@ -294,10 +294,10 @@ public:
             {
                 auto key = implode(keys, std::string(", "));
                 auto def = value->hasDefaultValue()
-                    ? fmt::format(" (default: {})", value->getDefaultValue())
+                    ? format(" (default: {})", value->getDefaultValue())
                     : "";
 
-                stream << fmt::format("{:<{}}{}{}\n", key, padding, desc, def);
+                stream << format("{:<{}}{}{}\n", key, padding, desc, def);
             }
         }
         return stream.str();
