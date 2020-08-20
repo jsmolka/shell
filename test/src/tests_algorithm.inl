@@ -6,127 +6,136 @@ bool issmall(int x)
 TEST_CASE("trimLeftIf")
 {
     std::string t0 = "  -";
-    std::string t1 = "ab-";
-    std::vector<int> t2 = { 1, 2, 3 };
-
     trimLeftIf(t0, isspace);
-    trimLeftIf(t1, isalpha);
-    trimLeftIf(t2, issmall);
-
     REQUIRE(t0 == "-");
+
+    std::string t1 = "xx-";
+    trimLeftIf(t1, isalpha);
     REQUIRE(t1 == "-");
-    REQUIRE(t2 == decltype(t2){ 3 });
-}
-
-TEST_CASE("trimLeftIfCopy")
-{
-    std::string t0 = "  -";
-    std::string t1 = "ab-";
-    std::vector<int> t2 = { 1, 2, 3 };
-
-    REQUIRE(trimLeftIfCopy(t0, isspace) == "-");
-    REQUIRE(trimLeftIfCopy(t1, isalpha) == "-");
-    REQUIRE(trimLeftIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
 TEST_CASE("trimLeft")
 {
     std::string t0 = "  -";
-
     trimLeft(t0);
-
     REQUIRE(t0 == "-");
+}
+
+TEST_CASE("trimLeftCopyIf")
+{
+    std::string t0 = "  -";
+    REQUIRE(trimLeftCopyIf(t0, isspace) == "-");
+
+    std::string t1 = "xx-";
+    REQUIRE(trimLeftCopyIf(t1, isalpha) == "-");
+
+    std::string t2;
+    trimLeftCopyIf(std::back_inserter(t2), t0, isspace);
+    REQUIRE(t2 == "-");
+
+    std::string t3;
+    trimLeftCopyIf(std::back_inserter(t3), t1, isalpha);
+    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimLeftCopy")
 {
     std::string t0 = "  -";
-
     REQUIRE(trimLeftCopy(t0) == "-");
+
+    std::string t1;
+    trimLeftCopy(std::back_inserter(t1), t0);
+    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("trimRightIf")
 {
     std::string t0 = "-  ";
-    std::string t1 = "-ba";
-    std::vector<int> t2 = { 3, 2, 1 };
-
     trimRightIf(t0, isspace);
-    trimRightIf(t1, isalpha);
-    trimRightIf(t2, issmall);
-
     REQUIRE(t0 == "-");
+
+    std::string t1 = "-xx";
+    trimRightIf(t1, isalpha);
     REQUIRE(t1 == "-");
-    REQUIRE(t2 == decltype(t2){ 3 });
-}
-
-TEST_CASE("trimRightIfCopy")
-{
-    std::string t0 = "-  ";
-    std::string t1 = "-ba";
-    std::vector<int> t2 = { 3, 2, 1 };
-
-    REQUIRE(trimRightIfCopy(t0, isspace) == "-");
-    REQUIRE(trimRightIfCopy(t1, isalpha) == "-");
-    REQUIRE(trimRightIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
 TEST_CASE("trimRight")
 {
     std::string t0 = "-  ";
-
     trimRight(t0);
-
     REQUIRE(t0 == "-");
+}
+
+TEST_CASE("trimRightCopyIf")
+{
+    std::string t0 = "-  ";
+    REQUIRE(trimRightCopyIf(t0, isspace) == "-");
+
+    std::string t1 = "-xx";
+    REQUIRE(trimRightCopyIf(t1, isalpha) == "-");
+
+    std::string t2;
+    trimRightCopyIf(std::back_inserter(t2), t0, isspace);
+    REQUIRE(t2 == "-");
+
+    std::string t3;
+    trimRightCopyIf(std::back_inserter(t3), t1, isalpha);
+    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimRightCopy")
 {
     std::string t0 = "-  ";
-
     REQUIRE(trimRightCopy(t0) == "-");
+
+    std::string t1;
+    trimRightCopy(std::back_inserter(t1), t0);
+    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("trimIf")
 {
     std::string t0 = "  -  ";
-    std::string t1 = "ab-ba";
-    std::vector<int> t2 = { 1, 2, 3, 2, 1 };
-
     trimIf(t0, isspace);
-    trimIf(t1, isalpha);
-    trimIf(t2, issmall);
-
     REQUIRE(t0 == "-");
+
+    std::string t1 = "xx-xx";
+    trimIf(t1, isalpha);
     REQUIRE(t1 == "-");
-    REQUIRE(t2 == decltype(t2){ 3 });
-}
-
-TEST_CASE("trimIfCopy")
-{
-    std::string t0 = "  -  ";
-    std::string t1 = "ab-ba";
-    std::vector<int> t2 = { 1, 2, 3, 2, 1 };
-
-    REQUIRE(trimIfCopy(t0, isspace) == "-");
-    REQUIRE(trimIfCopy(t1, isalpha) == "-");
-    REQUIRE(trimIfCopy(t2, issmall) == decltype(t2){ 3 });
 }
 
 TEST_CASE("trim")
 {
     std::string t0 = "  -  ";
-
     trim(t0);
-
     REQUIRE(t0 == "-");
+}
+
+TEST_CASE("trimCopyIf")
+{
+    std::string t0 = "  -  ";
+    REQUIRE(trimCopyIf(t0, isspace) == "-");
+
+    std::string t1 = "xx-xx";
+    REQUIRE(trimCopyIf(t1, isalpha) == "-");
+
+    std::string t2;
+    trimCopyIf(std::back_inserter(t2), t0, isspace);
+    REQUIRE(t2 == "-");
+
+    std::string t3;
+    trimCopyIf(std::back_inserter(t3), t1, isalpha);
+    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimCopy")
 {
     std::string t0 = "  -  ";
-
     REQUIRE(trimCopy(t0) == "-");
+
+    std::string t1;
+    trimCopy(std::back_inserter(t1), t0);
+    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("replaceLeft")

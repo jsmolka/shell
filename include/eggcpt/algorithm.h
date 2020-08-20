@@ -1,73 +1,128 @@
 #pragma once
 
 #include <algorithm>
+#include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "predicates.h"
-
 namespace eggcpt
 {
+
+namespace detail
+{
+
+inline auto predicateIsSpace(const std::locale& locale)
+{
+    return [&](auto ch) {
+        return std::isspace(ch, locale);
+    };
+}
+
+}  // namespace detail
 
 template<typename Sequence, typename Predicate>
 void trimLeftIf(Sequence& seq, Predicate pred)
 {
-    seq.erase(seq.begin(), std::find_if_not(seq.begin(), seq.end(), pred));
+    seq.erase(
+        std::begin(seq),
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq),
+            pred));
+}
+
+template<typename Sequence>
+void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
+{
+    trimLeftIf(seq, detail::predicateIsSpace(locale));
 }
 
 template<typename Sequence, typename Predicate>
-Sequence trimLeftIfCopy(const Sequence& seq, Predicate pred)
+Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
 {
-    Sequence copy(seq);
-    trimLeftIf(copy, pred);
+    return Sequence(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq), 
+            pred),
+        std::end(seq));
+}
 
-    return copy;
+template<typename OutputIterator, typename Sequence, typename Predicate>
+OutputIterator trimLeftCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
+{
+    return std::copy(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq),
+            pred),
+        std::end(seq),
+        output);
 }
 
 template<typename Sequence>
-void trimLeft(Sequence& seq)
+Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimLeftIf(seq, isspace);
+    return trimLeftCopyIf(seq, detail::predicateIsSpace(locale));
 }
 
-template<typename Sequence>
-Sequence trimLeftCopy(const Sequence& seq)
+template<typename OutputIterator, typename Sequence>
+OutputIterator trimLeftCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence copy(seq);
-    trimLeft(copy);
-
-    return copy;
+    return trimLeftCopyIf(output, seq, detail::predicateIsSpace(locale));
 }
 
 template<typename Sequence, typename Predicate>
 void trimRightIf(Sequence& seq, Predicate pred)
 {
-    seq.erase(std::find_if_not(seq.rbegin(), seq.rend(), pred).base(), seq.end());
+    seq.erase(
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base(),
+        std::end(seq));
+}
+
+template<typename Sequence>
+void trimRight(Sequence& seq, const std::locale& locale = std::locale())
+{
+    trimRightIf(seq, detail::predicateIsSpace(locale));
 }
 
 template<typename Sequence, typename Predicate>
-Sequence trimRightIfCopy(const Sequence& seq, Predicate pred)
+Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
 {
-    Sequence copy(seq);
-    trimRightIf(copy, pred);
+    return Sequence(
+        std::begin(seq),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base());
+}
 
-    return copy;
+template<typename OutputIterator, typename Sequence, typename Predicate>
+OutputIterator trimRightCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
+{
+    return std::copy(
+        std::begin(seq),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base(),
+        output);
 }
 
 template<typename Sequence>
-void trimRight(Sequence& seq)
+Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimRightIf(seq, isspace);
+    return trimRightCopyIf(seq, detail::predicateIsSpace(locale));
 }
 
-template<typename Sequence>
-Sequence trimRightCopy(const Sequence& seq)
+template<typename OutputIterator, typename Sequence>
+OutputIterator trimRightCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence copy(seq);
-    trimRight(copy);
-
-    return copy;
+    return trimRightCopyIf(output, seq, detail::predicateIsSpace(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -77,33 +132,58 @@ void trimIf(Sequence& seq, Predicate pred)
     trimRightIf(seq, pred);
 }
 
+template<typename Sequence>
+void trim(Sequence& seq, const std::locale& locale = std::locale())
+{
+    trimIf(seq, detail::predicateIsSpace(locale));
+}
+
 template<typename Sequence, typename Predicate>
-Sequence trimIfCopy(const Sequence& seq, Predicate pred)
+Sequence trimCopyIf(const Sequence& seq, Predicate pred)
 {
-    Sequence copy(seq);
-    trimIf(copy, pred);
+    return Sequence(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq), 
+            pred),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base());
+}
 
-    return copy;
+template<typename OutputIterator, typename Sequence, typename Predicate>
+OutputIterator trimCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
+{
+    return std::copy(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq), 
+            pred),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base(),
+        output);
 }
 
 template<typename Sequence>
-void trim(Sequence& seq)
+Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimIf(seq, isspace);
+    return trimCopyIf(seq, detail::predicateIsSpace(locale));
 }
 
-template<typename Sequence>
-Sequence trimCopy(const Sequence& seq)
+template<typename OutputIterator, typename Sequence>
+OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence copy(seq);
-    trim(copy);
-
-    return copy;
+    return trimCopyIf(output, seq, detail::predicateIsSpace(locale));
 }
 
 template<typename Sequence>
 void replaceLeft(Sequence& seq, const Sequence& from, const Sequence& to)
 {
+    boost::replace_first
+
     auto pos = seq.find(from);
     if (pos != Sequence::npos)
         seq.replace(pos, from.length(), to);

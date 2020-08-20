@@ -3,6 +3,7 @@
 #pragma warning(disable:6237)
 
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <vector>
 
