@@ -28,17 +28,6 @@ void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
     trimLeftIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
-{
-    return Sequence(
-        std::find_if_not(
-            std::begin(seq),
-            std::end(seq), 
-            pred),
-        std::end(seq));
-}
-
 template<typename OutputIterator, typename Sequence, typename Predicate>
 OutputIterator trimLeftCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
 {
@@ -51,16 +40,27 @@ OutputIterator trimLeftCopyIf(OutputIterator output, const Sequence& seq, Predic
         output);
 }
 
-template<typename Sequence>
-Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename Sequence, typename Predicate>
+Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
 {
-    return trimLeftCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return Sequence(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq), 
+            pred),
+        std::end(seq));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimLeftCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimLeftCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
+}
+
+template<typename Sequence>
+Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
+{
+    return trimLeftCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -80,17 +80,6 @@ void trimRight(Sequence& seq, const std::locale& locale = std::locale())
     trimRightIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
-{
-    return Sequence(
-        std::begin(seq),
-        std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
-            pred).base());
-}
-
 template<typename OutputIterator, typename Sequence, typename Predicate>
 OutputIterator trimRightCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
 {
@@ -103,16 +92,27 @@ OutputIterator trimRightCopyIf(OutputIterator output, const Sequence& seq, Predi
         output);
 }
 
+template<typename Sequence, typename Predicate>
+Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
+{
+    return Sequence(
+        std::begin(seq),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base());
+}
+
 template<typename Sequence>
 Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimRightCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimRightCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimRightCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -126,20 +126,6 @@ template<typename Sequence>
 void trim(Sequence& seq, const std::locale& locale = std::locale())
 {
     trimIf(seq, IsSpace<range_value_t<Sequence>>(locale));
-}
-
-template<typename Sequence, typename Predicate>
-Sequence trimCopyIf(const Sequence& seq, Predicate pred)
-{
-    return Sequence(
-        std::find_if_not(
-            std::begin(seq),
-            std::end(seq), 
-            pred),
-        std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
-            pred).base());
 }
 
 template<typename OutputIterator, typename Sequence, typename Predicate>
@@ -157,16 +143,90 @@ OutputIterator trimCopyIf(OutputIterator output, const Sequence& seq, Predicate 
         output);
 }
 
-template<typename Sequence>
-Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename Sequence, typename Predicate>
+Sequence trimCopyIf(const Sequence& seq, Predicate pred)
 {
-    return trimCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return Sequence(
+        std::find_if_not(
+            std::begin(seq),
+            std::end(seq), 
+            pred),
+        std::find_if_not(
+            std::rbegin(seq),
+            std::rend(seq),
+            pred).base());
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
+}
+
+template<typename Sequence>
+Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
+{
+    return trimCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
+}
+
+template<typename Sequence>
+void toLower(Sequence& seq, const std::locale& locale = std::locale())
+{
+    std::transform(
+        std::begin(seq),
+        std::end(seq),
+        std::begin(seq),
+        ToLower<range_value_t<Sequence>>(locale));
+}
+
+template<typename OutputIterator, typename Sequence>
+OutputIterator toLowerCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
+{
+    return std::transform(
+        std::begin(seq),
+        std::end(seq),
+        output,
+        ToLower<range_value_t<const Sequence>>(locale));
+}
+
+template<typename Sequence>
+Sequence toLowerCopy(const Sequence& seq, const std::locale& locale = std::locale())
+{
+    Sequence copy;
+    copy.reserve(seq.size());
+    toLowerCopy(std::back_inserter(copy), seq, locale);
+
+    return copy;
+}
+
+template<typename Sequence>
+void toUpper(Sequence& seq, const std::locale& locale = std::locale())
+{
+    std::transform(
+        std::begin(seq),
+        std::end(seq),
+        std::begin(seq),
+        ToUpper<range_value_t<Sequence>>(locale));
+}
+
+template<typename OutputIterator, typename Sequence>
+OutputIterator toUpperCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
+{
+    return std::transform(
+        std::begin(seq),
+        std::end(seq),
+        output,
+        ToUpper<range_value_t<const Sequence>>(locale));
+}
+
+template<typename Sequence>
+Sequence toUpperCopy(const Sequence& seq, const std::locale& locale = std::locale())
+{
+    Sequence copy;
+    copy.reserve(seq.size());
+    toUpperCopy(std::back_inserter(copy), seq, locale);
+
+    return copy;
 }
 
 template<typename Sequence>

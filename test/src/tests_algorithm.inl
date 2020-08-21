@@ -138,6 +138,40 @@ TEST_CASE("trimCopy")
     REQUIRE(t1 == "-");
 }
 
+TEST_CASE("toLower")
+{
+    std::string t0 = "TEst";
+    toLower(t0);
+    REQUIRE(t0 == "test");
+}
+
+TEST_CASE("toLowerCopy")
+{
+    std::string t0 = "TEst";
+    REQUIRE(toLowerCopy(t0) == "test");
+
+    std::string t1;
+    toLowerCopy(std::back_inserter(t1), t0);
+    REQUIRE(t1 == "test");
+}
+
+TEST_CASE("toUpper")
+{
+    std::string t0 = "TEst";
+    toUpper(t0);
+    REQUIRE(t0 == "TEST");
+}
+
+TEST_CASE("toUpperCopy")
+{
+    std::string t0 = "TEst";
+    REQUIRE(toUpperCopy(t0) == "TEST");
+
+    std::string t1;
+    toUpperCopy(std::back_inserter(t1), t0);
+    REQUIRE(t1 == "TEST");
+}
+
 TEST_CASE("replaceLeft")
 {
     std::string t0 = "test|test";
