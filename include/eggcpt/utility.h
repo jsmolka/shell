@@ -1,16 +1,12 @@
 #pragma once
 
 #include <iterator>
-#include <optional>
-#include <stdexcept>
-#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
-#include "iterator.h"
-#include "primitives.h"
-#include "traits.h"
+#include <eggcpt/iterator.h>
+#include <eggcpt/traits.h>
 
 namespace eggcpt
 {
@@ -22,27 +18,6 @@ void reconstruct(T& instance, Args&&... args)
 
     instance.~T();
     new(&instance)T(std::forward<Args>(args)...);
-}
-
-template<typename Primitive, typename Char>
-std::optional<Primitive> parse_primitive(const std::basic_string<Char>& data)
-{
-    static_assert(is_any_of_v<Char, char, wchar_t>);
-    static_assert(is_any_of_v<Primitive, s32, u32, s64, u64, f32, f64>);
-
-    try
-    {
-        if constexpr (std::is_same_v<Primitive, s32>) return std::stoi(data);
-        if constexpr (std::is_same_v<Primitive, u32>) return std::stoul(data);
-        if constexpr (std::is_same_v<Primitive, s64>) return std::stoll(data);
-        if constexpr (std::is_same_v<Primitive, u64>) return std::stoull(data);
-        if constexpr (std::is_same_v<Primitive, f32>) return std::stof(data);
-        if constexpr (std::is_same_v<Primitive, f64>) return std::stod(data);
-    } 
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
 }
 
 template<typename Integral, typename Iterator>
@@ -81,14 +56,14 @@ private:
 };
 
 template<typename Range, typename Integral = int>
-auto enumerate(Range& range, Integral start = 0)
+IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
+    enumerate(Range& range, Integral start = 0)
 {
-    using Iterator = decltype(std::begin(std::declval<Range&>()));
+    using Iterator = range_iterator_t<Range>;
 
-    return make_iterator_range(
+    return makeIteratorRange(
         EnumerateIterator<Integral, Iterator>(start, std::begin(range)),
-        EnumerateIterator<Integral, Iterator>(start, std::end(range))
-    );
+        EnumerateIterator<Integral, Iterator>(start, std::end(range)));
 }
 
 }  // namespace eggcpt

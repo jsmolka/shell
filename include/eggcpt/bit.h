@@ -210,7 +210,7 @@ private:
 template<typename Integral>
 auto iterate(Integral value)
 {
-    return make_iterator_range<BitIterator<Integral>>(value, 0);
+    return makeIteratorRange<BitIterator<Integral>>(value, 0);
 }
 
 }  // namespace eggcpt::bit

@@ -48,12 +48,6 @@ template<typename Range>
 using range_iterator_t = typename range_iterator<Range>::type;
 
 template<typename Range>
-struct range_value
-{
-    using type = typename std::iterator_traits<range_iterator_t<Range>>::value_type;
-};
-
-template<typename Range>
-using range_value_t = typename range_value<Range>::type;
+struct range_iterator_traits : std::iterator_traits<range_iterator_t<Range>> {};
 
 }

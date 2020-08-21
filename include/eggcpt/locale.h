@@ -8,12 +8,10 @@ namespace eggcpt
 namespace detail
 {
 
-template<typename Char, typename std::ctype<Char>::mask Mask>
+template<typename Char, typename std::ctype_base::mask Mask>
 class IsClassifiedAs
 {
 public:
-    using result_type = bool;
-
     explicit IsClassifiedAs(const std::locale& locale = std::locale())
         : locale(locale) {}
 
@@ -46,8 +44,6 @@ template<typename Char>
 class ToLower
 {
 public:
-    using result_type = Char;
-
     explicit ToLower(const std::locale& locale = std::locale())
         : locale(locale) {}
 
@@ -64,8 +60,6 @@ template<typename Char>
 class ToUpper
 {
 public:
-    using result_type = Char;
-
     explicit ToUpper(const std::locale& locale = std::locale())
         : locale(locale) {}
 

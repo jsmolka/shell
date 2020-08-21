@@ -8,6 +8,10 @@
 #include <eggcpt/locale.h>
 #include <eggcpt/traits.h>
 
+/////////////////////////////////////
+#include <boost/algorithm/string.hpp>
+/////////////////////////////////////
+
 namespace eggcpt
 {
 
@@ -15,20 +19,21 @@ namespace detail
 {
 
 template<typename Range>
-std::size_t rangeSize(const Range& range)
+std::size_t literalSize(const Range& range)
 {
     return std::distance(std::begin(range), std::end(range));
 }
 
-template<typename Range, std::size_t N>
-std::size_t rangeSize(const Range (&range)[N])
+template<typename Char, std::size_t N>
+std::size_t literalSize(const Char (&array)[N])
 {
-    static_assert(is_any_of_v<std::decay_t<Range>, char, wchar_t>);
+    static_assert(is_any_of_v<Char, char, wchar_t>);
 
     return N - 1;
 }
 
 }  // namespace detail
+
 
 template<typename Sequence, typename Predicate>
 void trimLeftIf(Sequence& seq, Predicate pred)
@@ -44,7 +49,7 @@ void trimLeftIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimLeftIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimLeftIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence, typename Predicate>
@@ -73,13 +78,13 @@ Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimLeftCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimLeftCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence>
 Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimLeftCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -96,7 +101,7 @@ void trimRightIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimRight(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimRightIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimRightIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence, typename Predicate>
@@ -125,13 +130,13 @@ Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
 template<typename Sequence>
 Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimRightCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimRightCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimRightCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -144,7 +149,7 @@ void trimIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trim(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence, typename Predicate>
@@ -179,13 +184,13 @@ Sequence trimCopyIf(const Sequence& seq, Predicate pred)
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(output, seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence>
 Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(seq, IsSpace<range_value_t<const Sequence>>(locale));
+    return trimCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence>
@@ -195,7 +200,7 @@ void toLower(Sequence& seq, const std::locale& locale = std::locale())
         std::begin(seq),
         std::end(seq),
         std::begin(seq),
-        ToLower<range_value_t<Sequence>>(locale));
+        ToLower<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
@@ -205,7 +210,7 @@ OutputIterator toLowerCopy(OutputIterator output, const Sequence& seq, const std
         std::begin(seq),
         std::end(seq),
         output,
-        ToLower<range_value_t<const Sequence>>(locale));
+        ToLower<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence>
@@ -225,7 +230,7 @@ void toUpper(Sequence& seq, const std::locale& locale = std::locale())
         std::begin(seq),
         std::end(seq),
         std::begin(seq),
-        ToUpper<range_value_t<Sequence>>(locale));
+        ToUpper<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
@@ -235,7 +240,7 @@ OutputIterator toUpperCopy(OutputIterator output, const Sequence& seq, const std
         std::begin(seq),
         std::end(seq),
         output,
-        ToUpper<range_value_t<const Sequence>>(locale));
+        ToUpper<typename range_iterator_traits<Sequence>::value_type>(locale));
 }
 
 template<typename Sequence>
@@ -253,7 +258,7 @@ void replaceFirst(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
     auto pos = seq.find(from);
     if (pos != Sequence::npos)
-        seq.replace(pos, detail::rangeSize(from), to);
+        seq.replace(pos, detail::literalSize(from), to);
 }
 
 template<typename Sequence, typename RangeFrom, typename RangeTo>
@@ -270,7 +275,7 @@ void replaceLast(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
     auto pos = seq.rfind(from);
     if (pos != Sequence::npos)
-        seq.replace(pos, detail::rangeSize(from), to);
+        seq.replace(pos, detail::literalSize(from), to);
 }
 
 template<typename Sequence, typename RangeFrom, typename RangeTo>
@@ -288,8 +293,8 @@ void replaceAll(Sequence& seq, const RangeFrom& from, const RangeTo& to)
     auto pos = static_cast<typename Sequence::size_type>(0);
     while ((pos = seq.find(from, pos)) != Sequence::npos)
     {
-        seq.replace(pos, detail::rangeSize(from), to);
-        pos += detail::rangeSize(to);
+        seq.replace(pos, detail::literalSize(from), to);
+        pos += detail::literalSize(to);
     }
 }
 
@@ -312,7 +317,7 @@ std::vector<Sequence> split(const Sequence& str, const Range& delim)
     while (end != Sequence::npos)
     {
         res.push_back(str.substr(pos, end - pos));
-        pos = end + detail::rangeSize(delim);
+        pos = end + detail::literalSize(delim);
         end = str.find(delim, pos);
     }
     res.push_back(str.substr(pos, end));
@@ -321,7 +326,8 @@ std::vector<Sequence> split(const Sequence& str, const Range& delim)
 }
 
 template<typename SequenceRange, typename Range>
-range_value_t<SequenceRange> join(const SequenceRange& range, const Range& delim)
+typename range_iterator_traits<SequenceRange>::value_type
+    join(const SequenceRange& range, const Range& delim)
 {
     auto stream = std::ostringstream();
 

@@ -28,10 +28,3 @@ TEST_CASE("is_detected")
     REQUIRE( is_detected_v<Test, test3_t>);
     REQUIRE(!is_detected_v<Test, test4_t>);
 }
-
-TEST_CASE("range_value")
-{
-    REQUIRE(std::is_same_v<range_value_t<std::vector<int*>>, int*>);
-    REQUIRE(std::is_same_v<range_value_t<std::vector<const int*>>, const int*>);
-    REQUIRE(std::is_same_v<range_value_t<char[10]>, char>);
-}
