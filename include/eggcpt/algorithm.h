@@ -11,6 +11,25 @@
 namespace eggcpt
 {
 
+namespace detail
+{
+
+template<typename Range>
+std::size_t rangeSize(const Range& range)
+{
+    return std::distance(std::begin(range), std::end(range));
+}
+
+template<typename Range, std::size_t N>
+std::size_t rangeSize(const Range (&range)[N])
+{
+    static_assert(is_any_of_v<std::decay_t<Range>, char, wchar_t>);
+
+    return N - 1;
+}
+
+}  // namespace detail
+
 template<typename Sequence, typename Predicate>
 void trimLeftIf(Sequence& seq, Predicate pred)
 {
@@ -192,11 +211,11 @@ OutputIterator toLowerCopy(OutputIterator output, const Sequence& seq, const std
 template<typename Sequence>
 Sequence toLowerCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence copy;
-    copy.reserve(seq.size());
-    toLowerCopy(std::back_inserter(copy), seq, locale);
+    Sequence result;
+    result.reserve(seq.size());
+    toLowerCopy(std::back_inserter(result), seq, locale);
 
-    return copy;
+    return result;
 }
 
 template<typename Sequence>
@@ -222,78 +241,78 @@ OutputIterator toUpperCopy(OutputIterator output, const Sequence& seq, const std
 template<typename Sequence>
 Sequence toUpperCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence copy;
-    copy.reserve(seq.size());
-    toUpperCopy(std::back_inserter(copy), seq, locale);
+    Sequence result;
+    result.reserve(seq.size());
+    toUpperCopy(std::back_inserter(result), seq, locale);
 
-    return copy;
+    return result;
 }
 
-template<typename Sequence>
-void replaceLeft(Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+void replaceFirst(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
     auto pos = seq.find(from);
     if (pos != Sequence::npos)
-        seq.replace(pos, from.length(), to);
+        seq.replace(pos, detail::rangeSize(from), to);
 }
 
-template<typename Sequence>
-Sequence replaceLeftCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+Sequence replaceFirstCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    Sequence copy(seq);
-    replaceLeft(copy, from, to);
+    Sequence result(seq);
+    replaceFirst(result, from, to);
     
-    return copy;
+    return result;
 }
 
-template<typename Sequence>
-void replaceRight(Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+void replaceLast(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
     auto pos = seq.rfind(from);
     if (pos != Sequence::npos)
-        seq.replace(pos, from.length(), to);
+        seq.replace(pos, detail::rangeSize(from), to);
 }
 
-template<typename Sequence>
-Sequence replaceRightCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+Sequence replaceLastCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    Sequence copy(seq);
-    replaceRight(copy, from, to);
+    Sequence result(seq);
+    replaceLast(result, from, to);
     
-    return copy;
+    return result;
 }
 
-template<typename Sequence>
-void replace(Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+void replaceAll(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    auto pos = 0ull;
+    auto pos = static_cast<typename Sequence::size_type>(0);
     while ((pos = seq.find(from, pos)) != Sequence::npos)
     {
-        seq.replace(pos, from.length(), to);
-        pos += to.length();
+        seq.replace(pos, detail::rangeSize(from), to);
+        pos += detail::rangeSize(to);
     }
 }
 
-template<typename Sequence>
-Sequence replaceCopy(const Sequence& seq, const Sequence& from, const Sequence& to)
+template<typename Sequence, typename RangeFrom, typename RangeTo>
+Sequence replaceAllCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    Sequence copy(seq);
-    replace(copy, from, to);
+    Sequence result(seq);
+    replaceAll(result, from, to);
 
-    return copy;
+    return result;
 }
 
-template<typename Sequence>
-std::vector<Sequence> explode(const Sequence& str, const Sequence& delim)
+template<typename Sequence, typename Range>
+std::vector<Sequence> split(const Sequence& str, const Range& delim)
 {
-    auto pos = 0ull;
     auto end = str.find(delim);
     auto res = std::vector<Sequence>();
+    auto pos = static_cast<typename Sequence::size_type>(0);
 
     while (end != Sequence::npos)
     {
         res.push_back(str.substr(pos, end - pos));
-        pos = end + delim.length();
+        pos = end + detail::rangeSize(delim);
         end = str.find(delim, pos);
     }
     res.push_back(str.substr(pos, end));
@@ -301,8 +320,8 @@ std::vector<Sequence> explode(const Sequence& str, const Sequence& delim)
     return res;
 }
 
-template<typename Range, typename Sequence>
-Sequence implode(const Range& range, const Sequence& delim)
+template<typename SequenceRange, typename Range>
+range_value_t<SequenceRange> join(const SequenceRange& range, const Range& delim)
 {
     auto stream = std::ostringstream();
 
@@ -314,18 +333,6 @@ Sequence implode(const Range& range, const Sequence& delim)
         stream << value;
     }
     return stream.str();
-}
-
-template<typename Iterator, typename Value>
-bool contains(Iterator begin, Iterator end, const Value& value)
-{
-    return std::find(begin, end, value) != end;
-}
-
-template<typename Container, typename Value>
-bool contains(const Container& container, const Value& value)
-{
-    return contains(std::begin(container), std::end(container), value);
 }
 
 }  // namespace eggcpt

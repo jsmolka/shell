@@ -80,7 +80,7 @@ public:
         return static_cast<bool>(default_value);
     }
 
-    std::string getValue() const
+    std::string getValue() const override
     {
         std::stringstream stream;
         stream << std::boolalpha;
@@ -89,7 +89,7 @@ public:
         return stream.str();
     }
 
-    std::string getDefaultValue() const
+    std::string getDefaultValue() const override
     {
         std::stringstream stream;
         stream << std::boolalpha;
@@ -195,7 +195,7 @@ private:
             if (!value->hasValue())
             {
                 if (!value->is_optional)
-                    throw OptionError("Missing option: {}", implode(keys, std::string(", ")));
+                    throw OptionError("Missing option: {}", join(keys, ", "));
 
                 continue;
             }
@@ -292,7 +292,7 @@ public:
 
             for (const auto& [keys, desc, value] : options)
             {
-                auto key = implode(keys, std::string(", "));
+                auto key = join(keys, ", ");
                 auto def = value->hasDefaultValue()
                     ? format(" (default: {})", value->getDefaultValue())
                     : "";

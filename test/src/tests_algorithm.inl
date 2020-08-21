@@ -172,68 +172,50 @@ TEST_CASE("toUpperCopy")
     REQUIRE(t1 == "TEST");
 }
 
-TEST_CASE("replaceLeft")
+TEST_CASE("replaceFirst")
 {
     std::string t0 = "test|test";
-
-    replaceLeft<std::string>(t0, "test", "");
-
+    replaceFirst(t0, "test", "");
     REQUIRE(t0 == "|test");
 }
 
-TEST_CASE("replaceLeftCopy")
+TEST_CASE("replaceFirstCopy")
 {
-    REQUIRE(replaceLeftCopy<std::string>("test|test", "test", "") == "|test");
+    REQUIRE(replaceFirstCopy("test|test"s, "test", "") == "|test");
 }
 
-TEST_CASE("replaceRight")
+TEST_CASE("replaceLast")
 {
     std::string t0 = "test|test";
-
-    replaceRight<std::string>(t0, "test", "");
-
+    replaceLast(t0, "test", "");
     REQUIRE(t0 == "test|");
 }
 
-TEST_CASE("replaceRightCopy")
+TEST_CASE("replaceLastCopy")
 {
-    REQUIRE(replaceRightCopy<std::string>("test|test", "test", "") == "test|");
+    REQUIRE(replaceLastCopy("test|test"s, "test", "") == "test|");
 }
 
-TEST_CASE("replace")
+TEST_CASE("replaceAll")
 {
     std::string t0 = "test|test";
-
-    replace<std::string>(t0, "test", "");
-
+    replaceAll(t0, "test", "");
     REQUIRE(t0 == "|");
 }
 
-TEST_CASE("replaceCopy")
+TEST_CASE("replaceAllCopy")
 {
-    REQUIRE(replaceCopy<std::string>("test|test", "test", "") == "|");
+    REQUIRE(replaceAllCopy("test|test"s, "test", "") == "|");
 }
 
-TEST_CASE("explode")
+TEST_CASE("split")
 {
-    REQUIRE(explode<std::string>("t.e.s.t", ".") == std::vector<std::string>{ "t", "e", "s", "t" });
-    REQUIRE(explode<std::string>("te..st", "..") == std::vector<std::string>{ "te", "st" });
+    REQUIRE(split("t.e.s.t"s, ".") == std::vector<std::string>{ "t", "e", "s", "t" });
+    REQUIRE(split("te..st"s, "..") == std::vector<std::string>{ "te", "st" });
 }
 
-TEST_CASE("implode")
+TEST_CASE("join")
 {
-    REQUIRE(implode<std::vector<std::string>, std::string>(std::vector<std::string>{ "t", "e", "s", "t" }, ".") == "t.e.s.t");
-    REQUIRE(implode<std::vector<std::string>, std::string>(std::vector<std::string>{ "te", "st" }, "..") == "te..st");
-}
-
-TEST_CASE("contains")
-{
-    std::vector<int> v1 = { 1, 2, 3, 4 };
-
-    REQUIRE( contains(v1, 1));
-    REQUIRE( contains(v1, 2));
-    REQUIRE( contains(v1, 3));
-    REQUIRE( contains(v1, 4));
-    REQUIRE(!contains(v1, 5));
-    REQUIRE(!contains(v1, 6));
+    REQUIRE(join(std::vector<std::string>{ "t", "e", "s", "t" }, ".") == "t.e.s.t");
+    REQUIRE(join(std::vector<std::string>{ "te", "st" }, "..") == "te..st");
 }
