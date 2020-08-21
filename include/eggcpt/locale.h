@@ -2,6 +2,8 @@
 
 #include <locale>
 
+#include <eggcpt/macros.h>
+
 namespace eggcpt
 {
 
@@ -55,7 +57,12 @@ public:
 
     bool operator()(const Char& ch) const
     {
+        #if EGGCPT_OS_DARWIN && EGGCPT_CC_CLANG
+        // Workaround for macOS clang using the wrong isblank
+        return std::use_facet<std::ctype<Char>>(locale).is(std::ctype_base::alpha, ch);        
+        #else
         return std::isblank(ch, locale);
+        #endif
     }
 
 private:
