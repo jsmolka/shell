@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iterator>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 #include <eggcpt/iterator.h>

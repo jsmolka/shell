@@ -1,22 +1,35 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <sstream>
-#include <string>
+#include <utility>
 #include <vector>
 
 #include <eggcpt/locale.h>
 #include <eggcpt/traits.h>
 
-/////////////////////////////////////
-#include <boost/algorithm/string.hpp>
-/////////////////////////////////////
+///////////////////////////////////////
+//#include <boost/algorithm/string.hpp>
+///////////////////////////////////////
 
 namespace eggcpt
 {
 
 namespace detail
 {
+
+template<typename Range>
+range_iterator_t<const Range> literalEnd(const Range& range)
+{
+    return std::end(range);
+}
+
+template<typename Char, std::size_t N>
+const Char* literalEnd(const Char(&array)[N])
+{
+    return array + N - 1;
+}
 
 template<typename Range>
 std::size_t literalSize(const Range& range)
@@ -33,7 +46,6 @@ std::size_t literalSize(const Char (&array)[N])
 }
 
 }  // namespace detail
-
 
 template<typename Sequence, typename Predicate>
 void trimLeftIf(Sequence& seq, Predicate pred)
@@ -256,9 +268,17 @@ Sequence toUpperCopy(const Sequence& seq, const std::locale& locale = std::local
 template<typename Sequence, typename RangeFrom, typename RangeTo>
 void replaceFirst(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    auto pos = seq.find(from);
-    if (pos != Sequence::npos)
-        seq.replace(pos, detail::literalSize(from), to);
+    auto iter = std::search(
+        std::begin(seq),
+        std::end(seq),
+        std::boyer_moore_searcher(
+            std::begin(from),
+            detail::literalEnd(from)));
+
+    if (iter != std::end(seq))
+        seq.replace(iter - std::begin(seq),
+            detail::literalSize(from),
+            to);
 }
 
 template<typename Sequence, typename RangeFrom, typename RangeTo>
@@ -290,11 +310,24 @@ Sequence replaceLastCopy(const Sequence& seq, const RangeFrom& from, const Range
 template<typename Sequence, typename RangeFrom, typename RangeTo>
 void replaceAll(Sequence& seq, const RangeFrom& from, const RangeTo& to)
 {
-    auto pos = static_cast<typename Sequence::size_type>(0);
-    while ((pos = seq.find(from, pos)) != Sequence::npos)
+    auto search = [&](range_iterator_t<Sequence> begin)
     {
-        seq.replace(pos, detail::literalSize(from), to);
-        pos += detail::literalSize(to);
+        return std::search(
+            begin,
+            std::end(seq),
+            std::boyer_moore_searcher(
+                std::begin(from),
+                detail::literalEnd(from)));
+    };
+
+    auto iter = std::begin(seq);
+    while ((iter = search(iter)) != std::end(seq))
+    {
+        seq.replace(
+            std::distance(std::begin(seq), iter),
+            detail::literalSize(from), to);
+
+        iter += detail::literalSize(to);
     }
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iterator>
+#include <eggcpt/traits.h>
 
 namespace eggcpt
 {
@@ -12,27 +12,29 @@ public:
     using iterator = Iterator;
     using const_iterator = const Iterator;
 
-    IteratorRange(iterator begin, iterator end)
+    IteratorRange(Iterator begin, Iterator end)
         : begin_(begin), end_(end) {}
 
-    iterator begin() { return begin_; }
-    iterator end() { return end_; }
-    const_iterator cbegin() const { return begin_; }
-    const_iterator cend() const { return end_; }
+    Iterator begin() { return begin_; }
+    Iterator end() { return end_; }
+    const Iterator cbegin() const { return begin_; }
+    const Iterator cend() const { return end_; }
 
 private:
-    iterator begin_;
-    iterator end_;
+    Iterator begin_;
+    Iterator end_;
 };
 
 template<typename Iterator>
-auto makeIteratorRange(Iterator begin, Iterator end)
+IteratorRange<Iterator>
+    makeIteratorRange(Iterator begin, Iterator end)
 {
     return IteratorRange<Iterator>(begin, end);
 }
 
 template<typename Range>
-auto reversed(Range& range)
+IteratorRange<range_iterator_t<Range>>
+    reversed(Range& range)
 {
     return makeIteratorRange(std::rbegin(range), std::rend(range));
 }

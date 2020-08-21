@@ -12,7 +12,7 @@ public:
 
     static T& instance()
     {
-        static T instance{ Token{} };
+        static T instance(Token{});
         return instance;
     }
 

@@ -124,8 +124,7 @@
     <ClInclude Include="eggcpt\filesystem.h" />
     <ClInclude Include="eggcpt\iterator.h" />
     <ClInclude Include="eggcpt\main.h" />
-    <ClInclude Include="eggcpt\predicates.h" />
-    <ClInclude Include="eggcpt\primitives.h" />
+    <ClInclude Include="eggcpt\int.h" />
     <ClInclude Include="eggcpt\traits.h" />
     <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\format.h" />

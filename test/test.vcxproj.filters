@@ -44,9 +44,6 @@
     <None Include="src\tests_algorithm.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_predicates.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\tests_options.inl">
       <Filter>Header Files</Filter>
     </None>

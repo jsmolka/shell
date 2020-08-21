@@ -5,7 +5,7 @@
 #  define FMT_HEADER_ONLY_DEFINED
 #endif
 
-#include "external/fmt/include/fmt/format.h"
+#include <eggcpt/external/fmt/include/fmt/format.h>
 
 #ifdef FMT_HEADER_ONLY_DEFINED
 #  undef FMT_HEADER_ONLY

@@ -5,10 +5,10 @@
 #include <memory>
 #include <type_traits>
 
-#include "filesystem.h"
-#include "format.h"
-#include "primitives.h"
-#include "windows.h"
+#include <eggcpt/filesystem.h>
+#include <eggcpt/format.h>
+#include <eggcpt/int.h>
+#include <eggcpt/windows.h>
 
 namespace eggcpt
 {

@@ -57,12 +57,6 @@
     <ClInclude Include="eggcpt\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\primitives.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eggcpt\predicates.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +67,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\locale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\int.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

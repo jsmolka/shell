@@ -3,9 +3,9 @@
 #include <climits>
 #include <type_traits>
 
-#include "iterator.h"
-#include "macros.h"
-#include "primitives.h"
+#include <eggcpt/int.h>
+#include <eggcpt/iterator.h>
+#include <eggcpt/macros.h>
 
 #if EGGCPT_CC_MSVC
 #include <intrin.h>

@@ -174,48 +174,46 @@ TEST_CASE("toUpperCopy")
 
 TEST_CASE("replaceFirst")
 {
-    std::string t0 = "test|test";
-    replaceFirst(t0, "test", "");
-    REQUIRE(t0 == "|test");
+    std::string t0 = "x|x";
+    replaceFirst(t0, "x", "xxx");
+    REQUIRE(t0 == "xxx|x");
 }
 
 TEST_CASE("replaceFirstCopy")
 {
-    REQUIRE(replaceFirstCopy("test|test"s, "test", "") == "|test");
+    REQUIRE(replaceFirstCopy("x|x"s, "x", "xxx") == "xxx|x");
 }
 
 TEST_CASE("replaceLast")
 {
-    std::string t0 = "test|test";
-    replaceLast(t0, "test", "");
-    REQUIRE(t0 == "test|");
+    std::string t0 = "x|x";
+    replaceLast(t0, "x", "xxx");
+    REQUIRE(t0 == "x|xxx");
 }
 
 TEST_CASE("replaceLastCopy")
 {
-    REQUIRE(replaceLastCopy("test|test"s, "test", "") == "test|");
+    REQUIRE(replaceLastCopy("x|x"s, "x", "xxx") == "x|xxx");
 }
 
 TEST_CASE("replaceAll")
 {
-    std::string t0 = "test|test";
-    replaceAll(t0, "test", "");
-    REQUIRE(t0 == "|");
+    std::string t0 = "x|x";
+    replaceAll(t0, "x", "xxx");
+    REQUIRE(t0 == "xxx|xxx");
 }
 
 TEST_CASE("replaceAllCopy")
 {
-    REQUIRE(replaceAllCopy("test|test"s, "test", "") == "|");
+    REQUIRE(replaceAllCopy("x|x"s, "x", "xxx") == "xxx|xxx");
 }
 
 TEST_CASE("split")
 {
-    REQUIRE(split("t.e.s.t"s, ".") == std::vector<std::string>{ "t", "e", "s", "t" });
-    REQUIRE(split("te..st"s, "..") == std::vector<std::string>{ "te", "st" });
+    REQUIRE(split("xxx|xxx"s, "|") == std::vector<std::string>{ "xxx", "xxx" });
 }
 
 TEST_CASE("join")
 {
-    REQUIRE(join(std::vector<std::string>{ "t", "e", "s", "t" }, ".") == "t.e.s.t");
-    REQUIRE(join(std::vector<std::string>{ "te", "st" }, "..") == "te..st");
+    REQUIRE(join(std::vector<std::string>{ "xxx", "xxx" }, "|") == "xxx|xxx");
 }
