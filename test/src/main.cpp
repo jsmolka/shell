@@ -11,6 +11,7 @@
 #include <eggcpt/algorithm.h>
 #include <eggcpt/bit.h>
 #include <eggcpt/filesystem.h>
+#include <eggcpt/locale.h>
 #include <eggcpt/logging.h>
 #include <eggcpt/options.h>
 #include <eggcpt/predicates.h>
@@ -27,6 +28,7 @@ using namespace std::string_literals;
 #include "tests_algorithm.inl"
 #include "tests_bit.inl"
 #include "tests_filesystem.inl"
+#include "tests_locale.inl"
 #include "tests_logging.inl"
 #include "tests_options.inl"
 #include "tests_predicates.inl"

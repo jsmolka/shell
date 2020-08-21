@@ -1,25 +1,15 @@
 #pragma once
 
 #include <algorithm>
-#include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include <eggcpt/locale.h>
+#include <eggcpt/traits.h>
+
 namespace eggcpt
 {
-
-namespace detail
-{
-
-inline auto predicateIsSpace(const std::locale& locale)
-{
-    return [&](auto ch) {
-        return std::isspace(ch, locale);
-    };
-}
-
-}  // namespace detail
 
 template<typename Sequence, typename Predicate>
 void trimLeftIf(Sequence& seq, Predicate pred)
@@ -35,7 +25,7 @@ void trimLeftIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimLeftIf(seq, detail::predicateIsSpace(locale));
+    trimLeftIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -64,13 +54,13 @@ OutputIterator trimLeftCopyIf(OutputIterator output, const Sequence& seq, Predic
 template<typename Sequence>
 Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(seq, detail::predicateIsSpace(locale));
+    return trimLeftCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimLeftCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(output, seq, detail::predicateIsSpace(locale));
+    return trimLeftCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -87,7 +77,7 @@ void trimRightIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimRight(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimRightIf(seq, detail::predicateIsSpace(locale));
+    trimRightIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -116,13 +106,13 @@ OutputIterator trimRightCopyIf(OutputIterator output, const Sequence& seq, Predi
 template<typename Sequence>
 Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(seq, detail::predicateIsSpace(locale));
+    return trimRightCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimRightCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(output, seq, detail::predicateIsSpace(locale));
+    return trimRightCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -135,7 +125,7 @@ void trimIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trim(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimIf(seq, detail::predicateIsSpace(locale));
+    trimIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -170,13 +160,13 @@ OutputIterator trimCopyIf(OutputIterator output, const Sequence& seq, Predicate 
 template<typename Sequence>
 Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(seq, detail::predicateIsSpace(locale));
+    return trimCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename OutputIterator, typename Sequence>
 OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(output, seq, detail::predicateIsSpace(locale));
+    return trimCopyIf(output, seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence>

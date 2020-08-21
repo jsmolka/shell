@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iterator>
 #include <type_traits>
 
 namespace eggcpt
@@ -20,4 +21,39 @@ constexpr bool is_detected_v<T, Func, std::void_t<Func<T>>> = true;
 template<typename T, template<typename> typename Func>
 struct is_detected : std::bool_constant<is_detected_v<T, Func>> {};
 
-}  // namespace eggcpt
+template<typename Range>
+struct range_traits
+{
+    using iterator = typename Range::iterator;
+    using const_iterator = typename Range::const_iterator;
+};
+
+template<typename Range, std::size_t N>
+struct range_traits<Range[N]>
+{
+    using iterator = Range*;
+    using const_iterator = const Range*;
+};
+
+template<typename Range>
+struct range_iterator
+{
+    using type = std::conditional_t<
+        std::is_const_v<Range>,
+        typename range_traits<Range>::const_iterator,
+        typename range_traits<Range>::iterator>;
+};
+
+template<typename Range>
+using range_iterator_t = typename range_iterator<Range>::type;
+
+template<typename Range>
+struct range_value
+{
+    using type = typename std::iterator_traits<range_iterator_t<Range>>::value_type;
+};
+
+template<typename Range>
+using range_value_t = typename range_value<Range>::type;
+
+}

@@ -118,6 +118,7 @@
   <ItemGroup>
     <ClInclude Include="eggcpt\algorithm.h" />
     <ClInclude Include="eggcpt\errors.h" />
+    <ClInclude Include="eggcpt\locale.h" />
     <ClInclude Include="eggcpt\options.h" />
     <ClInclude Include="eggcpt\bit.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
