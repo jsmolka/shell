@@ -7,9 +7,12 @@ TEST_CASE("bit::bits")
 
 TEST_CASE("bit::seq")
 {
-    REQUIRE(bit::seq< 0, 8>(0x0000'00FF) == 0xFF);
-    REQUIRE(bit::seq< 8, 8>(0x0000'FF00) == 0xFF);
-    REQUIRE(bit::seq<16, 8>(0x00FF'0000) == 0xFF);
+    u16 x = 0xDEAD;
+    REQUIRE(bit::seq<0, 3>(x) == ((x >> 0) & 0x7));
+    REQUIRE(bit::seq<3, 3>(x) == ((x >> 3) & 0x7));
+    REQUIRE(bit::seq<6, 1>(x) == ((x >> 6) & 0x1));
+    REQUIRE(bit::seq<7, 1>(x) == ((x >> 7) & 0x1));
+    REQUIRE(bit::seq<8, 2>(x) == ((x >> 8) & 0x3));
 }
 
 TEST_CASE("bit::signEx")

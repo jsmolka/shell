@@ -27,7 +27,9 @@ constexpr Integral seq(Integral value)
     static_assert(std::is_integral_v<Integral>);
     static_assert(Index + Size <= bits_v<Integral>);
 
-    constexpr Integral kMask = ~static_cast<Integral>(0) >> (bits_v<Integral> - Size);
+    constexpr Integral kMask =
+        static_cast<std::make_unsigned_t<Integral>>(~0ull)
+            >> (bits_v<Integral> - Size);
 
     return (value >> Index) & kMask;
 }
@@ -52,11 +54,11 @@ template<uint Size, typename Integral>
 constexpr Integral signEx(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    static_assert(Size > 0 && Size <= bits_v<Integral>);
+    static_assert(Size <= bits_v<Integral>);
 
-    constexpr Integral kAmount = bits_v<Integral> - Size;
+    constexpr Integral kMask = 1ull << (Size - 1);
 
-    return sar(value << kAmount, kAmount);
+    return (value ^ kMask) - kMask;
 }
 
 template<typename Integral>
