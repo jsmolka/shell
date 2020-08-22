@@ -1,2 +1,2 @@
 # eggcpt
-A collection of common code.
+Here be dragons (and common code).
