@@ -1,8 +1,3 @@
-bool issmall(int x)
-{
-    return x < 3;
-}
-
 TEST_CASE("trimLeftIf")
 {
     std::string t0 = "  -";
@@ -28,24 +23,12 @@ TEST_CASE("trimLeftCopyIf")
 
     std::string t1 = "xx-";
     REQUIRE(trimLeftCopyIf(t1, isalpha) == "-");
-
-    std::string t2;
-    trimLeftCopyIf(std::back_inserter(t2), t0, isspace);
-    REQUIRE(t2 == "-");
-
-    std::string t3;
-    trimLeftCopyIf(std::back_inserter(t3), t1, isalpha);
-    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimLeftCopy")
 {
     std::string t0 = "  -";
     REQUIRE(trimLeftCopy(t0) == "-");
-
-    std::string t1;
-    trimLeftCopy(std::back_inserter(t1), t0);
-    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("trimRightIf")
@@ -73,24 +56,12 @@ TEST_CASE("trimRightCopyIf")
 
     std::string t1 = "-xx";
     REQUIRE(trimRightCopyIf(t1, isalpha) == "-");
-
-    std::string t2;
-    trimRightCopyIf(std::back_inserter(t2), t0, isspace);
-    REQUIRE(t2 == "-");
-
-    std::string t3;
-    trimRightCopyIf(std::back_inserter(t3), t1, isalpha);
-    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimRightCopy")
 {
     std::string t0 = "-  ";
     REQUIRE(trimRightCopy(t0) == "-");
-
-    std::string t1;
-    trimRightCopy(std::back_inserter(t1), t0);
-    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("trimIf")
@@ -118,24 +89,12 @@ TEST_CASE("trimCopyIf")
 
     std::string t1 = "xx-xx";
     REQUIRE(trimCopyIf(t1, isalpha) == "-");
-
-    std::string t2;
-    trimCopyIf(std::back_inserter(t2), t0, isspace);
-    REQUIRE(t2 == "-");
-
-    std::string t3;
-    trimCopyIf(std::back_inserter(t3), t1, isalpha);
-    REQUIRE(t3 == "-");
 }
 
 TEST_CASE("trimCopy")
 {
     std::string t0 = "  -  ";
     REQUIRE(trimCopy(t0) == "-");
-
-    std::string t1;
-    trimCopy(std::back_inserter(t1), t0);
-    REQUIRE(t1 == "-");
 }
 
 TEST_CASE("toLower")
@@ -149,10 +108,6 @@ TEST_CASE("toLowerCopy")
 {
     std::string t0 = "TEst";
     REQUIRE(toLowerCopy(t0) == "test");
-
-    std::string t1;
-    toLowerCopy(std::back_inserter(t1), t0);
-    REQUIRE(t1 == "test");
 }
 
 TEST_CASE("toUpper")
@@ -166,10 +121,6 @@ TEST_CASE("toUpperCopy")
 {
     std::string t0 = "TEst";
     REQUIRE(toUpperCopy(t0) == "TEST");
-
-    std::string t1;
-    toUpperCopy(std::back_inserter(t1), t0);
-    REQUIRE(t1 == "TEST");
 }
 
 TEST_CASE("replaceFirst")

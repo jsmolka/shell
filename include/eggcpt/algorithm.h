@@ -1,17 +1,11 @@
 #pragma once
 
 #include <algorithm>
-#include <functional>
-#include <sstream>
-#include <utility>
 #include <vector>
 
 #include <eggcpt/locale.h>
 #include <eggcpt/traits.h>
-
-///////////////////////////////////////
-//#include <boost/algorithm/string.hpp>
-///////////////////////////////////////
+#include <eggcpt/utility.h>
 
 namespace eggcpt
 {
@@ -19,26 +13,14 @@ namespace eggcpt
 namespace detail
 {
 
-template<typename Range>
-range_iterator_t<const Range> literalEnd(const Range& range)
+template<typename Sequence>
+std::size_t size(const Sequence& seq)
 {
-    return std::end(range);
+    return std::distance(std::begin(seq), std::end(seq));
 }
 
 template<typename Char, std::size_t N>
-const Char* literalEnd(const Char(&array)[N])
-{
-    return array + N - 1;
-}
-
-template<typename Range>
-std::size_t literalSize(const Range& range)
-{
-    return std::distance(std::begin(range), std::end(range));
-}
-
-template<typename Char, std::size_t N>
-std::size_t literalSize(const Char (&array)[N])
+std::size_t size(const Char (&array)[N])
 {
     static_assert(is_any_of_v<Char, char, wchar_t>);
 
@@ -61,19 +43,7 @@ void trimLeftIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimLeftIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence, typename Predicate>
-OutputIterator trimLeftCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
-{
-    return std::copy(
-        std::find_if_not(
-            std::begin(seq),
-            std::end(seq),
-            pred),
-        std::end(seq),
-        output);
+    trimLeftIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -87,16 +57,10 @@ Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
         std::end(seq));
 }
 
-template<typename OutputIterator, typename Sequence>
-OutputIterator trimLeftCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
-{
-    return trimLeftCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
 template<typename Sequence>
 Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
+    return trimLeftCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -113,19 +77,7 @@ void trimRightIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trimRight(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimRightIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence, typename Predicate>
-OutputIterator trimRightCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
-{
-    return std::copy(
-        std::begin(seq),
-        std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
-            pred).base(),
-        output);
+    trimRightIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -142,13 +94,7 @@ Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
 template<typename Sequence>
 Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence>
-OutputIterator trimRightCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
-{
-    return trimRightCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
+    return trimRightCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -161,22 +107,7 @@ void trimIf(Sequence& seq, Predicate pred)
 template<typename Sequence>
 void trim(Sequence& seq, const std::locale& locale = std::locale())
 {
-    trimIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence, typename Predicate>
-OutputIterator trimCopyIf(OutputIterator output, const Sequence& seq, Predicate pred)
-{
-    return std::copy(
-        std::find_if_not(
-            std::begin(seq),
-            std::end(seq), 
-            pred),
-        std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
-            pred).base(),
-        output);
+    trimIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence, typename Predicate>
@@ -193,16 +124,10 @@ Sequence trimCopyIf(const Sequence& seq, Predicate pred)
             pred).base());
 }
 
-template<typename OutputIterator, typename Sequence>
-OutputIterator trimCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
-{
-    return trimCopyIf(output, seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
 template<typename Sequence>
 Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(seq, IsSpace<typename range_iterator_traits<Sequence>::value_type>(locale));
+    return trimCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence>
@@ -212,27 +137,22 @@ void toLower(Sequence& seq, const std::locale& locale = std::locale())
         std::begin(seq),
         std::end(seq),
         std::begin(seq),
-        ToLower<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence>
-OutputIterator toLowerCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
-{
-    return std::transform(
-        std::begin(seq),
-        std::end(seq),
-        output,
-        ToLower<typename range_iterator_traits<Sequence>::value_type>(locale));
+        ToLower<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence>
 Sequence toLowerCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence result;
-    result.reserve(seq.size());
-    toLowerCopy(std::back_inserter(result), seq, locale);
+    Sequence res;
+    res.reserve(detail::size(seq));
 
-    return result;
+    std::transform(
+        std::begin(seq),
+        std::end(seq),
+        std::back_inserter(res),
+        ToLower<range_value_t<Sequence>>(locale));
+
+    return res;
 }
 
 template<typename Sequence>
@@ -242,136 +162,113 @@ void toUpper(Sequence& seq, const std::locale& locale = std::locale())
         std::begin(seq),
         std::end(seq),
         std::begin(seq),
-        ToUpper<typename range_iterator_traits<Sequence>::value_type>(locale));
-}
-
-template<typename OutputIterator, typename Sequence>
-OutputIterator toUpperCopy(OutputIterator output, const Sequence& seq, const std::locale& locale = std::locale())
-{
-    return std::transform(
-        std::begin(seq),
-        std::end(seq),
-        output,
-        ToUpper<typename range_iterator_traits<Sequence>::value_type>(locale));
+        ToUpper<range_value_t<Sequence>>(locale));
 }
 
 template<typename Sequence>
 Sequence toUpperCopy(const Sequence& seq, const std::locale& locale = std::locale())
 {
-    Sequence result;
-    result.reserve(seq.size());
-    toUpperCopy(std::back_inserter(result), seq, locale);
+    Sequence res;
+    res.reserve(detail::size(seq));
 
-    return result;
-}
-
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-void replaceFirst(Sequence& seq, const RangeFrom& from, const RangeTo& to)
-{
-    auto iter = std::search(
+    std::transform(
         std::begin(seq),
         std::end(seq),
-        std::boyer_moore_searcher(
-            std::begin(from),
-            detail::literalEnd(from)));
+        std::back_inserter(res),
+        ToUpper<range_value_t<Sequence>>(locale));
 
-    if (iter != std::end(seq))
-        seq.replace(iter - std::begin(seq),
-            detail::literalSize(from),
-            to);
+    return res;
 }
 
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-Sequence replaceFirstCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+void replaceFirst(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
 {
-    Sequence result(seq);
-    replaceFirst(result, from, to);
-    
-    return result;
-}
-
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-void replaceLast(Sequence& seq, const RangeFrom& from, const RangeTo& to)
-{
-    auto pos = seq.rfind(from);
-    if (pos != Sequence::npos)
-        seq.replace(pos, detail::literalSize(from), to);
-}
-
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-Sequence replaceLastCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
-{
-    Sequence result(seq);
-    replaceLast(result, from, to);
-    
-    return result;
-}
-
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-void replaceAll(Sequence& seq, const RangeFrom& from, const RangeTo& to)
-{
-    auto search = [&](range_iterator_t<Sequence> begin)
+    auto pos = seq.find(from);
+    if ( pos != Sequence::npos)
     {
-        return std::search(
-            begin,
-            std::end(seq),
-            std::boyer_moore_searcher(
-                std::begin(from),
-                detail::literalEnd(from)));
-    };
-
-    auto iter = std::begin(seq);
-    while ((iter = search(iter)) != std::end(seq))
-    {
-        seq.replace(
-            std::distance(std::begin(seq), iter),
-            detail::literalSize(from), to);
-
-        iter += detail::literalSize(to);
+        seq.replace(pos, detail::size(from), to);
     }
 }
 
-template<typename Sequence, typename RangeFrom, typename RangeTo>
-Sequence replaceAllCopy(const Sequence& seq, const RangeFrom& from, const RangeTo& to)
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+Sequence replaceFirstCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
 {
-    Sequence result(seq);
-    replaceAll(result, from, to);
-
-    return result;
+    Sequence res(seq);
+    replaceFirst(res, from, to);
+    
+    return res;
 }
 
-template<typename Sequence, typename Range>
-std::vector<Sequence> split(const Sequence& str, const Range& delim)
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+void replaceLast(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
 {
-    auto end = str.find(delim);
+    auto pos = seq.rfind(from);
+    if ( pos != Sequence::npos)
+    {
+        seq.replace(pos, detail::size(from), to);
+    }
+}
+
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+Sequence replaceLastCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+{
+    Sequence res(seq);
+    replaceLast(res, from, to);
+    
+    return res;
+}
+
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+void replaceAll(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+{
+    typename Sequence::size_type pos = 0;
+    while ((pos = seq.find(from, pos)) != Sequence::npos)
+    {
+        seq.replace(pos, detail::size(from), to);
+        pos += detail::size(to);
+    }
+}
+
+template<typename Sequence, typename SequenceFrom, typename SequenceTo>
+Sequence replaceAllCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+{
+    Sequence res(seq);
+    replaceAll(res, from, to);
+
+    return res;
+}
+
+template<typename Sequence, typename SequenceDelimiter>
+std::vector<Sequence> split(const Sequence& seq, const SequenceDelimiter& del)
+{
+    auto end = seq.find(del);
     auto res = std::vector<Sequence>();
     auto pos = static_cast<typename Sequence::size_type>(0);
 
     while (end != Sequence::npos)
     {
-        res.push_back(str.substr(pos, end - pos));
-        pos = end + detail::literalSize(delim);
-        end = str.find(delim, pos);
+        res.push_back(seq.substr(pos, end - pos));
+        pos = end + detail::size(del);
+        end = seq.find(del, pos);
     }
-    res.push_back(str.substr(pos, end));
+    res.push_back(seq.substr(pos, end));
 
     return res;
 }
 
-template<typename SequenceRange, typename Range>
-typename range_iterator_traits<SequenceRange>::value_type
-    join(const SequenceRange& range, const Range& delim)
+template<typename SequenceRange, typename SequenceDelimiter>
+range_value_t<SequenceRange> join(const SequenceRange& range, const SequenceDelimiter& del)
 {
-    auto stream = std::ostringstream();
+    range_value_t<SequenceRange> res;
 
-    for (const auto& value : range)
+    for (auto [pos, seq] : enumerate(range))
     {
-        if (&value != &*range.begin())
-            stream << delim;
+        if (pos != 0)
+            res.append(del);
 
-        stream << value;
+        res.append(seq);
     }
-    return stream.str();
+    return res;
 }
 
 }  // namespace eggcpt
