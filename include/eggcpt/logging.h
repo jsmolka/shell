@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include <eggcpt/filesystem.h>
-#include <eggcpt/format.h>
+#include <eggcpt/fmt.h>
 #include <eggcpt/int.h>
 #include <eggcpt/windows.h>
 
@@ -62,7 +62,7 @@ public:
         case Level::Error: color = 91; break;  // Red
         case Level::Fatal: color = 95; break;  // Magenta
         }
-        ConsoleSink::sink(format("\033[{}m{}\033[0m", color, message), level);
+        ConsoleSink::sink(fmt::format("\033[{}m{}\033[0m", color, message), level);
     }
 };
 
@@ -70,7 +70,7 @@ class FileSink : public Sink
 {
 public:
     FileSink(const filesystem::path& file, bool trunc = false)
-        : stream(filesystem::make_absolute(file),
+        : stream(filesystem::makeAbsolute(file),
             trunc ? std::ios::trunc : std::ios::app) {}
 
     virtual void sink(const std::string& message, Level) override

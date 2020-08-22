@@ -24,15 +24,19 @@ struct is_detected : std::bool_constant<is_detected_v<T, Func>> {};
 template<typename Range>
 struct range_traits
 {
-    using iterator = typename Range::iterator;
-    using const_iterator = typename Range::const_iterator;
+    using iterator               = typename Range::iterator;
+    using const_iterator         = typename Range::const_iterator;
+    using reverse_iterator       = typename Range::reverse_iterator;
+    using const_reverse_iterator = typename Range::const_reverse_iterator;
 };
 
 template<typename Range, std::size_t N>
 struct range_traits<Range[N]>
 {
-    using iterator = Range*;
-    using const_iterator = const Range*;
+    using iterator               = Range*;
+    using const_iterator         = const Range*;
+    using reverse_iterator       = Range*;
+    using const_reverse_iterator = const Range*;
 };
 
 template<typename Range>
@@ -46,6 +50,18 @@ struct range_iterator
 
 template<typename Range>
 using range_iterator_t = typename range_iterator<Range>::type;
+
+template<typename Range>
+struct range_reverse_iterator
+{
+    using type = std::conditional_t<
+        std::is_const_v<Range>,
+        typename range_traits<Range>::const_reverse_iterator,
+        typename range_traits<Range>::reverse_iterator>;
+};
+
+template<typename Range>
+using range_reverse_iterator_t = typename range_reverse_iterator<Range>::type;
 
 template<typename Range>
 struct range_iterator_traits : std::iterator_traits<range_iterator_t<Range>> {};

@@ -16,15 +16,10 @@ namespace detail
 template<typename Sequence>
 std::size_t size(const Sequence& seq)
 {
-    return std::distance(std::begin(seq), std::end(seq));
-}
-
-template<typename Char, std::size_t N>
-std::size_t size(const Char (&array)[N])
-{
-    static_assert(is_any_of_v<Char, char, wchar_t>);
-
-    return N - 1;
+    if constexpr (std::is_array_v<Sequence>)
+        return sizeof(seq) - 1;
+    else
+        return seq.size();
 }
 
 }  // namespace detail

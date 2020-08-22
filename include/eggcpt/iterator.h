@@ -26,17 +26,19 @@ private:
 };
 
 template<typename Iterator>
-IteratorRange<Iterator>
+IteratorRange<Iterator> 
     makeIteratorRange(Iterator begin, Iterator end)
 {
     return IteratorRange<Iterator>(begin, end);
 }
 
 template<typename Range>
-IteratorRange<range_iterator_t<Range>>
+IteratorRange<range_reverse_iterator_t<Range>>
     reversed(Range& range)
 {
-    return makeIteratorRange(std::rbegin(range), std::rend(range));
+    return makeIteratorRange(
+        std::rbegin(range),
+        std::rend(range));
 }
 
 }  // namespace eggcpt

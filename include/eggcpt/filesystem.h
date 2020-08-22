@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <fstream>
 #ifdef __cpp_lib_filesystem
 #include <filesystem>
@@ -8,8 +7,8 @@
 #include <experimental/filesystem>
 #endif
 
-#include "traits.h"
-#include "windows.h"
+#include <eggcpt/traits.h>
+#include <eggcpt/windows.h>
 
 #if EGGCPT_OS_LINUX
 #include <unistd.h>
@@ -23,9 +22,11 @@ namespace eggcpt::filesystem
 namespace detail
 {
 
-template<typename T> using has_data_t   = decltype(std::declval<T>().data());
-template<typename T> using has_size_t   = decltype(std::declval<T>().size());
-template<typename T> using has_resize_t = decltype(std::declval<T>().resize(0));
+template<typename T>
+using resize_t = decltype(std::declval<T>().resize(1));
+
+template<typename T>
+constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
 }  // namespace detail
 
@@ -35,7 +36,7 @@ using namespace std::filesystem;
 using namespace std::experimental::filesystem;
 #endif
 
-inline path executable_path()
+inline path executablePath()
 {
     #if EGGCPT_OS_WINDOWS
     wchar_t buffer[MAX_PATH];
@@ -58,20 +59,18 @@ inline path executable_path()
     #endif
 }
 
-inline path make_absolute(const path& path)
+inline path makeAbsolute(const path& path)
 {
-    return path.is_relative()
-        ? executable_path() / path
-        : path;
+    if (path.is_relative())
+        return executablePath() / path;
+    else
+        return path;
 }
 
-template<typename T, std::enable_if_t<is_detected_v<T, detail::has_resize_t>, int> = 0>
-bool read(const path& file, T& dst)
+template<typename Container>
+bool read(const path& file, Container& dst)
 {
-    using value_type = typename T::value_type;
-
-    static_assert(is_detected_v<T, detail::has_data_t>);
-    static_assert(is_detected_v<T, detail::has_size_t>);
+    static_assert(sizeof(typename Container::value_type) == 1);
 
     auto stream = std::ifstream(file, std::ios::binary);
     if (!stream.is_open())
@@ -81,30 +80,10 @@ bool read(const path& file, T& dst)
     std::size_t size = stream.tellg();
     stream.seekg(0, std::ios::beg);
 
-    dst.resize((size + sizeof(value_type) - 1) / sizeof(value_type));
+    if constexpr (detail::is_resizable_v<Container>)
+        dst.resize(size);
 
-    stream.read(reinterpret_cast<char*>(dst.data()), size);
-
-    return true;
-}
-
-template<typename T, std::enable_if_t<!is_detected_v<T, detail::has_resize_t>, int> = 0>
-bool read(const path& file, T& dst)
-{
-    using value_type = typename T::value_type;
-
-    static_assert(is_detected_v<T, detail::has_data_t>);
-    static_assert(is_detected_v<T, detail::has_size_t>);
-
-    auto stream = std::ifstream(file, std::ios::binary);
-    if (!stream.is_open())
-        return false;
-
-    stream.seekg(0, std::ios::end);
-    std::size_t size = stream.tellg();
-    stream.seekg(0, std::ios::beg);
-
-    if (size != (dst.size() * sizeof(value_type)))
+    if (size != dst.size())
         return false;
 
     stream.read(reinterpret_cast<char*>(dst.data()), size);
@@ -112,19 +91,16 @@ bool read(const path& file, T& dst)
     return true;
 }
 
-template<typename T>
-bool write(const path& file, const T& src)
+template<typename Container>
+bool write(const path& file, const Container& src)
 {
-    using value_type = typename T::value_type;
-
-    static_assert(is_detected_v<T, detail::has_data_t>);
-    static_assert(is_detected_v<T, detail::has_size_t>);
+    static_assert(sizeof(typename Container::value_type) == 1);
 
     auto stream = std::ofstream(file, std::ios::binary);
     if (!stream.is_open())
         return false;
 
-    stream.write(reinterpret_cast<const char*>(src.data()), src.size() * sizeof(value_type));
+    stream.write(reinterpret_cast<const char*>(src.data()), src.size());
 
     return true;
 }

@@ -63,13 +63,13 @@
     <ClInclude Include="eggcpt\errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\format.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\locale.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\int.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\fmt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -50,5 +50,8 @@
     <None Include="src\tests_locale.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_iterator.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

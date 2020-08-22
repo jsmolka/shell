@@ -1,7 +1,6 @@
 #pragma once
 
 #include <climits>
-#include <type_traits>
 
 #include <eggcpt/int.h>
 #include <eggcpt/iterator.h>
@@ -20,7 +19,7 @@ template<typename T>
 struct bits : std::integral_constant<uint, CHAR_BIT * sizeof(T)> {};
 
 template<typename T>
-constexpr auto bits_v = bits<T>::value;
+constexpr typename bits<T>::value_type bits_v = bits<T>::value;
 
 template<uint Index, uint Size, typename Integral>
 constexpr Integral seq(Integral value)
@@ -38,9 +37,7 @@ constexpr Integral sar(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    using Signed = std::make_signed_t<Integral>;
-
-    return static_cast<Signed>(value) >> amount;
+    return static_cast<std::make_signed_t<Integral>>(value) >> amount;
 }
 
 template<typename Integral>
@@ -48,13 +45,11 @@ constexpr Integral shr(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    using Unsigned = std::make_unsigned_t<Integral>;
-
-    return static_cast<Unsigned>(value) >> amount;
+    return static_cast<std::make_unsigned_t<Integral>>(value) >> amount;
 }
 
 template<uint Size, typename Integral>
-constexpr Integral sign_ex(Integral value)
+constexpr Integral signEx(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
     static_assert(Size > 0 && Size <= bits_v<Integral>);
@@ -112,7 +107,7 @@ template<typename Integral>
 Integral bswap(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    static_assert(sizeof(Integral) >= 2);
+    static_assert(sizeof(Integral) > 1);
 
     #if EGGCPT_CC_MSVC
     if (sizeof(Integral) == 2) return _byteswap_ushort(value);
@@ -189,7 +184,7 @@ public:
     BitIterator(Integral value)
         : value(value) {}
 
-    value_type operator*() const
+    uint operator*() const
     {
         return ctz(value);
     }
@@ -208,9 +203,13 @@ private:
 };
 
 template<typename Integral>
-auto iterate(Integral value)
+IteratorRange<BitIterator<Integral>> iterate(Integral value)
 {
-    return makeIteratorRange<BitIterator<Integral>>(value, 0);
+    static_assert(std::is_integral_v<Integral>);
+
+    return makeIteratorRange(
+        BitIterator<Integral>(value),
+        BitIterator<Integral>(0));
 }
 
 }  // namespace eggcpt::bit
