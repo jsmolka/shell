@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "algorithm.h"
-#include "errors.h"
+#include <eggcpt/algorithm.h>
+#include <eggcpt/errors.h>
 
 namespace eggcpt
 {
@@ -57,15 +57,15 @@ public:
 };
 
 template<typename T>
-class GenericValue : public Value
+class TemplateValue : public Value
 {
 public:
-    GenericValue()
+    TemplateValue()
         : Value(false)
         , value(std::nullopt)
         , default_value(std::nullopt) {}
 
-    explicit GenericValue(const T& value)
+    explicit TemplateValue(const T& value)
         : Value(true)
         , value(value)
         , default_value(value) {}
@@ -105,10 +105,10 @@ private:
 };
 
 template<typename T>
-class OptionValue : public GenericValue<T>
+class OptionValue : public TemplateValue<T>
 {
 public:
-    using GenericValue<T>::GenericValue;
+    using TemplateValue<T>::TemplateValue;
 
     void parse() override
     {
@@ -131,10 +131,10 @@ public:
 };
 
 template<>
-class OptionValue<bool> : public GenericValue<bool>
+class OptionValue<bool> : public TemplateValue<bool>
 {
 public:
-    using GenericValue<bool>::GenericValue;
+    using TemplateValue<bool>::TemplateValue;
 
     void parse() override
     {
@@ -229,7 +229,7 @@ public:
                 throw OptionError("Empty key");
 
             if (detail::find(keyword, key) || detail::find(positional, key))
-                throw OptionError(key);
+                throw OptionError("Duplicate key: {}", key);
         }
         (value->is_positional ? positional : keyword).push_back({ keys, desc, value });
     }
@@ -266,19 +266,18 @@ public:
 
     std::string help() const
     {
-        std::stringstream stream;
-        stream << fmt::format("Usage: {}", program);
+        std::string help = fmt::format("Usage: {}", program);
 
         for (const auto& options : { keyword, positional })
         {
             for (const auto& [keys, desc, value] : options)
-                stream << fmt::format(value->is_optional ? " [{}]" : " {}", keys.front());
+                help.append(fmt::format(value->is_optional ? " [{}]" : " {}", keys.front()));
         }
-        stream << std::endl;
+        help.append("\n");
 
         for (const auto& [kind, options] : { Group{ "Keyword", keyword }, Group{ "Positional", positional } })
         {
-            stream << fmt::format("\n{} arguments\n", kind);
+            help.append(fmt::format("\n{} arguments\n", kind));
 
             std::size_t padding = 0;
             for (const auto& [keys, desc, value] : options)
@@ -297,10 +296,10 @@ public:
                     ? fmt::format(" (default: {})", value->getDefaultValue())
                     : "";
 
-                stream << fmt::format("{:<{}}{}{}\n", key, padding, desc, def);
+                help.append(fmt::format("{:<{}}{}{}\n", key, padding, desc, def));
             }
         }
-        return stream.str();
+        return help;
     }
 
 private:

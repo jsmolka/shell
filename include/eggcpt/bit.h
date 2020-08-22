@@ -181,7 +181,7 @@ public:
     using reference         = uint&;
     using pointer           = uint*;
 
-    BitIterator(Integral value)
+    explicit BitIterator(Integral value)
         : value(value) {}
 
     uint operator*() const

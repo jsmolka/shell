@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <fstream>
 #include <memory>
 #include <type_traits>
 
@@ -26,7 +25,7 @@ public:
 class ConsoleSink : public Sink
 {
 public:
-    virtual void sink(const std::string& message, Level) override
+    void sink(const std::string& message, Level) override
     {
         fmt::print(message);
     }
@@ -51,7 +50,7 @@ public:
         #endif
     }
 
-    virtual void sink(const std::string& message, Level level) override
+    void sink(const std::string& message, Level level) override
     {
         uint color = 0;
         switch (level)
@@ -73,7 +72,7 @@ public:
         : stream(filesystem::makeAbsolute(file),
             trunc ? std::ios::trunc : std::ios::app) {}
 
-    virtual void sink(const std::string& message, Level) override
+    void sink(const std::string& message, Level) override
     {
         if (stream.is_open())
             stream << message;
@@ -92,7 +91,7 @@ public:
     MultiSink(Ts&&... sinks)
         : sinks({ std::make_shared<Ts>(std::forward<Ts>(sinks))... }) {}
 
-    virtual void sink(const std::string& message, Level level) override
+    void sink(const std::string& message, Level level) override
     {
         for (const auto& sink : sinks)
             sink->sink(message, level);
@@ -102,7 +101,7 @@ private:
     std::array<std::shared_ptr<Sink>, sizeof...(Ts)> sinks;
 };
 
-std::shared_ptr<Sink>& default_sink()
+inline std::shared_ptr<Sink>& defaultSink()
 {
     static std::shared_ptr<Sink> sink = std::make_shared<ColoredConsoleSink>();
 
@@ -110,11 +109,11 @@ std::shared_ptr<Sink>& default_sink()
 }
 
 template<typename T>
-void set_default_sink(const T& sink)
+void setDefaultSink(const T& sink)
 {
     static_assert(std::is_base_of_v<Sink, T>);
 
-    default_sink() = std::make_shared<T>(sink);
+    defaultSink() = std::make_shared<T>(sink);
 }
 
 }  // namespace eggcpt
@@ -130,12 +129,13 @@ void set_default_sink(const T& sink)
 #elif defined(EGGCPT_LOG_LEVEL_FATAL)
 #  define EGGCPT_LOG_LEVEL 4
 #else
+#  pragma message("Log level is undefined")
 #  define EGGCPT_LOG_LEVEL 5
 #endif
 
-#define EGGCPT_LOG(prefix, level, ...)                                        \
-    eggcpt::default_sink()->sink(                                             \
-        fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,        \
+#define EGGCPT_LOG(prefix, level, ...)                                  \
+    eggcpt::defaultSink()->sink(                                        \
+        fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
             fmt::format(__VA_ARGS__)), eggcpt::Level::level)
 
 #if EGGCPT_LOG_LEVEL <= 0
