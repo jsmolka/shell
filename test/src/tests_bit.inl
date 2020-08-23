@@ -5,6 +5,26 @@ TEST_CASE("bit::bits")
     REQUIRE(bit::bits_v<u32> == 32);
 }
 
+TEST_CASE("bit::ones")
+{
+    REQUIRE(bit::ones< 0, int>() == 0x0000'0000);
+    REQUIRE(bit::ones< 1, int>() == 0x0000'0001);
+    REQUIRE(bit::ones< 2, int>() == 0x0000'0003);
+    REQUIRE(bit::ones< 3, int>() == 0x0000'0007);
+    REQUIRE(bit::ones< 4, int>() == 0x0000'000F);
+    REQUIRE(bit::ones< 8, int>() == 0x0000'00FF);
+    REQUIRE(bit::ones<32, int>() == 0xFFFF'FFFF);
+}
+
+TEST_CASE("bit::mask")
+{
+    REQUIRE(bit::mask< 0,  0, int>() == 0x0000'0000);
+    REQUIRE(bit::mask< 0,  1, int>() == 0x0000'0001);
+    REQUIRE(bit::mask< 1,  1, int>() == 0x0000'0002);
+    REQUIRE(bit::mask<16, 16, int>() == 0xFFFF'0000);
+    REQUIRE(bit::mask< 0, 32, int>() == 0xFFFF'FFFF);
+}
+
 TEST_CASE("bit::seq")
 {
     u16 x = 0xDEAD;
