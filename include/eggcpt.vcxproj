@@ -117,6 +117,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="eggcpt\algorithm.h" />
+    <ClInclude Include="eggcpt\bitfield.h" />
     <ClInclude Include="eggcpt\errors.h" />
     <ClInclude Include="eggcpt\locale.h" />
     <ClInclude Include="eggcpt\options.h" />

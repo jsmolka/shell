@@ -1,15 +1,7 @@
-#pragma warning(push)
-#pragma warning(disable:6319)
-#pragma warning(disable:6237)
-
-#include <iostream>
-#include <iterator>
-#include <string>
-#include <vector>
-
 #define EGGCPT_LOG_LEVEL_DEBUG
 #include <eggcpt/algorithm.h>
 #include <eggcpt/bit.h>
+#include <eggcpt/bitfield.h>
 #include <eggcpt/filesystem.h>
 #include <eggcpt/iterator.h>
 #include <eggcpt/locale.h>
@@ -27,6 +19,7 @@ using namespace std::string_literals;
 
 #include "tests_algorithm.inl"
 #include "tests_bit.inl"
+#include "tests_bitfield.inl"
 #include "tests_filesystem.inl"
 #include "tests_iterator.inl"
 #include "tests_locale.inl"
@@ -35,5 +28,3 @@ using namespace std::string_literals;
 #include "tests_singleton.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"
-
-#pragma warning(pop)

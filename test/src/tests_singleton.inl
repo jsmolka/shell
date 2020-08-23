@@ -1,4 +1,4 @@
-TEST_CASE("singleton")
+TEST_CASE("Singleton")
 {
     struct Test : Singleton<Test>
     {

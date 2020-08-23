@@ -134,6 +134,9 @@
     <None Include="src\tests_traits.inl" />
     <None Include="src\tests_utility.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\tests_bitfield.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
