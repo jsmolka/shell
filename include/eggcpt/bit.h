@@ -49,7 +49,7 @@ constexpr Integral seq(Integral value)
     static_assert(std::is_integral_v<Integral>);
     static_assert(Index + Size <= bits_v<Integral>);
 
-    return (value >> Index) & mask<0, Size, Integral>();
+    return (value >> Index) & ones<Size, Integral>();
 }
 
 template<typename Integral>
@@ -79,6 +79,33 @@ constexpr Integral signEx(Integral value)
     return (value ^ kMask) - kMask;
 }
 
+namespace cexpr
+{
+
+template<typename Integral>
+constexpr Integral ror(Integral value, uint amount)
+{
+    static_assert(std::is_integral_v<Integral>);
+
+    constexpr Integral kMask = bits_v<Integral> - 1;
+
+    amount &= kMask;
+    return (value >> amount) | (value << (-amount & kMask));   
+}
+
+template<typename Integral>
+constexpr Integral rol(Integral value, uint amount)
+{
+    static_assert(std::is_integral_v<Integral>);
+
+    constexpr Integral kMask = bits_v<Integral> - 1;
+
+    amount &= kMask;
+    return (value << amount) | (value >> (-amount & kMask));
+}
+
+}  // namespace cexpr
+
 template<typename Integral>
 Integral ror(Integral value, uint amount)
 {
@@ -95,9 +122,7 @@ Integral ror(Integral value, uint amount)
     if (sizeof(Integral) == 4) return __builtin_rotateright32(value, amount);
     if (sizeof(Integral) == 8) return __builtin_rotateright64(value, amount);
     #else
-    constexpr Integral kMask = bits_v<Integral> - 1;
-    amount &= kMask;
-    return (value >> amount) | (value << (-amount & kMask));   
+    return cexpr::ror(value, amount);
     #endif
 }
 
@@ -117,9 +142,7 @@ Integral rol(Integral value, uint amount)
     if (sizeof(Integral) == 4) return __builtin_rotateleft32(value, amount);
     if (sizeof(Integral) == 8) return __builtin_rotateleft64(value, amount);
     #else
-    constexpr Integral kMask = bits_v<Integral> - 1;
-    amount &= kMask;
-    return (value << amount) | (value >> (-amount & kMask));
+    return cexpr::rol(value, amount);
     #endif
 }
 

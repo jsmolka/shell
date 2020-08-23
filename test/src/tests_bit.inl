@@ -56,6 +56,20 @@ TEST_CASE("bit::shr")
     REQUIRE(bit::shr(0x8000'0000, 31) == 0x0000'0001);
 }
 
+TEST_CASE("bit::cexpr::ror")
+{
+    REQUIRE(bit::cexpr::ror(0x0000'00FF,  0) == 0x0000'00FF);
+    REQUIRE(bit::cexpr::ror(0x0000'00FF,  8) == 0xFF00'0000);
+    REQUIRE(bit::cexpr::ror(0x0000'00FF, 32) == 0x0000'00FF);
+}
+
+TEST_CASE("bit::cexpr::rol")
+{
+    REQUIRE(bit::cexpr::rol(0x0000'00FF,  0) == 0x0000'00FF);
+    REQUIRE(bit::cexpr::rol(0xFF00'0000,  8) == 0x0000'00FF);
+    REQUIRE(bit::cexpr::rol(0x0000'00FF, 32) == 0x0000'00FF);
+}
+
 TEST_CASE("bit::ror")
 {
     REQUIRE(bit::ror(0x0000'00FF,  0) == 0x0000'00FF);
