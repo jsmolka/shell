@@ -38,9 +38,6 @@
     <None Include="src\tests_traits.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_singleton.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\tests_algorithm.inl">
       <Filter>Header Files</Filter>
     </None>

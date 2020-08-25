@@ -7,7 +7,6 @@
 #include <eggcpt/locale.h>
 #include <eggcpt/logging.h>
 #include <eggcpt/options.h>
-#include <eggcpt/singleton.h>
 #include <eggcpt/traits.h>
 #include <eggcpt/utility.h>
 
@@ -25,6 +24,5 @@ using namespace std::string_literals;
 #include "tests_locale.inl"
 #include "tests_logging.inl"
 #include "tests_options.inl"
-#include "tests_singleton.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"

@@ -33,9 +33,6 @@
     <ClInclude Include="eggcpt\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\filesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -131,7 +131,6 @@
     <ClInclude Include="eggcpt\fmt.h" />
     <ClInclude Include="eggcpt\logging.h" />
     <ClInclude Include="eggcpt\macros.h" />
-    <ClInclude Include="eggcpt\singleton.h" />
     <ClInclude Include="eggcpt\utility.h" />
     <ClInclude Include="include\eggcpt\base\macros\platform.h" />
     <ClInclude Include="include\eggcpt\bits.h" />
