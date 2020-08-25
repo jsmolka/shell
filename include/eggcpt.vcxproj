@@ -119,6 +119,7 @@
     <ClInclude Include="eggcpt\algorithm.h" />
     <ClInclude Include="eggcpt\bitfield.h" />
     <ClInclude Include="eggcpt\errors.h" />
+    <ClInclude Include="eggcpt\env.h" />
     <ClInclude Include="eggcpt\locale.h" />
     <ClInclude Include="eggcpt\options.h" />
     <ClInclude Include="eggcpt\bit.h" />

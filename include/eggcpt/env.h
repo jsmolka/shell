@@ -47,9 +47,3 @@
 #else
 #define EGGCPT_CC_EMSCRIPTEN 0
 #endif
-
-#define 
-#define         
-#define EGGCPT_CC_MINGW      
-#define EGGCPT_CC_CLANG      
-#define EGGCPT_CC_EMSCRIPTEN 

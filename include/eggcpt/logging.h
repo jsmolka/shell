@@ -101,19 +101,14 @@ private:
     std::array<std::shared_ptr<Sink>, sizeof...(Ts)> sinks;
 };
 
-inline std::shared_ptr<Sink>& defaultSink()
-{
-    static std::shared_ptr<Sink> sink = std::make_shared<ColoredConsoleSink>();
-
-    return sink;
-}
+inline std::shared_ptr<Sink> default_sink = std::make_shared<ColoredConsoleSink>();
 
 template<typename T>
 void setDefaultSink(const T& sink)
 {
     static_assert(std::is_base_of_v<Sink, T>);
 
-    defaultSink() = std::make_shared<T>(sink);
+    default_sink = std::make_shared<T>(sink);
 }
 
 }  // namespace eggcpt
@@ -134,7 +129,7 @@ void setDefaultSink(const T& sink)
 #endif
 
 #define EGGCPT_LOG(prefix, level, ...)                                  \
-    eggcpt::defaultSink()->sink(                                        \
+    default_sink->sink(                                                 \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
             fmt::format(__VA_ARGS__)), eggcpt::Level::level)
 
