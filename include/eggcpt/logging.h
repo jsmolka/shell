@@ -98,6 +98,7 @@ public:
     }
 
 private:
+
     std::array<std::shared_ptr<Sink>, sizeof...(Ts)> sinks;
 };
 
@@ -129,7 +130,7 @@ void setDefaultSink(const T& sink)
 #endif
 
 #define EGGCPT_LOG(prefix, level, ...)                                  \
-    default_sink->sink(                                                 \
+    eggcpt::default_sink->sink(                                         \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
             fmt::format(__VA_ARGS__)), eggcpt::Level::level)
 
