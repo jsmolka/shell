@@ -2,15 +2,7 @@
 
 #include <cassert>
 
-#define EGGCPT_OS_WINDOWS _WIN32
-#define EGGCPT_OS_LINUX   __linux__
-#define EGGCPT_OS_DARWIN  __APPLE__
-
-#define EGGCPT_CC_MSVC       _MSC_VER
-#define EGGCPT_CC_GCC        __GNUC__
-#define EGGCPT_CC_MINGW      __MINGW32__
-#define EGGCPT_CC_CLANG      __clang__
-#define EGGCPT_CC_EMSCRIPTEN __EMSCRIPTEN__
+#include <eggcpt/env.h>
 
 #if EGGCPT_CC_MSVC
 #  define EGGCPT_INLINE    __forceinline
