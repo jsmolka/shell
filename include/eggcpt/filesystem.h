@@ -11,6 +11,7 @@
 #include <eggcpt/windows.h>
 
 #if EGGCPT_OS_LINUX
+#include <limits.h>
 #include <unistd.h>
 #elif EGGCPT_OS_DARWIN
 #include <mach-o/dyld.h>

@@ -15,7 +15,7 @@
 #endif
 
 #define EGGCPT_UNUSED(variable) static_cast<void>(variable)
-#define EGGCPT_ASSERT(condition, ...) assert((condition) && (__VA_ARGS__""))
+#define EGGCPT_ASSERT(condition, ...) assert((condition) && #__VA_ARGS__"")
 
 #ifdef NDEBUG
 #  define EGGCPT_DEBUG   0
