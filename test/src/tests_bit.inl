@@ -56,18 +56,10 @@ TEST_CASE("bit::shr")
     REQUIRE(bit::shr(0x8000'0000, 31) == 0x0000'0001);
 }
 
-TEST_CASE("bit::cexpr::ror")
+TEST_CASE("bit::msb")
 {
-    REQUIRE(bit::cexpr::ror(0x0000'00FF,  0) == 0x0000'00FF);
-    REQUIRE(bit::cexpr::ror(0x0000'00FF,  8) == 0xFF00'0000);
-    REQUIRE(bit::cexpr::ror(0x0000'00FF, 32) == 0x0000'00FF);
-}
-
-TEST_CASE("bit::cexpr::rol")
-{
-    REQUIRE(bit::cexpr::rol(0x0000'00FF,  0) == 0x0000'00FF);
-    REQUIRE(bit::cexpr::rol(0xFF00'0000,  8) == 0x0000'00FF);
-    REQUIRE(bit::cexpr::rol(0x0000'00FF, 32) == 0x0000'00FF);
+    REQUIRE(bit::msb(0x8000'0000) == 1);
+    REQUIRE(bit::msb(0x4000'0000) == 0);
 }
 
 TEST_CASE("bit::ror")
@@ -75,6 +67,7 @@ TEST_CASE("bit::ror")
     REQUIRE(bit::ror(0x0000'00FF,  0) == 0x0000'00FF);
     REQUIRE(bit::ror(0x0000'00FF,  8) == 0xFF00'0000);
     REQUIRE(bit::ror(0x0000'00FF, 32) == 0x0000'00FF);
+    REQUIRE(bit::ror(0x8000'8000, 32) == 0x8000'8000);
 }
 
 TEST_CASE("bit::rol")
@@ -82,6 +75,8 @@ TEST_CASE("bit::rol")
     REQUIRE(bit::rol(0x0000'00FF,  0) == 0x0000'00FF);
     REQUIRE(bit::rol(0xFF00'0000,  8) == 0x0000'00FF);
     REQUIRE(bit::rol(0x0000'00FF, 32) == 0x0000'00FF);
+    REQUIRE(bit::rol(0x0000'00FF, 32) == 0x0000'00FF);
+    REQUIRE(bit::rol(0x8000'8000, 32) == 0x8000'8000);
 }
 
 TEST_CASE("bit::bswap")
