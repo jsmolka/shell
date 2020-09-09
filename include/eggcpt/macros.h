@@ -17,14 +17,6 @@
 #define EGGCPT_UNUSED(variable) static_cast<void>(variable)
 #define EGGCPT_ASSERT(condition, ...) assert((condition) && #__VA_ARGS__"")
 
-#ifdef NDEBUG
-#  define EGGCPT_DEBUG   0
-#  define EGGCPT_RELEASE 1
-#else
-#  define EGGCPT_DEBUG   1
-#  define EGGCPT_RELEASE 0
-#endif
-
 #if EGGCPT_RELEASE
 #  if EGGCPT_CC_MSVC
 #    define EGGCPT_UNREACHABLE __assume(0)
