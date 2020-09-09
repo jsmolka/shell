@@ -14,15 +14,15 @@ namespace eggcpt
 
 enum class Level { Debug, Info, Warn, Error, Fatal };
 
-class Sink
+class SinkInterface
 {
 public:
-    virtual ~Sink() = default;
+    virtual ~SinkInterface() = default;
 
     virtual void sink(const std::string& message, Level level) = 0;
 };
 
-class ConsoleSink : public Sink
+class ConsoleSink : public SinkInterface
 {
 public:
     void sink(const std::string& message, Level) override
@@ -31,41 +31,36 @@ public:
     }
 };
 
-class ColoredConsoleSink : public ConsoleSink
+class ColoredConsoleSink : public SinkInterface
 {
 public:
     ColoredConsoleSink()
     {
         #if EGGCPT_OS_WINDOWS
-        auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
+        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
         if (handle != INVALID_HANDLE_VALUE)
         {
             DWORD mode;
             if (GetConsoleMode(handle, &mode))
-            {
-                mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-                SetConsoleMode(handle, mode);
-            }
+                SetConsoleMode(handle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
         }
         #endif
     }
 
     void sink(const std::string& message, Level level) override
     {
-        fmt::rgb color;
         switch (level)
         {
-        case Level::Debug: color = fmt::rgb( 97, 214, 214); break;
-        case Level::Info:  color = fmt::rgb(204, 204, 204); break;
-        case Level::Warn:  color = fmt::rgb(249, 241, 165); break;
-        case Level::Error: color = fmt::rgb(231,  72,  86); break;
-        case Level::Fatal: color = fmt::rgb(180,   0, 158); break;
+        case Level::Debug: fmt::print(fmt::fg(fmt::rgb( 97, 214, 214)), message); break;
+        case Level::Warn:  fmt::print(fmt::fg(fmt::rgb(249, 241, 165)), message); break;
+        case Level::Error: fmt::print(fmt::fg(fmt::rgb(231,  72,  86)), message); break;
+        case Level::Fatal: fmt::print(fmt::fg(fmt::rgb(180,   0, 158)), message); break;
+        default:           fmt::print(                                  message); break;
         }
-        fmt::print(fmt::fg(color), message);
     }
 };
 
-class FileSink : public Sink
+class FileSink : public SinkInterface
 {
 public:
     FileSink(const filesystem::path& file, bool trunc = false)
@@ -82,43 +77,43 @@ private:
     std::ofstream stream;
 };
 
-template<typename... Ts>
-class MultiSink : public Sink
+template<typename... Sinks>
+class MultiSink : public SinkInterface
 {
-    static_assert(sizeof...(Ts) > 0);
+    static_assert(sizeof...(Sinks) > 0);
 
 public:
-    MultiSink(Ts&&... sinks)
-        : sinks({ std::make_shared<Ts>(std::move(sinks))... }) {}
+    MultiSink(Sinks&&... sinks)
+        : sinks({ std::make_shared<Sinks>(std::move(sinks))... }) {}
 
     void sink(const std::string& message, Level level) override
     {
-        for (const auto& sink : sinks)
+        for (auto& sink : sinks)
             sink->sink(message, level);
     }
 
 private:
-    std::array<std::shared_ptr<Sink>, sizeof...(Ts)> sinks;
+    std::array<std::shared_ptr<SinkInterface>, sizeof...(Sinks)> sinks;
 };
 
 namespace detail
 {
 
-inline std::shared_ptr<Sink> sink = std::make_shared<ColoredConsoleSink>();
+inline std::shared_ptr<SinkInterface> default_sink = std::make_shared<ColoredConsoleSink>();
 
 }  // namespace detail
 
-template<typename T>
-void setSink(const T& sink)
+template<typename Sink>
+void setSink(Sink&& sink)
 {
-    static_assert(std::is_base_of_v<Sink, T>);
+    static_assert(std::is_base_of_v<SinkInterface, Sink>);
 
-    detail::sink = std::make_shared<T>(sink);
+    detail::default_sink = std::make_shared<Sink>(std::move(sink));
 }
 
 }  // namespace eggcpt
 
 #define EGGCPT_LOG(prefix, level, ...)                                  \
-    eggcpt::detail::sink->sink(                                         \
+    eggcpt::detail::default_sink->sink(                                 \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
             fmt::format(__VA_ARGS__)), level)
