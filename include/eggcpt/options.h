@@ -72,12 +72,12 @@ public:
 
     bool hasValue() const override
     {
-        return static_cast<bool>(value);
+        return value.has_value();
     }
 
     bool hasDefaultValue() const override
     {
-        return static_cast<bool>(default_value);
+        return default_value.has_value();
     }
 
     std::string getValue() const override
@@ -241,9 +241,9 @@ public:
 
         while (pos < argc)
         {
-            auto key = argv[pos++];
+            const auto key = argv[pos++];
 
-            if (auto value = detail::find(keyword, key))
+            if (const auto value = detail::find(keyword, key))
             {
                 if (pos < argc && !detail::find(keyword, argv[pos]))
                     value->parse(argv[pos++]);
@@ -291,8 +291,8 @@ public:
 
             for (const auto& [keys, desc, value] : options)
             {
-                auto key = join(keys, ", ");
-                auto def = value->hasDefaultValue()
+                const auto key = join(keys, ", ");
+                const auto def = value->hasDefaultValue()
                     ? fmt::format(" (default: {})", value->getDefaultValue())
                     : "";
 

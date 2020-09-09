@@ -4,7 +4,7 @@
 #include <codecvt>
 #include <vector>
 
-#include <eggcpt/macros.h>
+#include <eggcpt/env.h>
 
 #if EGGCPT_OS_WINDOWS
 

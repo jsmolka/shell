@@ -1,18 +1,18 @@
 #pragma once
 
 #include <stdexcept>
+#include <string>
 
 #include <eggcpt/fmt.h>
 
 namespace eggcpt
 {
 
-class FormattedError : public std::exception
+class Error : public std::exception
 {
 public:
-    template<typename String, typename... Args>
-    FormattedError(const String& format, Args&&... args)
-        : message(fmt::format(format, std::forward<Args>(args)...)) {}
+    Error(const std::string& message)
+        : message(message) {}
 
     const char* what() const noexcept override
     {
@@ -21,6 +21,14 @@ public:
 
 private:
     std::string message;
+};
+
+class FormattedError : public Error
+{
+public:
+    template<typename... Args>
+    FormattedError(const std::string& format, Args&&... args)
+        : Error(fmt::format(format, std::forward<Args>(args)...)) {}
 };
 
 }  // namespace eggcpt

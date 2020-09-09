@@ -2,19 +2,19 @@
 
 #include <fstream>
 #ifdef __cpp_lib_filesystem
-#include <filesystem>
+#  include <filesystem>
 #else
-#include <experimental/filesystem>
+#  include <experimental/filesystem>
 #endif
 
 #include <eggcpt/traits.h>
 #include <eggcpt/windows.h>
 
 #if EGGCPT_OS_LINUX
-#include <limits.h>
-#include <unistd.h>
+#  include <limits.h>
+#  include <unistd.h>
 #elif EGGCPT_OS_DARWIN
-#include <mach-o/dyld.h>
+#  include <mach-o/dyld.h>
 #endif
 
 namespace eggcpt::filesystem
@@ -62,10 +62,9 @@ inline path executablePath()
 
 inline path makeAbsolute(const path& path)
 {
-    if (path.is_relative())
-        return executablePath() / path;
-    else
-        return path;
+    return path.is_relative()
+        ? executablePath() / path
+        : path;
 }
 
 template<typename Container>

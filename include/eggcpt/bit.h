@@ -7,9 +7,9 @@
 #include <eggcpt/macros.h>
 
 #if EGGCPT_CC_MSVC
-#include <intrin.h>
+#  include <intrin.h>
 #elif !EGGCPT_CC_EMSCRIPTEN 
-#include <x86intrin.h>
+#  include <x86intrin.h>
 #endif
 
 namespace eggcpt::bit
@@ -28,9 +28,9 @@ constexpr Integral ones()
     static_assert(Size <= bits_v<Integral>);
 
     if constexpr (Size == bits_v<Integral>)
-        return static_cast<Integral>(~0ull);
+        return static_cast<Integral>(~0ULL);
     else
-        return static_cast<Integral>(~(~0ull << Size));
+        return static_cast<Integral>(~(~0ULL << Size));
 }
 
 template<uint Index, uint Size, typename Integral>
@@ -82,7 +82,7 @@ constexpr Integral signEx(Integral value)
     static_assert(std::is_integral_v<Integral>);
     static_assert(Size <= bits_v<Integral>);
 
-    constexpr Integral kMask = 1ull << (Size - 1);
+    constexpr Integral kMask = 1ULL << (Size - 1);
 
     return (value ^ kMask) - kMask;
 }
