@@ -52,16 +52,16 @@ public:
 
     void sink(const std::string& message, Level level) override
     {
-        uint color = 0;
+        fmt::rgb color;
         switch (level)
         {
-        case Level::Debug: color = 96; break;  // Cyan
-        case Level::Info:  color = 92; break;  // Green
-        case Level::Warn:  color = 93; break;  // Yellow
-        case Level::Error: color = 91; break;  // Red
-        case Level::Fatal: color = 95; break;  // Magenta
+        case Level::Debug: color = fmt::rgb( 97, 214, 214); break;
+        case Level::Info:  color = fmt::rgb(204, 204, 204); break;
+        case Level::Warn:  color = fmt::rgb(249, 241, 165); break;
+        case Level::Error: color = fmt::rgb(231,  72,  86); break;
+        case Level::Fatal: color = fmt::rgb(180,   0, 158); break;
         }
-        ConsoleSink::sink(fmt::format("\033[{}m{}\033[0m", color, message), level);
+        fmt::print(fmt::fg(color), message);
     }
 };
 
