@@ -26,9 +26,6 @@
     <None Include="src\tests_bit.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_logging.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\tests_filesystem.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -48,6 +45,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="src\tests_iterator.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\tests_log.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

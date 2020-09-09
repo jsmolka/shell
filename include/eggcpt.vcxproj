@@ -121,6 +121,14 @@
     <ClInclude Include="eggcpt\errors.h" />
     <ClInclude Include="eggcpt\env.h" />
     <ClInclude Include="eggcpt\locale.h" />
+    <ClInclude Include="eggcpt\log\all.h" />
+    <ClInclude Include="eggcpt\log\debug.h" />
+    <ClInclude Include="eggcpt\log\detail\core.h" />
+    <ClInclude Include="eggcpt\log\error.h" />
+    <ClInclude Include="eggcpt\log\fatal.h" />
+    <ClInclude Include="eggcpt\log\info.h" />
+    <ClInclude Include="eggcpt\log\none.h" />
+    <ClInclude Include="eggcpt\log\warn.h" />
     <ClInclude Include="eggcpt\options.h" />
     <ClInclude Include="eggcpt\bit.h" />
     <ClInclude Include="eggcpt\filesystem.h" />
@@ -130,7 +138,6 @@
     <ClInclude Include="eggcpt\traits.h" />
     <ClInclude Include="eggcpt\windows.h" />
     <ClInclude Include="eggcpt\fmt.h" />
-    <ClInclude Include="eggcpt\logging.h" />
     <ClInclude Include="eggcpt\macros.h" />
     <ClInclude Include="eggcpt\utility.h" />
     <ClInclude Include="include\eggcpt\base\macros\platform.h" />

@@ -30,9 +30,6 @@
     <ClInclude Include="eggcpt\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="eggcpt\logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eggcpt\filesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +70,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eggcpt\env.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\detail\core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\all.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\fatal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\none.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eggcpt\log\warn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

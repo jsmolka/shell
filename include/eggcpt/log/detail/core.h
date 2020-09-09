@@ -89,7 +89,7 @@ class MultiSink : public Sink
 
 public:
     MultiSink(Ts&&... sinks)
-        : sinks({ std::make_shared<Ts>(std::forward<Ts>(sinks))... }) {}
+        : sinks({ std::make_shared<Ts>(std::move(sinks))... }) {}
 
     void sink(const std::string& message, Level level) override
     {
@@ -98,68 +98,27 @@ public:
     }
 
 private:
-
     std::array<std::shared_ptr<Sink>, sizeof...(Ts)> sinks;
 };
 
-inline std::shared_ptr<Sink> default_sink = std::make_shared<ColoredConsoleSink>();
+namespace detail
+{
+
+inline std::shared_ptr<Sink> sink = std::make_shared<ColoredConsoleSink>();
+
+}  // namespace detail
 
 template<typename T>
-void setDefaultSink(const T& sink)
+void setSink(const T& sink)
 {
     static_assert(std::is_base_of_v<Sink, T>);
 
-    default_sink = std::make_shared<T>(sink);
+    detail::sink = std::make_shared<T>(sink);
 }
 
 }  // namespace eggcpt
 
-#ifdef EGGCPT_LOG_LEVEL_DEBUG
-#  define EGGCPT_LOG_LEVEL 0
-#elif defined(EGGCPT_LOG_LEVEL_INFO)
-#  define EGGCPT_LOG_LEVEL 1
-#elif defined(EGGCPT_LOG_LEVEL_WARN)
-#  define EGGCPT_LOG_LEVEL 2
-#elif defined(EGGCPT_LOG_LEVEL_ERROR)
-#  define EGGCPT_LOG_LEVEL 3
-#elif defined(EGGCPT_LOG_LEVEL_FATAL)
-#  define EGGCPT_LOG_LEVEL 4
-#else
-#  pragma message("Log level is undefined")
-#  define EGGCPT_LOG_LEVEL 5
-#endif
-
 #define EGGCPT_LOG(prefix, level, ...)                                  \
-    eggcpt::default_sink->sink(                                         \
+    eggcpt::detail::sink->sink(                                         \
         fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
-            fmt::format(__VA_ARGS__)), eggcpt::Level::level)
-
-#if EGGCPT_LOG_LEVEL <= 0
-#  define EGGCPT_LOG_DEBUG(...) EGGCPT_LOG("[D]", Debug, __VA_ARGS__)
-#else
-#  define EGGCPT_LOG_DEBUG(...) static_cast<void>(0)
-#endif
-
-#if EGGCPT_LOG_LEVEL <= 1
-#  define EGGCPT_LOG_INFO(...)  EGGCPT_LOG("[I]", Info,  __VA_ARGS__)
-#else
-#  define EGGCPT_LOG_INFO(...)  static_cast<void>(0)
-#endif
-
-#if EGGCPT_LOG_LEVEL <= 2
-#  define EGGCPT_LOG_WARN(...)  EGGCPT_LOG("[W]", Warn,  __VA_ARGS__)
-#else
-#  define EGGCPT_LOG_WARN(...)  static_cast<void>(0)
-#endif
-
-#if EGGCPT_LOG_LEVEL <= 3
-#  define EGGCPT_LOG_ERROR(...) EGGCPT_LOG("[E]", Error, __VA_ARGS__)
-#else
-#  define EGGCPT_LOG_ERROR(...) static_cast<void>(0)
-#endif
-
-#if EGGCPT_LOG_LEVEL <= 4
-#  define EGGCPT_LOG_FATAL(...) EGGCPT_LOG("[F]", Fatal, __VA_ARGS__)
-#else
-#  define EGGCPT_LOG_FATAL(...) static_cast<void>(0)
-#endif
+            fmt::format(__VA_ARGS__)), level)
