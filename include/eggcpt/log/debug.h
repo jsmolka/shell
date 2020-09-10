@@ -1,6 +1,7 @@
 #pragma once
 
 #include <eggcpt/log/none.h>
+#include <eggcpt/log/sinks.h>
 
 #ifdef EGGCPT_LOG_DEBUG
 #undef EGGCPT_LOG_DEBUG
