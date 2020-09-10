@@ -1,6 +1,6 @@
-TEST_CASE("filesystem::executablePath")
+TEST_CASE("filesystem::base_path")
 {
-    EGGCPT_LOG_INFO("Executable path: {}", filesystem::executablePath().string());
+    EGGCPT_LOG_INFO("base_path: {}", filesystem::base_path.string());
 }
 
 TEST_CASE("filesystem::read/write<vector>")

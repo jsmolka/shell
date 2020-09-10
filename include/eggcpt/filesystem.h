@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+
 #ifdef __cpp_lib_filesystem
 #  include <filesystem>
 #else
@@ -8,17 +9,15 @@
 #endif
 
 #include <eggcpt/traits.h>
-#include <eggcpt/windows.h>
-
-#if EGGCPT_OS_LINUX
-#  include <limits.h>
-#  include <unistd.h>
-#elif EGGCPT_OS_DARWIN
-#  include <mach-o/dyld.h>
-#endif
 
 namespace eggcpt::filesystem
 {
+
+#ifdef __cpp_lib_filesystem
+using namespace std::filesystem;
+#else
+using namespace std::experimental::filesystem;
+#endif
 
 namespace detail
 {
@@ -31,39 +30,12 @@ constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
 }  // namespace detail
 
-#ifdef __cpp_lib_filesystem
-using namespace std::filesystem;
-#else
-using namespace std::experimental::filesystem;
-#endif
-
-inline path executablePath()
-{
-    #if EGGCPT_OS_WINDOWS
-    wchar_t buffer[MAX_PATH];
-    GetModuleFileNameW(NULL, buffer, sizeof(buffer) / sizeof(wchar_t));
-    return path(buffer).parent_path();
-
-    #elif EGGCPT_OS_LINUX
-    char buffer[PATH_MAX];
-    readlink("/proc/self/exe", buffer, sizeof(buffer));
-    return path(buffer).parent_path();
-
-    #elif EGGCPT_OS_DARWIN
-    char buffer[PATH_MAX];
-    uint32_t size = sizeof(buffer);
-    _NSGetExecutablePath(buffer, &size);
-    return path(buffer).parent_path();
-
-    #else
-    return current_path();
-    #endif
-}
+inline path base_path = current_path();
 
 inline path makeAbsolute(const path& path)
 {
     return path.is_relative()
-        ? executablePath() / path
+        ? base_path / path
         : path;
 }
 
@@ -83,7 +55,7 @@ bool read(const path& file, Container& dst)
     if constexpr (detail::is_resizable_v<Container>)
         dst.resize(size);
 
-    if (size != dst.size())
+    if (dst.size() != size)
         return false;
 
     stream.read(reinterpret_cast<char*>(dst.data()), size);
