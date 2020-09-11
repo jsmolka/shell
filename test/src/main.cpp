@@ -1,6 +1,7 @@
 #include <eggcpt/algorithm.h>
 #include <eggcpt/bit.h>
 #include <eggcpt/bitfield.h>
+#include <eggcpt/errors.h>
 #include <eggcpt/filesystem.h>
 #include <eggcpt/iterator.h>
 #include <eggcpt/locale.h>
@@ -18,6 +19,7 @@ using namespace std::string_literals;
 #include "tests_algorithm.inl"
 #include "tests_bit.inl"
 #include "tests_bitfield.inl"
+#include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_iterator.inl"
 #include "tests_locale.inl"
