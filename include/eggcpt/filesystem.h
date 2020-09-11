@@ -28,14 +28,24 @@ using resize_t = decltype(std::declval<T>().resize(1));
 template<typename T>
 constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
+inline path base_path = current_path();
+
 }  // namespace detail
 
-inline path base_path = current_path();
+inline void setBasePath(const path& path)
+{
+    detail::base_path = path;
+}
+
+inline void setBasePath(int argc, char* argv[])
+{
+    if (argc > 0) setBasePath(u8path(argv[0]).parent_path());
+}
 
 inline path makeAbsolute(const path& path)
 {
     return path.is_relative()
-        ? base_path / path
+        ? detail::base_path / path
         : path;
 }
 

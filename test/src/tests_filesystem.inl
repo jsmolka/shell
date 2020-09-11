@@ -1,8 +1,3 @@
-TEST_CASE("filesystem::base_path")
-{
-    EGGCPT_LOG_INFO("base_path: {}", filesystem::base_path.string());
-}
-
 TEST_CASE("filesystem::read/write<vector>")
 {
     std::vector<char> src = { 0x00, 0x01, 0x02, 0x03, 0x04 };
