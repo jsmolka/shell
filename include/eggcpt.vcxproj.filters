@@ -96,5 +96,8 @@
     <ClInclude Include="eggcpt\log\sinks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eggcpt\toml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

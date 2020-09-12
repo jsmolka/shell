@@ -130,6 +130,7 @@
     <None Include="src\tests_locale.inl" />
     <None Include="src\tests_log.inl" />
     <None Include="src\tests_options.inl" />
+    <None Include="src\tests_toml.inl" />
     <None Include="src\tests_traits.inl" />
     <None Include="src\tests_utility.inl" />
     <None Include="src\tests_errors.inl" />

@@ -7,6 +7,7 @@
 #include <eggcpt/locale.h>
 #include <eggcpt/log/all.h>
 #include <eggcpt/options.h>
+#include <eggcpt/toml.h>
 #include <eggcpt/traits.h>
 #include <eggcpt/utility.h>
 
@@ -25,5 +26,6 @@ using namespace std::string_literals;
 #include "tests_locale.inl"
 #include "tests_log.inl"
 #include "tests_options.inl"
+#include "tests_toml.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"
