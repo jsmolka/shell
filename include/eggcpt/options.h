@@ -13,7 +13,7 @@
 namespace eggcpt
 {
 
-class OptionError : public FormattedError
+class OptionParseError : public FormattedError
 {
 public:
     using FormattedError::FormattedError;
@@ -28,21 +28,31 @@ public:
     using Pointer = std::shared_ptr<Value>;
 
     explicit Value(bool optional)
-        : is_optional(optional)
-        , is_positional(false) {}
+        : m_optional(optional)
+        , m_positional(false) {}
 
     virtual ~Value() = default;
 
     Pointer optional()
     {
-        is_optional = true;
+        m_optional = true;
         return shared_from_this();
+    }
+
+    bool isOptional() const
+    {
+        return m_optional;
     }
 
     Pointer positional()
     {
-        is_positional = true;
+        m_positional = true;
         return shared_from_this();
+    }
+
+    bool isPositional() const
+    {
+        return m_positional;
     }
 
     virtual void parse() = 0;
@@ -52,23 +62,54 @@ public:
     virtual std::string getValue() const = 0;
     virtual std::string getDefaultValue() const = 0;
 
-    bool is_optional;
-    bool is_positional;
+private:
+    bool m_optional;
+    bool m_positional;
 };
 
 template<typename T>
-class TemplateValue : public Value
+class OptionValue : public Value
 {
 public:
-    TemplateValue()
+    OptionValue()
         : Value(false)
         , value(std::nullopt)
         , default_value(std::nullopt) {}
 
-    explicit TemplateValue(const T& value)
+    explicit OptionValue(const T& value)
         : Value(true)
         , value(value)
         , default_value(value) {}
+
+    void parse() override
+    {
+        if constexpr (std::is_same_v<T, bool>)
+            value = true;
+        else
+            throw OptionParseError("Missing value for non-bool option");
+    }
+
+    void parse(const std::string& data) override
+    {
+        if constexpr (std::is_same_v<T, bool>)
+        {
+                 if (data == "1" || data == "true" ) value = true;
+            else if (data == "0" || data == "false") value = false;
+            else throw OptionParseError("Invalid bool data: {}", data);
+        }
+        else
+        {
+            T result;
+
+            std::stringstream stream;
+            stream << data;
+            stream >> result;
+
+            throwIf<OptionParseError>(!stream, "Invalid data: {}", data);
+
+            this->value = result;
+        }
+    }
 
     bool hasValue() const override
     {
@@ -104,67 +145,88 @@ private:
     std::optional<T> default_value;
 };
 
-template<typename T>
-class OptionValue : public TemplateValue<T>
-{
-public:
-    using TemplateValue<T>::TemplateValue;
-
-    void parse() override
-    {
-        throw OptionError("Missing value for non-bool option");
-    }
-
-    void parse(const std::string& data) override
-    {
-        T result;
-
-        std::stringstream stream;
-        stream << data;
-        stream >> result;
-
-        if (!stream)
-            throw OptionError("Invalid data: {}", data);
-
-        this->value = result;
-    }
-};
-
-template<>
-class OptionValue<bool> : public TemplateValue<bool>
-{
-public:
-    using TemplateValue<bool>::TemplateValue;
-
-    void parse() override
-    {
-        value = true;
-    }
-
-    void parse(const std::string& data) override
-    {
-             if (data == "1" || data == "true" ) value = true;
-        else if (data == "0" || data == "false") value = false;
-        else throw OptionError("Invalid bool data: {}", data);
-    }
-};
-
 struct Option
 {
     std::vector<std::string> keys;
-    std::string description;
     Value::Pointer value;
+    std::string desc;
 };
 
-inline Value::Pointer find(const std::vector<Option>& options, const std::string& key)
+class OptionVector : public std::vector<Option>
 {
-    for (const auto& [keys, desc, value] : options)
+public:
+    Value::Pointer find(const std::string& key) const
     {
-        if (std::find(keys.begin(), keys.end(), key) != keys.end())
-            return value;
+        for (const auto& [keys, value, desc] : *this)
+        {
+            if (std::find(keys.begin(), keys.end(), key) != keys.end())
+                return value;
+        }
+        return nullptr;
     }
-    return nullptr;
-}
+
+    bool has(const std::string& key) const
+    {
+        return static_cast<bool>(find(key));
+    }
+};
+
+class OptionGroup
+{
+public:
+    explicit OptionGroup(const std::string& name)
+        : name(name) {}
+
+    std::string args() const
+    {
+        std::string result;
+        for (const auto& [keys, value, desc] : options)
+            result.append(fmt::format(value->isOptional() ? " [{}]" : " {}", keys.front()));
+
+        return result;
+    }
+
+    std::string help() const
+    {
+        if (options.empty())
+            return std::string();
+
+        std::string result = fmt::format("\n{} arguments:\n", name);
+        std::size_t padding = this->padding();
+
+        for (const auto& [keys, value, desc] : options)
+        {
+            const auto key = join(keys, kDelimiter);
+            const auto def = value->hasDefaultValue()
+                ? fmt::format(" (default: {})", value->getDefaultValue())
+                : std::string();
+
+            result.append(fmt::format("{:<{}}{}{}\n", key, padding, desc, def));
+        }
+        return result;
+    }
+
+    OptionVector options;
+
+private:
+    static constexpr std::string_view kDelimiter = ", ";
+
+    std::size_t padding() const
+    {
+        std::size_t padding = 0;
+        for (const auto& option : options)
+        {
+            std::size_t size = 0;
+            for (const auto& key : option.keys)
+                size += key.size() + kDelimiter.size();
+
+            padding = std::max(size, padding);
+        }
+        return padding;
+    }
+
+    std::string name;
+};
 
 }  // namespace detail
 
@@ -175,63 +237,58 @@ public:
 
     bool has(const std::string& key) const
     {
-        return static_cast<bool>(detail::find(options, key));
+        return options.has(key);
     }
 
     template<typename T>
     T get(const std::string& key) const
     {
-        if (auto value = detail::find(options, key))
-            return *static_cast<detail::OptionValue<T>&>(*value).value;
-
-        throw OptionError("Invalid key: {}", key);
+        return *std::static_pointer_cast<
+            detail::OptionValue<T>>(options.find(key))->value;
     }
 
 private:
-    void fill(const std::vector<detail::Option>& options)
+    void copyAndValidate(detail::OptionVector& other)
     {
-        for (const auto& [keys, desc, value] : options)
+        for (const auto& [keys, value, desc] : other)
         {
-            if (!value->hasValue())
-            {
-                if (!value->is_optional)
-                    throw OptionError("Missing option: {}", join(keys, ", "));
-
-                continue;
-            }
-            this->options.push_back({ keys, desc, value });
+            if (value->hasValue())
+                options.push_back({ keys, value, desc });
+            else
+                throwIf<OptionParseError>(!value->isOptional(), "Missing option: {}", join(keys, ", "));
         }
     }
 
-    std::vector<detail::Option> options;
+    detail::OptionVector options;
 };
 
 class Options
 {
 public:
     explicit Options(const std::string& program)
-        : program(program) {}
+        : program(program)
+        , keyword("Keyword")
+        , positional("Positional") {}
 
-    template<typename T, typename... Args>
-    static detail::Value::Pointer value(Args&&... args)
+    template<typename T>
+    static detail::Value::Pointer value()
     {
-        return std::make_shared<detail::OptionValue<T>>(std::forward<Args>(args)...);
+        return std::make_shared<detail::OptionValue<T>>();
+    }
+
+    template<typename T>
+    static detail::Value::Pointer value(const T& value)
+    {
+        return std::make_shared<detail::OptionValue<T>>(value);
     }
 
     void add(const std::vector<std::string>& keys, const std::string& desc, detail::Value::Pointer value)
     {
-        if (keys.empty())
-            throw OptionError("Empty keys");
+        auto& options = value->isPositional()
+            ? positional.options
+            : keyword.options;
 
-        for (const auto& key : keys)
-        {
-            if (key.empty())
-                throw OptionError("Empty key");
-
-            if (detail::find(keyword, key) || detail::find(positional, key))
-                throw OptionError("Duplicate key: {}", key);
-        }
-        (value->is_positional ? positional : keyword).push_back({ keys, desc, value });
+        options.push_back({ keys, value, desc });
     }
 
     OptionsResult parse(int argc, const char* argv[])
@@ -241,77 +298,44 @@ public:
 
         while (pos < argc)
         {
-            const auto key = argv[pos++];
+            std::string key = argv[pos++];
 
-            if (const auto value = detail::find(keyword, key))
+            if (auto value = keyword.options.find(key))
             {
-                if (pos < argc && !detail::find(keyword, argv[pos]))
+                if (pos < argc && !keyword.options.has(argv[pos]))
                     value->parse(argv[pos++]);
                 else
                     value->parse();
             }
             else
             {
-                if (idx < positional.size())
-                    positional[idx++].value->parse(key);
+                if (idx < positional.options.size())
+                    positional.options[idx++].value->parse(key);
             }
         }
 
         OptionsResult result;
-        result.fill(keyword);
-        result.fill(positional);
+        result.copyAndValidate(keyword.options);
+        result.copyAndValidate(positional.options);
 
         return result;
     }
 
     std::string help() const
     {
-        std::string help = fmt::format("Usage: {}", program);
-
-        for (const auto& options : { keyword, positional })
-        {
-            for (const auto& [keys, desc, value] : options)
-                help.append(fmt::format(value->is_optional ? " [{}]" : " {}", keys.front()));
-        }
-        help.append("\n");
-
-        for (const auto& [kind, options] : { Group{ "Keyword", keyword }, Group{ "Positional", positional } })
-        {
-            help.append(fmt::format("\n{} arguments\n", kind));
-
-            std::size_t padding = 0;
-            for (const auto& [keys, desc, value] : options)
-            {
-                std::size_t size = 0;
-                for (const auto& key : keys)
-                    size += key.size() + 2;
-
-                padding = std::max(size, padding);
-            }
-
-            for (const auto& [keys, desc, value] : options)
-            {
-                const auto key = join(keys, ", ");
-                const auto def = value->hasDefaultValue()
-                    ? fmt::format(" (default: {})", value->getDefaultValue())
-                    : "";
-
-                help.append(fmt::format("{:<{}}{}{}\n", key, padding, desc, def));
-            }
-        }
-        return help;
+        return fmt::format(
+            "Usage: {}{}{}\n{}{}",
+            program,
+            keyword.args(),
+            positional.args(),
+            keyword.help(),
+            positional.help());
     }
 
 private:
-    struct Group
-    {
-        std::string kind;
-        std::vector<detail::Option> options;
-    };
-
     std::string program;
-    std::vector<detail::Option> keyword;
-    std::vector<detail::Option> positional;
+    detail::OptionGroup keyword;
+    detail::OptionGroup positional;
 };
 
 }  // namespace eggcpt

@@ -13,16 +13,16 @@ public:
     using const_iterator = const Iterator;
 
     IteratorRange(Iterator begin, Iterator end)
-        : begin_(begin), end_(end) {}
+        : m_begin(begin), m_end(end) {}
 
-    Iterator begin() { return begin_; }
-    Iterator end() { return end_; }
-    const Iterator cbegin() const { return begin_; }
-    const Iterator cend() const { return end_; }
+    Iterator begin() { return m_begin; }
+    Iterator end() { return m_end; }
+    const Iterator cbegin() const { return m_begin; }
+    const Iterator cend() const { return m_end; }
 
 private:
-    Iterator begin_;
-    Iterator end_;
+    Iterator m_begin;
+    Iterator m_end;
 };
 
 template<typename Iterator>
