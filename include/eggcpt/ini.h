@@ -4,7 +4,6 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include <eggcpt/algorithm.h>
@@ -15,22 +14,10 @@
 namespace eggcpt
 {
 
-class IniError : public FormattedError
+class IniParseError : public FormattedError
 {
 public:
     using FormattedError::FormattedError;
-};
-
-class IniParseError : public IniError
-{
-public:
-    using IniError::IniError;
-};
-
-class IniValueError : public IniError
-{
-public:
-    using IniError::IniError;
 };
 
 namespace detail
@@ -280,8 +267,6 @@ std::optional<filesystem::path> parse(const std::string& data)
 class Ini
 {
 public:
-    using ValueToken = std::shared_ptr<detail::ValueToken>;
-
     bool load(const filesystem::path& file)
     {
         auto stream = std::ifstream(file);
@@ -312,6 +297,39 @@ public:
         return filesystem::write(file, join(lines, "\n"));
     }
 
+    template<typename T>
+    std::optional<T> find(const std::string& section, const std::string& key) const
+    {
+        if (const auto token = findToken(section, key))
+            return ini::parse<T>(token->value);
+
+        return std::nullopt;
+    }
+
+    template<typename T>
+    T findOr(const std::string& section, const std::string& key, const T& fallback) const
+    {
+        return find<T>(section, key).value_or(fallback);
+    }
+
+    void set(const std::string& section, const std::string& key, const std::string& value)
+    {
+        if (const auto token = findToken(section, key))
+            token->value = value;
+    }
+
+private:
+    using Token = std::shared_ptr<detail::Token>;
+    using ValueToken = std::shared_ptr<detail::ValueToken>;
+
+    static Token makeToken(const std::string& line)
+    {
+        if (line.empty()) return std::make_shared<detail::BlankToken>();
+        if (line.front() == '#') return std::make_shared<detail::CommentToken>();
+        if (line.front() == '[') return std::make_shared<detail::SectionToken>();
+        return std::make_shared<detail::ValueToken>();
+    }
+
     ValueToken findToken(const std::string& section, const std::string& key) const
     {
         std::string active;
@@ -331,32 +349,6 @@ public:
             }
         }
         return nullptr;
-    }
-
-    template<typename T>
-    std::optional<T> find(const std::string& section, const std::string& key) const
-    {
-        if (const auto token = findToken(section, key))
-            return ini::parse<T>(token->value);
-
-        return std::nullopt;
-    }
-
-    template<typename T>
-    T findOr(const std::string& section, const std::string& key, const T& fallback) const
-    {
-        return find<T>(section, key).value_or(fallback);
-    }
-
-private:
-    using Token = std::shared_ptr<detail::Token>;
-
-    Token makeToken(const std::string& line)
-    {
-        if (line.empty())        return std::make_shared<detail::BlankToken>();
-        if (line.front() == '#') return std::make_shared<detail::CommentToken>();
-        if (line.front() == '[') return std::make_shared<detail::SectionToken>();
-                                 return std::make_shared<detail::ValueToken>();
     }
 
     std::vector<Token> tokens;
