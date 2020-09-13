@@ -100,30 +100,6 @@ TEST_CASE("ValueToken")
     REQUIRE_THROWS_AS(token.parse("=test"), Error);
 }
 
-//basic_istream& __CLR_OR_THIS_CALL operator>>(short& _Val) { // extract a short
-//    ios_base::iostate _Err = ios_base::goodbit;
-//    const sentry _Ok(*this);
-//
-//    if (_Ok) { // state okay, use facet to extract
-//        _TRY_IO_BEGIN
-//            long _Lval;
-//        _STD use_facet<_Nget>(this->getloc()).get(*this, {}, *this, _Err, _Lval);
-//        if (_Lval < SHRT_MIN) {
-//            _Err |= ios_base::failbit;
-//            _Val = SHRT_MIN;
-//        } else if (_Lval > SHRT_MAX) {
-//            _Err |= ios_base::failbit;
-//            _Val = SHRT_MAX;
-//        } else {
-//            _Val = static_cast<short>(_Lval);
-//        }
-//        _CATCH_IO_END
-//    }
-//
-//    _Myios::setstate(_Err);
-//    return *this;
-//}
-
 TEST_CASE("Ini")
 {
     std::vector<std::string> lines = {

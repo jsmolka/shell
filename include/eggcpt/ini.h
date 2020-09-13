@@ -246,6 +246,37 @@ public:
 
 }  // namespace detail
 
+namespace ini
+{
+
+template<typename T>
+std::optional<T> parse(const std::string& data)
+{
+    T value{};
+    std::stringstream stream;
+    stream << std::boolalpha;
+    stream << data;
+    stream >> value;
+
+    return stream
+        ? std::optional(value)
+        : std::nullopt;
+}
+
+template<>
+std::optional<std::string> parse(const std::string& data)
+{
+    return data;
+}
+
+template<>
+std::optional<filesystem::path> parse(const std::string& data)
+{
+    return filesystem::u8path(data);
+}
+
+}  // namespace ini
+
 class Ini
 {
 public:
@@ -306,7 +337,7 @@ public:
     std::optional<T> find(const std::string& section, const std::string& key) const
     {
         if (const auto token = findToken(section, key))
-            return parse<T>(token->value);
+            return ini::parse<T>(token->value);
 
         return std::nullopt;
     }
@@ -314,35 +345,18 @@ public:
     template<typename T>
     T findOr(const std::string& section, const std::string& key, const T& fallback) const
     {
-        return find(section, key).value_or(fallback);
+        return find<T>(section, key).value_or(fallback);
     }
 
 private:
     using Token = std::shared_ptr<detail::Token>;
 
-    template<typename T>
-    static std::optional<T> parse(const std::string& data)
-    {
-        if constexpr (std::is_constructible_v<T, std::string>)
-            return T(data);
-
-        T value;
-        std::stringstream stream;
-        stream << std::boolalpha;
-        stream << data;
-        stream >> value;
-
-        return stream
-            ? std::optional(value)
-            : std::nullopt;
-    }
-
     Token makeToken(const std::string& line)
     {
-        if (line.empty()) return std::make_shared<detail::BlankToken>();
+        if (line.empty())        return std::make_shared<detail::BlankToken>();
         if (line.front() == '#') return std::make_shared<detail::CommentToken>();
         if (line.front() == '[') return std::make_shared<detail::SectionToken>();
-        return std::make_shared<detail::ValueToken>();
+                                 return std::make_shared<detail::ValueToken>();
     }
 
     std::vector<Token> tokens;
