@@ -1,8 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <eggcpt/algorithm.h>
@@ -10,7 +12,7 @@
 #include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 
-namespace eggcpt::ini
+namespace eggcpt
 {
 
 class IniError : public FormattedError
@@ -19,10 +21,16 @@ public:
     using FormattedError::FormattedError;
 };
 
-class ParseError : public FormattedError
+class IniParseError : public IniError
 {
 public:
-    using FormattedError::FormattedError;
+    using IniError::IniError;
+};
+
+class IniValueError : public IniError
+{
+public:
+    using IniError::IniError;
 };
 
 namespace detail
@@ -125,7 +133,7 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '#'
                     || ch == ';';
@@ -159,13 +167,13 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '[';
             }),
             "Expected [ at position {}: {}", consumer.pos, line);
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
@@ -173,13 +181,13 @@ public:
             "Expected section char at position {}: {}", consumer.pos, line);
         section = consumer.value;
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == ']';
             }),
             "Expected ] at position {}: {}", consumer.pos, line);
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             consumer.consumeSome([](char ch) {
                 return true;
             }),
@@ -204,7 +212,7 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
@@ -214,7 +222,7 @@ public:
 
         consumer.consume(IsSpace<char>());
 
-        throwIf<ParseError>(
+        throwIf<IniParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '=';
             }),
@@ -241,81 +249,37 @@ public:
 class Ini
 {
 public:
-    Ini() = default;
-    Ini(const filesystem::path& path)
-    {
-        std::ifstream stream(path);
-        throwIf<IniError>(!stream.is_open(), "Failed opening file: {}", path.string());
+    using ValueToken = std::shared_ptr<detail::ValueToken>;
 
-        for (std::string line; std::getline(stream, line); )
+    bool load(const filesystem::path& file)
+    {
+        auto stream = std::ifstream(file);
+        if (!stream.is_open())
+            return false;
+
+        std::string line;
+        while (std::getline(stream, line))
         {
             trim(line);
 
-            Token token;
-
-            if (line.empty())
-            {
-                token = std::make_shared<detail::BlankToken>();
-            }
-            else
-            {
-                switch (line.front())
-                {
-                case '#': token = std::make_shared<detail::CommentToken>(); break;
-                case '[': token = std::make_shared<detail::SectionToken>(); break;
-                default : token = std::make_shared<detail::ValueToken>();   break;
-                }
-            }
-
+            Token token = makeToken(line);
             token->parse(line);
+
             tokens.push_back(token);
         }
+        return true;
     }
 
-    template<typename T>
-    T find(const std::string& section, const std::string& key)
+    bool save(const filesystem::path& file) const
     {
-        const auto token = findToken(section, key);
-        throwIf<IniError>(!token, "Failed finding :{}.{}", section, key);
+        std::vector<std::string> lines;
+        lines.reserve(tokens.size());
 
-        if constexpr (std::is_same_v<T, std::string>)
-            return token->value;
+        for (const auto& token : tokens)
+            lines.push_back(token->string());
 
-        T result;
-
-        std::stringstream stream;
-        stream << std::boolalpha;
-        stream << token->value;
-        stream >> result;
-
-        throwIf<IniError>(!stream, "Failed parsing token: {}", token->value);
-
-        return result;
+        return filesystem::write(file, join(lines, "\n"));
     }
-
-    template<typename T>
-    T findOr(const std::string& section, const std::string& key, const T& fallback)
-    {
-        if (const auto token = findToken(section, key))
-        {
-            if constexpr (std::is_same_v<T, std::string>)
-                return token->value;
-
-            T result;
-
-            std::stringstream stream;
-            stream << std::boolalpha;
-            stream << token->value;
-            stream >> result;
-
-            return stream ? result : fallback;
-        }
-        return fallback;
-    }
-
-private:
-    using Token      = std::shared_ptr<detail::Token>;
-    using ValueToken = std::shared_ptr<detail::ValueToken>;
 
     ValueToken findToken(const std::string& section, const std::string& key) const
     {
@@ -338,7 +302,50 @@ private:
         return nullptr;
     }
 
+    template<typename T>
+    std::optional<T> find(const std::string& section, const std::string& key) const
+    {
+        if (const auto token = findToken(section, key))
+            return parse<T>(token->value);
+
+        return std::nullopt;
+    }
+
+    template<typename T>
+    T findOr(const std::string& section, const std::string& key, const T& fallback) const
+    {
+        return find(section, key).value_or(fallback);
+    }
+
+private:
+    using Token = std::shared_ptr<detail::Token>;
+
+    template<typename T>
+    static std::optional<T> parse(const std::string& data)
+    {
+        if constexpr (std::is_constructible_v<T, std::string>)
+            return T(data);
+
+        T value;
+        std::stringstream stream;
+        stream << std::boolalpha;
+        stream << data;
+        stream >> value;
+
+        return stream
+            ? std::optional(value)
+            : std::nullopt;
+    }
+
+    Token makeToken(const std::string& line)
+    {
+        if (line.empty()) return std::make_shared<detail::BlankToken>();
+        if (line.front() == '#') return std::make_shared<detail::CommentToken>();
+        if (line.front() == '[') return std::make_shared<detail::SectionToken>();
+        return std::make_shared<detail::ValueToken>();
+    }
+
     std::vector<Token> tokens;
 };
 
-}  // namespace eggcpt::toml
+}  // namespace eggcpt

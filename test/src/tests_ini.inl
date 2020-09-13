@@ -1,7 +1,7 @@
-TEST_CASE("ini::SectionToken")
+TEST_CASE("SectionToken")
 {
-    using Token = ini::detail::SectionToken;
-    using Error = ini::ParseError;
+    using Token = detail::SectionToken;
+    using Error = IniParseError;
 
     Token token;
     
@@ -23,10 +23,10 @@ TEST_CASE("ini::SectionToken")
     REQUIRE_THROWS_AS(token.parse("[[test]"), Error);
 }
 
-TEST_CASE("ini::CommentToken")
+TEST_CASE("CommentToken")
 {
-    using Token = ini::detail::CommentToken;
-    using Error = ini::ParseError;
+    using Token = detail::CommentToken;
+    using Error = IniParseError;
 
     Token token;
     
@@ -65,10 +65,10 @@ TEST_CASE("ini::CommentToken")
     REQUIRE_THROWS_AS(token.parse(""), Error);
 }
 
-TEST_CASE("ini::ValueToken")
+TEST_CASE("ValueToken")
 {
-    using Token = ini::detail::ValueToken;
-    using Error = ini::ParseError;
+    using Token = detail::ValueToken;
+    using Error = IniParseError;
 
     Token token;
     
@@ -100,7 +100,31 @@ TEST_CASE("ini::ValueToken")
     REQUIRE_THROWS_AS(token.parse("=test"), Error);
 }
 
-TEST_CASE("ini::Ini")
+//basic_istream& __CLR_OR_THIS_CALL operator>>(short& _Val) { // extract a short
+//    ios_base::iostate _Err = ios_base::goodbit;
+//    const sentry _Ok(*this);
+//
+//    if (_Ok) { // state okay, use facet to extract
+//        _TRY_IO_BEGIN
+//            long _Lval;
+//        _STD use_facet<_Nget>(this->getloc()).get(*this, {}, *this, _Err, _Lval);
+//        if (_Lval < SHRT_MIN) {
+//            _Err |= ios_base::failbit;
+//            _Val = SHRT_MIN;
+//        } else if (_Lval > SHRT_MAX) {
+//            _Err |= ios_base::failbit;
+//            _Val = SHRT_MAX;
+//        } else {
+//            _Val = static_cast<short>(_Lval);
+//        }
+//        _CATCH_IO_END
+//    }
+//
+//    _Myios::setstate(_Err);
+//    return *this;
+//}
+
+TEST_CASE("Ini")
 {
     std::vector<std::string> lines = {
         "[test]",
@@ -115,15 +139,15 @@ TEST_CASE("ini::Ini")
 
     filesystem::write("ini.ini", join(lines, "\n"));
 
-    ini::Ini ini("ini.ini");
+    Ini ini;
+    ini.load("ini.ini");
 
-    REQUIRE(ini.find<int>("test", "value1") == 10);
-    REQUIRE(ini.find<double>("test", "value2") == 10.1);
-    REQUIRE(ini.find<bool>("test", "value3") == true);
-    REQUIRE(ini.find<bool>("test", "value4") == false);
-    REQUIRE(ini.find<std::string>("test", "value5") == "test");
-    REQUIRE(ini.find<std::string>("test", "value6") == "");
-
-    REQUIRE_THROWS_AS(ini.find<bool>("test", "value1"), ini::IniError);
-    REQUIRE_THROWS_AS(ini.find<int>("test", "value3"), ini::IniError);
+    REQUIRE(*ini.find<int>("test", "value1") == 10);
+    REQUIRE(*ini.find<double>("test", "value2") == 10.1);
+    REQUIRE(*ini.find<bool>("test", "value3") == true);
+    REQUIRE(*ini.find<bool>("test", "value4") == false);
+    REQUIRE(*ini.find<std::string>("test", "value5") == "test");
+    REQUIRE(*ini.find<std::string>("test", "value6") == "");
+    REQUIRE(!ini.find<bool>("test", "value1").has_value());
+    REQUIRE(!ini.find<int>("test", "value3").has_value());
 }
