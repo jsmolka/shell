@@ -3,11 +3,11 @@
 #include <eggcpt/bitfield.h>
 #include <eggcpt/errors.h>
 #include <eggcpt/filesystem.h>
+#include <eggcpt/ini.h>
 #include <eggcpt/iterator.h>
 #include <eggcpt/locale.h>
 #include <eggcpt/log/all.h>
 #include <eggcpt/options.h>
-#include <eggcpt/toml.h>
 #include <eggcpt/traits.h>
 #include <eggcpt/utility.h>
 
@@ -22,10 +22,10 @@ using namespace std::string_literals;
 #include "tests_bitfield.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
+#include "tests_ini.inl"
 #include "tests_iterator.inl"
 #include "tests_locale.inl"
 #include "tests_log.inl"
 #include "tests_options.inl"
-#include "tests_toml.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"

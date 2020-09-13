@@ -53,7 +53,7 @@
     <None Include="src\tests_errors.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_toml.inl">
+    <None Include="src\tests_ini.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

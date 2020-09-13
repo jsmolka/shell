@@ -4,7 +4,7 @@
 #include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 
-namespace eggcpt::toml
+namespace eggcpt::ini
 {
 
 class ParseError : public FormattedError
@@ -22,16 +22,16 @@ public:
     Consumer(const std::string& data)
         : data(data)
     {
-        consumed.reserve(data.size());
+        value.reserve(data.size());
     }
 
     template<typename Predicate>
     void eat(Predicate pred)
     {
-        consumed.clear();
+        value.clear();
         if (pos < data.size() && pred(data[pos]))
         {
-            consumed.push_back(data[pos]);
+            value.push_back(data[pos]);
             ++pos;
         }
     }
@@ -40,33 +40,36 @@ public:
     bool eatOne(Predicate pred)
     {
         eat(pred);
-        return consumed.size() == 1;
+        return value.size() == 1;
     }
 
     template<typename Predicate>
     void consume(Predicate pred)
     {
-        consumed.clear();
-        for (; pos < data.size() && pred(data[pos]); ++pos)
-            consumed.push_back(data[pos]);
+        value.clear();
+        while (pos < data.size() && pred(data[pos]))
+        {
+            value.push_back(data[pos]);
+            ++pos;
+        }
     }
 
     template<typename Predicate>
     bool consumeOne(Predicate pred)
     {
         consume(pred);
-        return consumed.size() == 1;
+        return value.size() == 1;
     }
 
     template<typename Predicate>
     bool consumeSome(Predicate pred)
     {
         consume(pred);
-        return consumed.size() != 0;
+        return value.size() != 0;
     }
 
     std::size_t pos = 0;
-    std::string consumed;
+    std::string value;
 
 private:
     const std::string& data;
@@ -75,7 +78,7 @@ private:
 class Token
 {
 public:
-    enum class Kind { Blank, Comment, Table, Value };
+    enum class Kind { Blank, Comment, Section, Value };
 
     Token(Kind kind)
         : kind(kind) {}
@@ -112,37 +115,40 @@ public:
 
         throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
-                return ch == '#';
+                return ch == '#'
+                    || ch == ';';
             }),
-            "Expected # at position {}: {}", consumer.pos, line);
+            "Expected # or ; at position {}: {}", consumer.pos, line);
+        token = consumer.value;
 
         consumer.consume(std::isspace);
         consumer.consume([](char ch) {
             return true;
         });
-        value = consumer.consumed;
+        comment = consumer.value;
     }
 
     std::string string() const override
     {
-        return fmt::format("# {}", value);
+        return fmt::format("{} {}", token, comment);
     }
 
-    std::string value;
+    std::string token;
+    std::string comment;
 };
 
-class TableToken : public Token
+class SectionToken : public Token
 {
 public:
-    TableToken()
-        : Token(Kind::Table) {}
+    SectionToken()
+        : Token(Kind::Section) {}
 
     void parse(const std::string& line) override
     {
         Consumer consumer(line);
 
         throwIf<ParseError>(
-            !consumer.consumeOne([](char ch) {
+            !consumer.eatOne([](char ch) {
                 return ch == '[';
             }),
             "Expected [ at position {}: {}", consumer.pos, line);
@@ -150,15 +156,13 @@ public:
         throwIf<ParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
-                    || ch == '.'
-                    || ch == '-'
                     || ch == '_';
             }),
-            "Expected table char at position {}: {}", consumer.pos, line);
-        value = consumer.consumed;
+            "Expected section char at position {}: {}", consumer.pos, line);
+        section = consumer.value;
 
         throwIf<ParseError>(
-            !consumer.consumeOne([](char ch) {
+            !consumer.eatOne([](char ch) {
                 return ch == ']';
             }),
             "Expected ] at position {}: {}", consumer.pos, line);
@@ -172,10 +176,10 @@ public:
 
     std::string string() const override
     {
-        return fmt::format("[{}]", value);
+        return fmt::format("[{}]", section);
     }
 
-    std::string value;
+    std::string section;
 };
 
 class ValueToken : public Token
@@ -191,29 +195,24 @@ public:
         throwIf<ParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
-                    || ch == '.'
-                    || ch == '-'
                     || ch == '_';
             }),
             "Expected key char at position {}: {}", consumer.pos, line);
-        key = consumer.consumed;
+        key = consumer.value;
 
         consumer.consume(std::isspace);
 
         throwIf<ParseError>(
-            !consumer.consumeOne([](char ch) {
+            !consumer.eatOne([](char ch) {
                 return ch == '=';
             }),
             "Expected = at position {}: {}", consumer.pos, line);
 
-        consumer.consume(std::isspace),
-
-        throwIf<ParseError>(
-            !consumer.consumeSome([](char ch) { 
-                return true;
-            }),
-            "Expected value char at position {}: {}", consumer.pos, line);
-        value = consumer.consumed;
+        consumer.consume(std::isspace);
+        consumer.consume([](char ch) {
+            return true;
+        });
+        value = consumer.value;
     }
 
     std::string string() const override
