@@ -1,11 +1,23 @@
 #pragma once
 
+#include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include <eggcpt/algorithm.h>
 #include <eggcpt/errors.h>
 #include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 
 namespace eggcpt::ini
 {
+
+class IniError : public FormattedError
+{
+public:
+    using FormattedError::FormattedError;
+};
 
 class ParseError : public FormattedError
 {
@@ -121,7 +133,7 @@ public:
             "Expected # or ; at position {}: {}", consumer.pos, line);
         token = consumer.value;
 
-        consumer.consume(std::isspace);
+        consumer.consume(IsSpace<char>());
         consumer.consume([](char ch) {
             return true;
         });
@@ -200,7 +212,7 @@ public:
             "Expected key char at position {}: {}", consumer.pos, line);
         key = consumer.value;
 
-        consumer.consume(std::isspace);
+        consumer.consume(IsSpace<char>());
 
         throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
@@ -208,7 +220,7 @@ public:
             }),
             "Expected = at position {}: {}", consumer.pos, line);
 
-        consumer.consume(std::isspace);
+        consumer.consume(IsSpace<char>());
         consumer.consume([](char ch) {
             return true;
         });
@@ -225,5 +237,108 @@ public:
 };
 
 }  // namespace detail
+
+class Ini
+{
+public:
+    Ini() = default;
+    Ini(const filesystem::path& path)
+    {
+        std::ifstream stream(path);
+        throwIf<IniError>(!stream.is_open(), "Failed opening file: {}", path.string());
+
+        for (std::string line; std::getline(stream, line); )
+        {
+            trim(line);
+
+            Token token;
+
+            if (line.empty())
+            {
+                token = std::make_shared<detail::BlankToken>();
+            }
+            else
+            {
+                switch (line.front())
+                {
+                case '#': token = std::make_shared<detail::CommentToken>(); break;
+                case '[': token = std::make_shared<detail::SectionToken>(); break;
+                default : token = std::make_shared<detail::ValueToken>();   break;
+                }
+            }
+
+            token->parse(line);
+            tokens.push_back(token);
+        }
+    }
+
+    template<typename T>
+    T find(const std::string& section, const std::string& key)
+    {
+        const auto token = findToken(section, key);
+        throwIf<IniError>(!token, "Failed finding :{}.{}", section, key);
+
+        if constexpr (std::is_same_v<T, std::string>)
+            return token->value;
+
+        T result;
+
+        std::stringstream stream;
+        stream << std::boolalpha;
+        stream << token->value;
+        stream >> result;
+
+        throwIf<IniError>(!stream, "Failed parsing token: {}", token->value);
+
+        return result;
+    }
+
+    template<typename T>
+    T findOr(const std::string& section, const std::string& key, const T& fallback)
+    {
+        if (const auto token = findToken(section, key))
+        {
+            if constexpr (std::is_same_v<T, std::string>)
+                return token->value;
+
+            T result;
+
+            std::stringstream stream;
+            stream << std::boolalpha;
+            stream << token->value;
+            stream >> result;
+
+            return stream ? result : fallback;
+        }
+        return fallback;
+    }
+
+private:
+    using Token      = std::shared_ptr<detail::Token>;
+    using ValueToken = std::shared_ptr<detail::ValueToken>;
+
+    ValueToken findToken(const std::string& section, const std::string& key) const
+    {
+        std::string active;
+        for (const auto& token : tokens)
+        {
+            switch (token->kind)
+            {
+            case detail::Token::Kind::Section:
+                active = std::static_pointer_cast<detail::SectionToken>(token)->section;
+                break;
+
+            case detail::Token::Kind::Value:
+                if (section == active 
+                        && std::static_pointer_cast<detail::ValueToken>(token)->key == key)
+                    return std::static_pointer_cast<detail::ValueToken>(token);
+                break;
+            }
+        }
+        return nullptr;
+    }
+
+    std::vector<Token> tokens;
+};
 
 }  // namespace eggcpt::toml

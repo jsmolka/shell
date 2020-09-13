@@ -99,3 +99,31 @@ TEST_CASE("ini::ValueToken")
     REQUIRE_THROWS_AS(token.parse("test test"), Error);
     REQUIRE_THROWS_AS(token.parse("=test"), Error);
 }
+
+TEST_CASE("ini::Ini")
+{
+    std::vector<std::string> lines = {
+        "[test]",
+        "# Comment",
+        "value1 = 10",
+        "value2 = 10.1",
+        "value3 = true",
+        "value4 = false",
+        "value5 = test",
+        "value6 = "
+    };
+
+    filesystem::write("ini.ini", join(lines, "\n"));
+
+    ini::Ini ini("ini.ini");
+
+    REQUIRE(ini.find<int>("test", "value1") == 10);
+    REQUIRE(ini.find<double>("test", "value2") == 10.1);
+    REQUIRE(ini.find<bool>("test", "value3") == true);
+    REQUIRE(ini.find<bool>("test", "value4") == false);
+    REQUIRE(ini.find<std::string>("test", "value5") == "test");
+    REQUIRE(ini.find<std::string>("test", "value6") == "");
+
+    REQUIRE_THROWS_AS(ini.find<bool>("test", "value1"), ini::IniError);
+    REQUIRE_THROWS_AS(ini.find<int>("test", "value3"), ini::IniError);
+}
