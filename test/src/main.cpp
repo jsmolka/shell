@@ -3,6 +3,7 @@
 #include <eggcpt/bitfield.h>
 #include <eggcpt/errors.h>
 #include <eggcpt/filesystem.h>
+#include <eggcpt/functional.h>
 #include <eggcpt/ini.h>
 #include <eggcpt/iterator.h>
 #include <eggcpt/locale.h>
@@ -22,6 +23,7 @@ using namespace std::string_literals;
 #include "tests_bitfield.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
+#include "tests_functional.h"
 #include "tests_ini.inl"
 #include "tests_iterator.inl"
 #include "tests_locale.inl"
