@@ -15,19 +15,26 @@ using s64  = std::int64_t;
 using u64  = std::uint64_t;
 using uint = unsigned int;
 
-template<uint Size, uint Unsigned>
+template<uint Size>
 struct stdint {};
 
-template<> struct stdint<1, 0> { using type =  s8; };
-template<> struct stdint<1, 1> { using type =  u8; };
-template<> struct stdint<2, 0> { using type = s16; };
-template<> struct stdint<2, 1> { using type = u16; };
-template<> struct stdint<4, 0> { using type = s32; };
-template<> struct stdint<4, 1> { using type = u32; };
-template<> struct stdint<8, 0> { using type = s64; };
-template<> struct stdint<8, 1> { using type = u64; };
+template<> struct stdint<1> { using type =  s8; };
+template<> struct stdint<2> { using type = s16; };
+template<> struct stdint<4> { using type = s32; };
+template<> struct stdint<8> { using type = s64; };
 
-template<uint Size, uint Unsigned>
-using stdint_t = typename stdint<Size, Unsigned>::type;
+template<uint Size>
+using stdint_t = typename stdint<Size>::type;
+
+template<uint Size>
+struct stduint {};
+
+template<> struct stduint<1> { using type =  u8; };
+template<> struct stduint<2> { using type = u16; };
+template<> struct stduint<4> { using type = u32; };
+template<> struct stduint<8> { using type = u64; };
+
+template<uint Size>
+using stduint_t = typename stduint<Size>::type;
 
 }  // namespace eggcpt
