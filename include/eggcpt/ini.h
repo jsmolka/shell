@@ -9,6 +9,7 @@
 #include <eggcpt/algorithm.h>
 #include <eggcpt/errors.h>
 #include <eggcpt/filesystem.h>
+#include <eggcpt/functional.h>
 #include <eggcpt/fmt.h>
 
 namespace eggcpt
@@ -129,9 +130,7 @@ public:
         token = consumer.value;
 
         consumer.consume(IsSpace<char>());
-        consumer.consume([](char ch) {
-            return true;
-        });
+        consumer.consume(Tautology());
         comment = consumer.value;
     }
 
@@ -175,9 +174,7 @@ public:
             "Expected ] at position {}: {}", consumer.pos, line);
 
         throwIf<IniParseError>(
-            consumer.consumeSome([](char ch) {
-                return true;
-            }),
+            consumer.consumeSome(Tautology()),
             "Expected no chars at position {}: {}", consumer.pos, line);
     }
 
@@ -216,9 +213,7 @@ public:
             "Expected = at position {}: {}", consumer.pos, line);
 
         consumer.consume(IsSpace<char>());
-        consumer.consume([](char ch) {
-            return true;
-        });
+        consumer.consume(Tautology());
         value = consumer.value;
     }
 
