@@ -1,16 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <optional>
-#include <sstream>
-#include <string>
 #include <vector>
 
 #include <eggcpt/algorithm.h>
 #include <eggcpt/errors.h>
-#include <eggcpt/filesystem.h>
 #include <eggcpt/functional.h>
-#include <eggcpt/fmt.h>
 #include <eggcpt/parse.h>
 
 namespace eggcpt
