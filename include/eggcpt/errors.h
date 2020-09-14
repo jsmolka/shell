@@ -13,8 +13,12 @@ class Error : public std::exception
 {
 public:
     Error(const std::string& message)
-        : std::exception(message.c_str())
-        , message(message) {}
+        : message(message) {}
+
+    const char* what() const noexcept override
+    {
+        return message.c_str();
+    }
 
 private:
     std::string message;
@@ -26,6 +30,12 @@ public:
     template<typename... Args>
     FormattedError(const std::string& format, Args&&... args)
         : Error(fmt::format(format, std::forward<Args>(args)...)) {}
+};
+
+class ParseError : public FormattedError
+{
+public:
+    using FormattedError::FormattedError;
 };
 
 template<typename Exception, typename... Args>

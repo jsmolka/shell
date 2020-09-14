@@ -19,10 +19,10 @@ TEST_CASE("options::bool")
     
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
-    REQUIRE( result.get<bool>("-b"));
-    REQUIRE( result.get<bool>("-c"));
-    REQUIRE( result.get<bool>("-d"));
-    REQUIRE( result.get<bool>( "e"));
+    REQUIRE(*result.find<bool>("-b"));
+    REQUIRE(*result.find<bool>("-c"));
+    REQUIRE(*result.find<bool>("-d"));
+    REQUIRE(*result.find<bool>( "e"));
 }
 
 TEST_CASE("options::int")
@@ -44,10 +44,10 @@ TEST_CASE("options::int")
     
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
-    REQUIRE( result.get<int>("-b") == 1);
-    REQUIRE( result.get<int>("-c") == 2);
-    REQUIRE( result.get<int>("-d") == 4);
-    REQUIRE( result.get<int>( "e") == 8);
+    REQUIRE(*result.find<int>("-b") == 1);
+    REQUIRE(*result.find<int>("-c") == 2);
+    REQUIRE(*result.find<int>("-d") == 4);
+    REQUIRE(*result.find<int>( "e") == 8);
 }
 
 TEST_CASE("options::double")
@@ -69,10 +69,10 @@ TEST_CASE("options::double")
     
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
-    REQUIRE( result.get<double>("-b") == 1.1);
-    REQUIRE( result.get<double>("-c") == 2.1);
-    REQUIRE( result.get<double>("-d") == 4.1);
-    REQUIRE( result.get<double>( "e") == 8.1);
+    REQUIRE(*result.find<double>("-b") == 1.1);
+    REQUIRE(*result.find<double>("-c") == 2.1);
+    REQUIRE(*result.find<double>("-d") == 4.1);
+    REQUIRE(*result.find<double>( "e") == 8.1);
 }
 
 TEST_CASE("options::string")
@@ -94,13 +94,13 @@ TEST_CASE("options::string")
     
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
-    REQUIRE( result.get<std::string>("-b") == "test1");
-    REQUIRE( result.get<std::string>("-c") == "test2");
-    REQUIRE( result.get<std::string>("-d") == "test3");
-    REQUIRE( result.get<std::string>( "e") == "test4");
+    REQUIRE(*result.find<std::string>("-b") == "test1");
+    REQUIRE(*result.find<std::string>("-c") == "test2");
+    REQUIRE(*result.find<std::string>("-d") == "test3");
+    REQUIRE(*result.find<std::string>( "e") == "test4");
 }
 
-TEST_CASE("options::OptionParseError1")
+TEST_CASE("options::ParseError1")
 {
     const char* argv1[] = { "program.exe", "-x" };
     const char* argv2[] = { "program.exe", "-x", "wrong" };
@@ -114,12 +114,12 @@ TEST_CASE("options::OptionParseError1")
     options2.add({ "-x" }, "", Options::value<int>());
     options3.add({ "-x" }, "", Options::value<bool>());
 
-    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionParseError);
-    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionParseError);
-    CHECK_THROWS_AS(options3.parse(ARGC(argv3), argv3), OptionParseError);
+    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), ParseError);
+    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), ParseError);
+    CHECK_THROWS_AS(options3.parse(ARGC(argv3), argv3), ParseError);
 }
 
-TEST_CASE("options::OptionParseError2")
+TEST_CASE("options::ParseError2")
 {
     const char* argv1[] = { "program.exe" };
     const char* argv2[] = { "program.exe" };
@@ -130,8 +130,8 @@ TEST_CASE("options::OptionParseError2")
     options1.add({ "-x" }, "", Options::value<int>());
     options2.add({  "x" }, "", Options::value<int>()->positional());
 
-    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), OptionParseError);
-    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), OptionParseError);
+    CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), ParseError);
+    CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), ParseError);
 }
 
 TEST_CASE("options::help")

@@ -1,9 +1,6 @@
 TEST_CASE("SectionToken")
 {
-    using Token = detail::SectionToken;
-    using Error = IniParseError;
-
-    Token token;
+    detail::SectionToken token;
     
     token.parse("[test]");
     REQUIRE(token.section == "test");
@@ -11,24 +8,21 @@ TEST_CASE("SectionToken")
     token.parse("[test_test]");
     REQUIRE(token.section == "test_test");
 
-    REQUIRE_THROWS_AS(token.parse(""), Error);
-    REQUIRE_THROWS_AS(token.parse("["), Error);
-    REQUIRE_THROWS_AS(token.parse("]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[[]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[test.]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[test-]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[test][]"), Error);
-    REQUIRE_THROWS_AS(token.parse("[test]test"), Error);
-    REQUIRE_THROWS_AS(token.parse("[[test]"), Error);
+    REQUIRE_THROWS_AS(token.parse(""), ParseError);
+    REQUIRE_THROWS_AS(token.parse("["), ParseError);
+    REQUIRE_THROWS_AS(token.parse("]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[[]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[test.]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[test-]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[test][]"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[test]test"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("[[test]"), ParseError);
 }
 
 TEST_CASE("CommentToken")
 {
-    using Token = detail::CommentToken;
-    using Error = IniParseError;
-
-    Token token;
+    detail::CommentToken token;
     
     token.parse("# test");
     REQUIRE(token.token == "#");
@@ -62,15 +56,12 @@ TEST_CASE("CommentToken")
     REQUIRE(token.token == ";");
     REQUIRE(token.comment == ";");
 
-    REQUIRE_THROWS_AS(token.parse(""), Error);
+    REQUIRE_THROWS_AS(token.parse(""), ParseError);
 }
 
 TEST_CASE("ValueToken")
 {
-    using Token = detail::ValueToken;
-    using Error = IniParseError;
-
-    Token token;
+    detail::ValueToken token;
     
     token.parse("test = test");
     REQUIRE(token.key == "test");
@@ -92,12 +83,12 @@ TEST_CASE("ValueToken")
     REQUIRE(token.key == "test");
     REQUIRE(token.value == "");
 
-    REQUIRE_THROWS_AS(token.parse(""), Error);
-    REQUIRE_THROWS_AS(token.parse("/=test"), Error);
-    REQUIRE_THROWS_AS(token.parse("test.test = test"), Error);
-    REQUIRE_THROWS_AS(token.parse("test-test = test"), Error);
-    REQUIRE_THROWS_AS(token.parse("test test"), Error);
-    REQUIRE_THROWS_AS(token.parse("=test"), Error);
+    REQUIRE_THROWS_AS(token.parse(""), ParseError);
+    REQUIRE_THROWS_AS(token.parse("/=test"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("test.test = test"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("test-test = test"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("test test"), ParseError);
+    REQUIRE_THROWS_AS(token.parse("=test"), ParseError);
 }
 
 TEST_CASE("Ini")

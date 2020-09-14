@@ -11,12 +11,6 @@
 namespace eggcpt
 {
 
-class IniParseError : public FormattedError
-{
-public:
-    using FormattedError::FormattedError;
-};
-
 namespace detail
 {
 
@@ -117,7 +111,7 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '#'
                     || ch == ';';
@@ -149,13 +143,13 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '[';
             }),
             "Expected [ at position {}: {}", consumer.pos, line);
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
@@ -163,13 +157,13 @@ public:
             "Expected section char at position {}: {}", consumer.pos, line);
         section = consumer.value;
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == ']';
             }),
             "Expected ] at position {}: {}", consumer.pos, line);
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             consumer.consumeSome(Tautology()),
             "Expected no chars at position {}: {}", consumer.pos, line);
     }
@@ -192,7 +186,7 @@ public:
     {
         Consumer consumer(line);
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
@@ -202,7 +196,7 @@ public:
 
         consumer.consume(IsSpace<char>());
 
-        throwIf<IniParseError>(
+        throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == '=';
             }),

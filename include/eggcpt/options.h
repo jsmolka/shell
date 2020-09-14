@@ -1,23 +1,14 @@
 #pragma once
 
 #include <memory>
-#include <optional>
-#include <sstream>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include <eggcpt/algorithm.h>
 #include <eggcpt/errors.h>
+#include <eggcpt/parse.h>
 
 namespace eggcpt
 {
-
-class OptionParseError : public FormattedError
-{
-public:
-    using FormattedError::FormattedError;
-};
 
 namespace detail
 {
@@ -25,90 +16,74 @@ namespace detail
 class Value : public std::enable_shared_from_this<Value>
 {
 public:
-    using Pointer = std::shared_ptr<Value>;
-
-    explicit Value(bool optional)
-        : m_optional(optional)
-        , m_positional(false) {}
+    using Shared = std::shared_ptr<Value>;
 
     virtual ~Value() = default;
 
-    Pointer optional()
+    Shared optional()
     {
-        m_optional = true;
+        opt = true;
         return shared_from_this();
     }
 
     bool isOptional() const
     {
-        return m_optional;
+        return opt;
     }
 
-    Pointer positional()
+    Shared positional()
     {
-        m_positional = true;
+        pos = true;
         return shared_from_this();
     }
 
     bool isPositional() const
     {
-        return m_positional;
+        return pos;
     }
 
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
+
     virtual bool hasValue() const = 0;
     virtual bool hasDefaultValue() const = 0;
+
     virtual std::string getValue() const = 0;
     virtual std::string getDefaultValue() const = 0;
 
-private:
-    bool m_optional;
-    bool m_positional;
+protected:
+    bool opt = false;
+    bool pos = false;
 };
 
 template<typename T>
 class OptionValue : public Value
 {
 public:
-    OptionValue()
-        : Value(false)
-        , value(std::nullopt)
-        , default_value(std::nullopt) {}
+    OptionValue() = default;
 
     explicit OptionValue(const T& value)
-        : Value(true)
-        , value(value)
-        , default_value(value) {}
+        : value(value)
+        , default_value(value)
+    {
+        opt = true;
+    }
 
     void parse() override
     {
         if constexpr (std::is_same_v<T, bool>)
             value = true;
         else
-            throw OptionParseError("Missing value for non-bool option");
+            throw ParseError("Missing value for non-bool option");
     }
 
     void parse(const std::string& data) override
     {
-        if constexpr (std::is_same_v<T, bool>)
-        {
-                 if (data == "1" || data == "true" ) value = true;
-            else if (data == "0" || data == "false") value = false;
-            else throw OptionParseError("Invalid bool data: {}", data);
-        }
-        else
-        {
-            T result;
+        const auto optional = eggcpt::parse<T>(data);
 
-            std::stringstream stream;
-            stream << data;
-            stream >> result;
+        throwIf<ParseError>(!optional.has_value(), "Invalid data: {}", data);
 
-            throwIf<OptionParseError>(!stream, "Invalid data: {}", data);
-
-            this->value = result;
-        }
+        value = *optional;
     }
 
     bool hasValue() const override
@@ -123,39 +98,40 @@ public:
 
     std::string getValue() const override
     {
-        std::stringstream stream;
-        stream << std::boolalpha;
-        stream << *value;
-
-        return stream.str();
+        return toString(*value);
     }
 
     std::string getDefaultValue() const override
     {
-        std::stringstream stream;
-        stream << std::boolalpha;
-        stream << *default_value;
-
-        return stream.str();
+        return toString(*default_value);
     }
 
     std::optional<T> value;
 
 private:
+    static std::string toString(const T& value)
+    {
+        std::stringstream stream;
+        stream << std::boolalpha;
+        stream << value;
+
+        return stream.str();
+    }
+
     std::optional<T> default_value;
 };
 
 struct Option
 {
     std::vector<std::string> keys;
-    Value::Pointer value;
+    Value::Shared value;
     std::string desc;
 };
 
 class OptionVector : public std::vector<Option>
 {
 public:
-    Value::Pointer find(const std::string& key) const
+    Value::Shared find(const std::string& key) const
     {
         for (const auto& [keys, value, desc] : *this)
         {
@@ -241,21 +217,29 @@ public:
     }
 
     template<typename T>
-    T get(const std::string& key) const
+    std::optional<T> find(const std::string& key) const
     {
-        return *std::static_pointer_cast<
-            detail::OptionValue<T>>(options.find(key))->value;
+        if (const auto value = options.find(key))
+            return std::static_pointer_cast<detail::OptionValue<T>>(value)->value;
+
+        return std::nullopt;
+    }
+
+    template<typename T>
+    T findOr(const std::string& key, const T& fallback)
+    {
+        return find<T>(key).value_or(fallback);
     }
 
 private:
-    void copyAndValidate(detail::OptionVector& other)
+    void populate(detail::OptionVector& other)
     {
         for (const auto& [keys, value, desc] : other)
         {
             if (value->hasValue())
                 options.push_back({ keys, value, desc });
             else
-                throwIf<OptionParseError>(!value->isOptional(), "Missing option: {}", join(keys, ", "));
+                throwIf<ParseError>(!value->isOptional(), "Missing option: {}", join(keys, ", "));
         }
     }
 
@@ -271,18 +255,18 @@ public:
         , positional("Positional") {}
 
     template<typename T>
-    static detail::Value::Pointer value()
+    static detail::Value::Shared value()
     {
         return std::make_shared<detail::OptionValue<T>>();
     }
 
     template<typename T>
-    static detail::Value::Pointer value(const T& value)
+    static detail::Value::Shared value(const T& value)
     {
         return std::make_shared<detail::OptionValue<T>>(value);
     }
 
-    void add(const std::vector<std::string>& keys, const std::string& desc, detail::Value::Pointer value)
+    void add(const std::vector<std::string>& keys, const std::string& desc, detail::Value::Shared value)
     {
         auto& options = value->isPositional()
             ? positional.options
@@ -315,8 +299,8 @@ public:
         }
 
         OptionsResult result;
-        result.copyAndValidate(keyword.options);
-        result.copyAndValidate(positional.options);
+        result.populate(keyword.options);
+        result.populate(positional.options);
 
         return result;
     }
