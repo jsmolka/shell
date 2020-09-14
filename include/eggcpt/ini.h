@@ -11,6 +11,7 @@
 #include <eggcpt/filesystem.h>
 #include <eggcpt/functional.h>
 #include <eggcpt/fmt.h>
+#include <eggcpt/parse.h>
 
 namespace eggcpt
 {
@@ -228,37 +229,6 @@ public:
 
 }  // namespace detail
 
-namespace ini
-{
-
-template<typename T>
-std::optional<T> parse(const std::string& data)
-{
-    T value{};
-    std::stringstream stream;
-    stream << std::boolalpha;
-    stream << data;
-    stream >> value;
-
-    return stream
-        ? std::optional(value)
-        : std::nullopt;
-}
-
-template<>
-std::optional<std::string> parse(const std::string& data)
-{
-    return data;
-}
-
-template<>
-std::optional<filesystem::path> parse(const std::string& data)
-{
-    return filesystem::u8path(data);
-}
-
-}  // namespace ini
-
 class Ini
 {
 public:
@@ -296,7 +266,7 @@ public:
     std::optional<T> find(const std::string& section, const std::string& key) const
     {
         if (const auto token = findToken(section, key))
-            return ini::parse<T>(token->value);
+            return parse<T>(token->value);
 
         return std::nullopt;
     }
