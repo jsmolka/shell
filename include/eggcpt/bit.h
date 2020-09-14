@@ -19,7 +19,7 @@ template<typename T>
 struct bits : std::integral_constant<uint, CHAR_BIT * sizeof(T)> {};
 
 template<typename T>
-constexpr typename bits<T>::value_type bits_v = bits<T>::value;
+inline constexpr typename bits<T>::value_type bits_v = bits<T>::value;
 
 template<uint Size, typename Integral>
 constexpr Integral ones()

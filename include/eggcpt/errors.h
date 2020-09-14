@@ -13,12 +13,8 @@ class Error : public std::exception
 {
 public:
     Error(const std::string& message)
-        : message(message) {}
-
-    const char* what() const noexcept override
-    {
-        return message.c_str();
-    }
+        : std::exception(message.c_str())
+        , message(message) {}
 
 private:
     std::string message;
