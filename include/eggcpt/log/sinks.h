@@ -123,5 +123,8 @@ void setSink(Sink&& sink, Sinks&&... sinks)
 
 }  // namespace eggcpt
 
-#define EGGCPT_LOG(prefix, level, ...) \
-    eggcpt::detail::default_sink->sink(prefix " " EGGCPT_FUNCTION, fmt::format(__VA_ARGS__), level)
+#define EGGCPT_LOG(prefix, level, ...)                  \
+    eggcpt::detail::default_sink->sink(                 \
+        fmt::format("{} {}", prefix, EGGCPT_FUNCTION),  \
+        fmt::format(__VA_ARGS__),                       \
+        level)

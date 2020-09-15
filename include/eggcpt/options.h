@@ -74,14 +74,14 @@ public:
         if constexpr (std::is_same_v<T, bool>)
             value = true;
         else
-            throw ParseError("Missing value for non-bool option");
+            throw ParseError("Expected value for non-bool option but got none");
     }
 
     void parse(const std::string& data) override
     {
         const auto optional = eggcpt::parse<T>(data);
 
-        throwIf<ParseError>(!optional.has_value(), "Invalid data: {}", data);
+        throwIf<ParseError>(!optional.has_value(), "Expected valid data but got '{}'", data);
 
         value = *optional;
     }
@@ -239,7 +239,7 @@ private:
             if (value->hasValue())
                 options.push_back({ keys, value, desc });
             else
-                throwIf<ParseError>(!value->isOptional(), "Missing option: {}", join(keys, ", "));
+                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", keys.front());
         }
     }
 

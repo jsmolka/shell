@@ -101,6 +101,8 @@ public:
     }
 };
 
+#define PARSE_ERROR_EXPECTED(expected) "Expected {} at position {} in line '{}' but got '{}'", expected, consumer.pos, line, line[consumer.pos]
+
 class CommentToken : public Token
 {
 public:
@@ -116,7 +118,7 @@ public:
                 return ch == '#'
                     || ch == ';';
             }),
-            "Expected # or ; at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("'#' or ';'"));
         token = consumer.value;
 
         consumer.consume(IsSpace<char>());
@@ -147,25 +149,25 @@ public:
             !consumer.eatOne([](char ch) {
                 return ch == '[';
             }),
-            "Expected [ at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("'['"));
 
         throwIf<ParseError>(
             !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
             }),
-            "Expected section char at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("section char"));
         section = consumer.value;
 
         throwIf<ParseError>(
             !consumer.eatOne([](char ch) {
                 return ch == ']';
             }),
-            "Expected ] at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("']'"));
 
         throwIf<ParseError>(
             consumer.consumeSome(Tautology()),
-            "Expected no chars at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("no char"));
     }
 
     std::string string() const override
@@ -191,7 +193,7 @@ public:
                 return std::isalnum(ch)
                     || ch == '_';
             }),
-            "Expected key char at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("key char"));
         key = consumer.value;
 
         consumer.consume(IsSpace<char>());
@@ -200,7 +202,7 @@ public:
             !consumer.eatOne([](char ch) {
                 return ch == '=';
             }),
-            "Expected = at position {}: {}", consumer.pos, line);
+            PARSE_ERROR_EXPECTED("'='"));
 
         consumer.consume(IsSpace<char>());
         consumer.consume(Tautology());
@@ -215,6 +217,8 @@ public:
     std::string key;
     std::string value;
 };
+
+#undef PARSE_ERROR_EXPECTED
 
 }  // namespace detail
 
