@@ -23,13 +23,13 @@ std::optional<T> parse(const std::string& data)
 }
 
 template<>
-std::optional<std::string> parse(const std::string& data)
+inline std::optional<std::string> parse(const std::string& data)
 {
     return data;
 }
 
 template<>
-std::optional<filesystem::path> parse(const std::string& data)
+inline std::optional<filesystem::path> parse(const std::string& data)
 {
     return filesystem::u8path(data);
 }

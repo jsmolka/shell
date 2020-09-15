@@ -7,6 +7,7 @@
 #include <eggcpt/filesystem.h>
 #include <eggcpt/fmt.h>
 #include <eggcpt/int.h>
+#include <eggcpt/macros.h>
 #include <eggcpt/windows.h>
 
 namespace eggcpt
