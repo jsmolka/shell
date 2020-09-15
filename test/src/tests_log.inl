@@ -9,7 +9,7 @@ TEST_CASE("logging::levels")
 
 TEST_CASE("logging::sinks")
 {
-    setSink(MultiSink(ConsoleSink(), ColoredConsoleSink()));
+    setSink(ConsoleSink(), ColoredConsoleSink());
 
     EGGCPT_LOG_INFO("MultiSink");
 

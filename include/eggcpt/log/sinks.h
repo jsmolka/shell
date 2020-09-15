@@ -18,6 +18,8 @@ enum class Level { Debug, Info, Warn, Error, Fatal };
 class SinkInterface
 {
 public:
+    using Shared = std::shared_ptr<SinkInterface>;
+
     virtual ~SinkInterface() = default;
 
     virtual void sink(const std::string& message, Level level) = 0;
@@ -78,6 +80,9 @@ private:
     std::ofstream stream;
 };
 
+namespace detail
+{
+
 template<typename... Sinks>
 class MultiSink : public SinkInterface
 {
@@ -94,22 +99,25 @@ public:
     }
 
 private:
-    std::array<std::shared_ptr<SinkInterface>, sizeof...(Sinks)> sinks;
+    std::array<SinkInterface::Shared, sizeof...(Sinks)> sinks;
 };
 
-namespace detail
-{
-
-inline std::shared_ptr<SinkInterface> default_sink = std::make_shared<ColoredConsoleSink>();
+inline SinkInterface::Shared default_sink = std::make_shared<ColoredConsoleSink>();
 
 }  // namespace detail
 
-template<typename Sink>
-void setSink(Sink&& sink)
+template<typename Sink, typename... Sinks>
+void setSink(Sink&& sink, Sinks&&... sinks)
 {
     static_assert(std::is_base_of_v<SinkInterface, Sink>);
+    static_assert(std::conjunction_v<std::is_base_of<SinkInterface, Sinks>...>);
 
-    detail::default_sink = std::make_shared<Sink>(std::move(sink));
+    if constexpr (sizeof...(Sinks) == 0)
+        detail::default_sink = std::make_shared<Sink>(std::move(sink));
+    else 
+        detail::default_sink = std::make_shared<
+            detail::MultiSink<Sink, Sinks...>>(
+                std::move(sink), std::move(sinks)...);
 }
 
 }  // namespace eggcpt
