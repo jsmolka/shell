@@ -22,15 +22,15 @@ public:
 
     virtual ~SinkInterface() = default;
 
-    virtual void sink(const std::string& message, Level level) = 0;
+    virtual void sink(const std::string& location, const std::string& message, Level level) = 0;
 };
 
 class ConsoleSink : public SinkInterface
 {
 public:
-    void sink(const std::string& message, Level) override
+    void sink(const std::string& location, const std::string& message, Level) override
     {
-        fmt::print(message);
+        fmt::print("{}: {}\n", location, message);
     }
 };
 
@@ -50,16 +50,17 @@ public:
         #endif
     }
 
-    void sink(const std::string& message, Level level) override
+    void sink(const std::string& location, const std::string& message, Level level) override
     {
+        fmt::text_style style;
         switch (level)
         {
-        case Level::Debug: fmt::print(fmt::fg(fmt::rgb( 97, 214, 214)), message); break;
-        case Level::Warn:  fmt::print(fmt::fg(fmt::rgb(249, 241, 165)), message); break;
-        case Level::Error: fmt::print(fmt::fg(fmt::rgb(231,  72,  86)), message); break;
-        case Level::Fatal: fmt::print(fmt::fg(fmt::rgb(180,   0, 158)), message); break;
-        default:           fmt::print(                                  message); break;
+        case Level::Debug: style = fmt::fg(fmt::rgb( 97, 214, 214)); break;
+        case Level::Warn:  style = fmt::fg(fmt::rgb(249, 241, 165)); break;
+        case Level::Error: style = fmt::fg(fmt::rgb(231,  72,  86)); break;
+        case Level::Fatal: style = fmt::fg(fmt::rgb(180,   0, 158)); break;
         }
+        fmt::print(style, "{}: {}\n", location, message);
     }
 };
 
@@ -70,10 +71,10 @@ public:
         : stream(filesystem::makeAbsolute(file),
             trunc ? std::ios::trunc : std::ios::app) {}
 
-    void sink(const std::string& message, Level) override
+    void sink(const std::string& location, const std::string& message, Level) override
     {
         if (stream.is_open())
-            stream << message;
+            stream << location << ": " << message << "\n";
     }
 
 private:
@@ -92,10 +93,10 @@ public:
     MultiSink(Sinks&&... sinks)
         : sinks({ std::make_shared<Sinks>(std::move(sinks))... }) {}
 
-    void sink(const std::string& message, Level level) override
+    void sink(const std::string& location, const std::string& message, Level level) override
     {
         for (auto& sink : sinks)
-            sink->sink(message, level);
+            sink->sink(location, message, level);
     }
 
 private:
@@ -122,7 +123,5 @@ void setSink(Sink&& sink, Sinks&&... sinks)
 
 }  // namespace eggcpt
 
-#define EGGCPT_LOG(prefix, level, ...)                                  \
-    eggcpt::detail::default_sink->sink(                                 \
-        fmt::format(prefix" {}:{} :: {}\n", EGGCPT_FUNCTION, __LINE__,  \
-            fmt::format(__VA_ARGS__)), level)
+#define EGGCPT_LOG(prefix, level, ...) \
+    eggcpt::detail::default_sink->sink(prefix " " EGGCPT_FUNCTION, fmt::format(__VA_ARGS__), level)
