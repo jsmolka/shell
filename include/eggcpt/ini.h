@@ -236,7 +236,7 @@ public:
         {
             trim(line);
 
-            Token token = makeToken(line);
+            Token token = tokenize(line);
             token->parse(line);
 
             tokens.push_back(token);
@@ -280,11 +280,17 @@ private:
     using Token = std::shared_ptr<detail::Token>;
     using ValueToken = std::shared_ptr<detail::ValueToken>;
 
-    static Token makeToken(const std::string& line)
+    static Token tokenize(const std::string& line)
     {
-        if (line.empty()) return std::make_shared<detail::BlankToken>();
-        if (line.front() == '#') return std::make_shared<detail::CommentToken>();
-        if (line.front() == '[') return std::make_shared<detail::SectionToken>();
+        if (line.empty())
+            return std::make_shared<detail::BlankToken>();
+
+        switch (line.front())
+        {
+        case '#': return std::make_shared<detail::CommentToken>(); break;
+        case ';': return std::make_shared<detail::CommentToken>(); break;
+        case '[': return std::make_shared<detail::SectionToken>(); break;
+        }
         return std::make_shared<detail::ValueToken>();
     }
 
