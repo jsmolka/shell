@@ -121,6 +121,7 @@
     <ClInclude Include="eggcpt\errors.h" />
     <ClInclude Include="eggcpt\env.h" />
     <ClInclude Include="eggcpt\functional.h" />
+    <ClInclude Include="eggcpt\hash.h" />
     <ClInclude Include="eggcpt\locale.h" />
     <ClInclude Include="eggcpt\log\all.h" />
     <ClInclude Include="eggcpt\log\debug.h" />
