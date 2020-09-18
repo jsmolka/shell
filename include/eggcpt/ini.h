@@ -287,9 +287,9 @@ private:
 
         switch (line.front())
         {
-        case '#': return std::make_shared<detail::CommentToken>(); break;
-        case ';': return std::make_shared<detail::CommentToken>(); break;
-        case '[': return std::make_shared<detail::SectionToken>(); break;
+        case '#': return std::make_shared<detail::CommentToken>();
+        case ';': return std::make_shared<detail::CommentToken>();
+        case '[': return std::make_shared<detail::SectionToken>();
         }
         return std::make_shared<detail::ValueToken>();
     }
