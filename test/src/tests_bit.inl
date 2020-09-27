@@ -25,6 +25,13 @@ TEST_CASE("bit::mask")
     REQUIRE(bit::mask< 0, 32, int>() == 0xFFFF'FFFF);
 }
 
+TEST_CASE("bit::byte")
+{
+    REQUIRE(bit::byte<0>(0xAABBCC) == 0xCC);
+    REQUIRE(bit::byte<1>(0xAABBCC) == 0xBB);
+    REQUIRE(bit::byte<2>(0xAABBCC) == 0xAA);
+}
+
 TEST_CASE("bit::seq")
 {
     u16 x = 0xDEAD;

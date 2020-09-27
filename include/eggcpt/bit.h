@@ -52,6 +52,15 @@ constexpr Integral seq(Integral value)
     return (value >> Index) & ones<Size, Integral>();
 }
 
+template<uint Index, typename Integral>
+constexpr u8 byte(Integral value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Index < sizeof(Integral));
+
+    return static_cast<u8>(value >> (CHAR_BIT * Index));
+}
+
 template<typename Integral>
 constexpr Integral sar(Integral value, uint amount)
 {
