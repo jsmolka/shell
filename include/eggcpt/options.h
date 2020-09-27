@@ -22,24 +22,24 @@ public:
 
     Shared optional()
     {
-        opt = true;
+        is_optional = true;
         return shared_from_this();
     }
 
     bool isOptional() const
     {
-        return opt;
+        return is_optional;
     }
 
     Shared positional()
     {
-        pos = true;
+        is_positional = true;
         return shared_from_this();
     }
 
     bool isPositional() const
     {
-        return pos;
+        return is_positional;
     }
 
     virtual void parse() = 0;
@@ -48,12 +48,11 @@ public:
     virtual bool hasValue() const = 0;
     virtual bool hasDefaultValue() const = 0;
 
-    virtual std::string getValue() const = 0;
-    virtual std::string getDefaultValue() const = 0;
+    virtual std::string info() const = 0;
 
 protected:
-    bool opt = false;
-    bool pos = false;
+    bool is_optional = false;
+    bool is_positional = false;
 };
 
 template<typename T>
@@ -66,7 +65,7 @@ public:
         : value(value)
         , default_value(value)
     {
-        opt = true;
+        is_optional = true;
     }
 
     void parse() override
@@ -96,28 +95,20 @@ public:
         return default_value.has_value();
     }
 
-    std::string getValue() const override
+    std::string info() const override
     {
-        return toString(*value);
-    }
-
-    std::string getDefaultValue() const override
-    {
-        return toString(*default_value);
+        switch (static_cast<int>(hasDefaultValue()) << 1 | static_cast<int>(isOptional()))
+        {
+        case 0b01: return fmt::format(" (optional)");
+        case 0b10: return fmt::format(" (default: {})", *default_value);
+        case 0b11: return fmt::format(" (default: {}, optional)", *default_value);
+        }
+        return std::string();
     }
 
     std::optional<T> value;
 
 private:
-    static std::string toString(const T& value)
-    {
-        std::stringstream stream;
-        stream << std::boolalpha;
-        stream << value;
-
-        return stream.str();
-    }
-
     std::optional<T> default_value;
 };
 
@@ -172,12 +163,12 @@ public:
 
         for (const auto& [keys, value, desc] : options)
         {
-            const auto key = join(keys, kDelimiter);
-            const auto def = value->hasDefaultValue()
-                ? fmt::format(" (default: {})", value->getDefaultValue())
-                : std::string();
-
-            result.append(fmt::format("{:<{}}{}{}\n", key, padding, desc, def));
+            result.append(fmt::format(
+                "{:<{}}{}{}\n",
+                join(keys, kDelimiter),
+                padding,
+                desc,
+                value->info()));
         }
         return result;
     }
@@ -275,7 +266,7 @@ public:
         options.push_back({ keys, value, desc });
     }
 
-    OptionsResult parse(int argc, const char* argv[])
+    OptionsResult parse(int argc, char* argv[])
     {
         int pos = 1;
         int idx = 0;
