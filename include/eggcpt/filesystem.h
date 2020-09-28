@@ -8,6 +8,8 @@
 #  include <experimental/filesystem>
 #endif
 
+#include <eggcpt/fmt.h>
+#include <eggcpt/parse.h>
 #include <eggcpt/traits.h>
 
 namespace eggcpt::filesystem
@@ -88,3 +90,25 @@ bool write(const path& file, const Container& src)
 }
 
 }  // namespace eggcpt::filesystem
+
+template<>
+struct fmt::formatter<eggcpt::filesystem::path>
+{
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const eggcpt::filesystem::path& path, FormatContext& ctx)
+    {
+        return fmt::format_to(ctx.out(), "{}", path.string());
+    }
+};
+
+template<>
+inline std::optional<eggcpt::filesystem::path> eggcpt::parse(const std::string& data)
+{
+    return filesystem::u8path(data);
+}

@@ -4,8 +4,6 @@
 #include <sstream>
 #include <string>
 
-#include <eggcpt/filesystem.h>
-
 namespace eggcpt
 {
 
@@ -26,12 +24,6 @@ template<>
 inline std::optional<std::string> parse(const std::string& data)
 {
     return data;
-}
-
-template<>
-inline std::optional<filesystem::path> parse(const std::string& data)
-{
-    return filesystem::u8path(data);
 }
 
 }  // namespace eggcpt
