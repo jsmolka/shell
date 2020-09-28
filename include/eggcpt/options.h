@@ -97,12 +97,12 @@ public:
 
     std::string info() const override
     {
-        switch (static_cast<int>(hasDefaultValue()) << 1 | static_cast<int>(isOptional()))
-        {
-        case 0b01: return fmt::format(" (optional)");
-        case 0b10: return fmt::format(" (default: {})", *default_value);
-        case 0b11: return fmt::format(" (default: {}, optional)", *default_value);
-        }
+        if (hasDefaultValue())
+            return fmt::format(" (default: {})", *default_value);
+
+        if (isOptional())
+            return fmt::format(" (optional)");
+
         return std::string();
     }
 
@@ -183,7 +183,7 @@ private:
         std::size_t padding = 0;
         for (const auto& option : options)
         {
-            std::size_t size = 0;
+            std::size_t size = 2;
             for (const auto& key : option.keys)
                 size += key.size() + kDelimiter.size();
 
