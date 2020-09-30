@@ -28,7 +28,7 @@ template<typename T>
 using resize_t = decltype(std::declval<T>().resize(1));
 
 template<typename T>
-constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
+inline constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
 inline path base_path = current_path();
 
@@ -110,5 +110,5 @@ struct fmt::formatter<eggcpt::filesystem::path>
 template<>
 inline std::optional<eggcpt::filesystem::path> eggcpt::parse(const std::string& data)
 {
-    return filesystem::u8path(data);
+    return eggcpt::filesystem::u8path(data);
 }
