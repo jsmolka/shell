@@ -1,17 +1,17 @@
 TEST_CASE("logging::levels")
 {
-    EGGCPT_LOG_DEBUG("debug");
-    EGGCPT_LOG_INFO ("info");
-    EGGCPT_LOG_WARN ("warn");
-    EGGCPT_LOG_ERROR("error");
-    EGGCPT_LOG_FATAL("fatal");
+    SHELL_LOG_DEBUG("debug");
+    SHELL_LOG_INFO ("info");
+    SHELL_LOG_WARN ("warn");
+    SHELL_LOG_ERROR("error");
+    SHELL_LOG_FATAL("fatal");
 }
 
 TEST_CASE("logging::sinks")
 {
     setSink(ConsoleSink(), ColoredConsoleSink());
 
-    EGGCPT_LOG_INFO("MultiSink");
+    SHELL_LOG_INFO("MultiSink");
 
     setSink(ColoredConsoleSink());
 }

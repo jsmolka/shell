@@ -1,20 +1,20 @@
-#include <eggcpt/algorithm.h>
-#include <eggcpt/bit.h>
-#include <eggcpt/bitfield.h>
-#include <eggcpt/errors.h>
-#include <eggcpt/filesystem.h>
-#include <eggcpt/ini.h>
-#include <eggcpt/iterator.h>
-#include <eggcpt/locale.h>
-#include <eggcpt/log/all.h>
-#include <eggcpt/options.h>
-#include <eggcpt/traits.h>
-#include <eggcpt/utility.h>
+#include <shell/algorithm.h>
+#include <shell/bit.h>
+#include <shell/bitfield.h>
+#include <shell/errors.h>
+#include <shell/filesystem.h>
+#include <shell/ini.h>
+#include <shell/iterator.h>
+#include <shell/locale.h>
+#include <shell/log/all.h>
+#include <shell/options.h>
+#include <shell/traits.h>
+#include <shell/utility.h>
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-using namespace eggcpt;
+using namespace shell;
 using namespace std::string_literals;
 
 #include "tests_algorithm.inl"
