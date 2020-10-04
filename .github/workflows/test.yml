@@ -49,7 +49,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build tests
+      - name: Build
         run: |
           mkdir test/build
           cd test/build
