@@ -21,7 +21,7 @@ jobs:
           msbuild /property:Configuration=Release shell.sln
 
       - name: Run
-        run: bin/Release/test.exe
+        run: bin\Release\test.exe
 
   test-linux:
     runs-on: ubuntu-latest
