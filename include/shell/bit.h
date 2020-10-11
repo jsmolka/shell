@@ -33,6 +33,18 @@ constexpr Integral ones()
         return static_cast<Integral>(~(~0ULL << Size));
 }
 
+template<typename Integral>
+Integral ones(uint size)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(size <= bits_v<Integral>);
+
+    if (size == bits_v<Integral>)
+        return static_cast<Integral>(~0ULL);
+    else
+        return static_cast<Integral>(~(~0ULL << size));
+}
+
 template<uint Index, uint Size, typename Integral>
 constexpr Integral mask()
 {
@@ -41,6 +53,16 @@ constexpr Integral mask()
     static_assert(Index < bits_v<Integral>);
 
     return ones<Size, Integral>() << Index;
+}
+
+template<typename Integral>
+Integral mask(uint index, uint size)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(index + size <= bits_v<Integral>);
+    SHELL_ASSERT(index < bits_v<Integral>);
+
+    return ones<Integral>(size) << index;
 }
 
 template<uint Index, uint Size, typename Integral>
@@ -52,6 +74,15 @@ constexpr Integral seq(Integral value)
     return (value >> Index) & ones<Size, Integral>();
 }
 
+template<typename Integral>
+Integral seq(Integral value, uint index, uint size)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(index + size <= bits_v<Integral>);
+
+    return (value >> index) & ones<Integral>(size);
+}
+
 template<uint Index, typename Integral>
 constexpr u8 byte(Integral value)
 {
@@ -59,6 +90,55 @@ constexpr u8 byte(Integral value)
     static_assert(Index < sizeof(Integral));
 
     return static_cast<u8>(value >> (CHAR_BIT * Index));
+}
+
+template<typename Integral>
+u8 byte(Integral value, uint index)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(index < sizeof(Integral));
+
+    return static_cast<u8>(value >> (CHAR_BIT * index));
+}
+
+template<uint Index, typename Integral>
+constexpr u8 nibble(Integral value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Index < 2 * sizeof(Integral));
+
+    return (value >> ((CHAR_BIT / 2) * Index)) & 0xF;
+}
+
+template<typename Integral>
+u8 nibble(Integral value, uint index)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(index < 2 * sizeof(Integral));
+
+    return (value >> ((CHAR_BIT / 2) * index)) & 0xF;
+}
+
+template<uint Size, typename Integral>
+constexpr Integral signEx(Integral value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Size <= bits_v<Integral>);
+
+    constexpr Integral kMask = 1ULL << (Size - 1);
+
+    return (value ^ kMask) - kMask;
+}
+
+template<typename Integral>
+Integral signEx(Integral value, uint size)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(size <= bits_v<Integral>);
+
+    Integral mask = 1ULL << (size - 1);
+
+    return (value ^ mask) - mask;
 }
 
 template<typename Integral>
@@ -83,17 +163,6 @@ constexpr Integral msb(Integral value)
     static_assert(std::is_integral_v<Integral>);
 
     return shr(value, bits_v<Integral> - 1);
-}
-
-template<uint Size, typename Integral>
-constexpr Integral signEx(Integral value)
-{
-    static_assert(std::is_integral_v<Integral>);
-    static_assert(Size <= bits_v<Integral>);
-
-    constexpr Integral kMask = 1ULL << (Size - 1);
-
-    return (value ^ kMask) - kMask;
 }
 
 template<typename Integral>
