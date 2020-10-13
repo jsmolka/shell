@@ -4,7 +4,7 @@
 #include <string>
 #include <type_traits>
 
-#include <shell/fmt.h>
+#include <shell/fmt/format.h>
 
 namespace shell
 {

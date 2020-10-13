@@ -120,6 +120,18 @@
     <ClInclude Include="shell\bitfield.h" />
     <ClInclude Include="shell\errors.h" />
     <ClInclude Include="shell\env.h" />
+    <ClInclude Include="shell\fmt\chrono.h" />
+    <ClInclude Include="shell\fmt\color.h" />
+    <ClInclude Include="shell\fmt\compile.h" />
+    <ClInclude Include="shell\fmt\core.h" />
+    <ClInclude Include="shell\fmt\detail\begin.h" />
+    <ClInclude Include="shell\fmt\detail\end.h" />
+    <ClInclude Include="shell\fmt\format.h" />
+    <ClInclude Include="shell\fmt\locale.h" />
+    <ClInclude Include="shell\fmt\os.h" />
+    <ClInclude Include="shell\fmt\ostream.h" />
+    <ClInclude Include="shell\fmt\posix.h" />
+    <ClInclude Include="shell\fmt\ranges.h" />
     <ClInclude Include="shell\functional.h" />
     <ClInclude Include="shell\hash.h" />
     <ClInclude Include="shell\locale.h" />
@@ -141,7 +153,6 @@
     <ClInclude Include="shell\parse.h" />
     <ClInclude Include="shell\traits.h" />
     <ClInclude Include="shell\windows.h" />
-    <ClInclude Include="shell\fmt.h" />
     <ClInclude Include="shell\macros.h" />
     <ClInclude Include="shell\utility.h" />
   </ItemGroup>

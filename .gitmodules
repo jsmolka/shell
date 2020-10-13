@@ -1,5 +1,5 @@
-[submodule "include/shell/external/fmt"]
-    path = include/shell/external/fmt
+[submodule "include/shell/fmt/detail/fmt"]
+    path = include/shell/fmt/detail/fmt
     url = https://github.com/fmtlib/fmt
 
 [submodule "test/catch2"]

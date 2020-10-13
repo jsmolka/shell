@@ -54,9 +54,6 @@
     <ClInclude Include="shell\int.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shell\fmt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shell\bitfield.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,6 +94,42 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\detail\begin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\detail\end.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\chrono.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\compile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\locale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\os.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\ostream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\posix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
