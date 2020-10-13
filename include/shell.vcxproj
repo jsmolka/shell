@@ -126,11 +126,13 @@
     <ClInclude Include="shell\fmt\core.h" />
     <ClInclude Include="shell\fmt\detail\begin.h" />
     <ClInclude Include="shell\fmt\detail\end.h" />
+    <ClInclude Include="shell\fmt\format-inl.h" />
     <ClInclude Include="shell\fmt\format.h" />
     <ClInclude Include="shell\fmt\locale.h" />
     <ClInclude Include="shell\fmt\os.h" />
     <ClInclude Include="shell\fmt\ostream.h" />
     <ClInclude Include="shell\fmt\posix.h" />
+    <ClInclude Include="shell\fmt\printf.h" />
     <ClInclude Include="shell\fmt\ranges.h" />
     <ClInclude Include="shell\functional.h" />
     <ClInclude Include="shell\hash.h" />

@@ -1,7 +1,3 @@
-[submodule "include/shell/fmt/detail/fmt"]
-    path = include/shell/fmt/detail/fmt
-    url = https://github.com/fmtlib/fmt
-
 [submodule "test/catch2"]
     path = test/catch2
     url = https://github.com/catchorg/Catch2

@@ -132,5 +132,11 @@
     <ClInclude Include="shell\fmt\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\fmt\format-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\fmt\printf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
