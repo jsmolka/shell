@@ -8,8 +8,6 @@
 #ifndef FMT_LOCALE_H_
 #define FMT_LOCALE_H_
 
-#define FMT_HEADER_ONLY
-
 #include <locale>
 
 #include "format.h"

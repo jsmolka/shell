@@ -12,8 +12,6 @@
 #ifndef FMT_RANGES_H_
 #define FMT_RANGES_H_
 
-#define FMT_HEADER_ONLY
-
 #include <initializer_list>
 #include <type_traits>
 

@@ -8,8 +8,6 @@
 #ifndef FMT_OSTREAM_H_
 #define FMT_OSTREAM_H_
 
-#define FMT_HEADER_ONLY
-
 #include <ostream>
 
 #include "format.h"

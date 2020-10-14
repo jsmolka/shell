@@ -8,8 +8,6 @@
 #ifndef FMT_OS_H_
 #define FMT_OS_H_
 
-#define FMT_HEADER_ONLY
-
 #if defined(__MINGW32__) || defined(__CYGWIN__)
 // Workaround MinGW bug https://sourceforge.net/p/mingw/bugs/2024/.
 #  undef __STRICT_ANSI__

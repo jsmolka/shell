@@ -8,8 +8,6 @@
 #ifndef FMT_CHRONO_H_
 #define FMT_CHRONO_H_
 
-#define FMT_HEADER_ONLY
-
 #include <chrono>
 #include <ctime>
 #include <locale>

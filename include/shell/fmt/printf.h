@@ -8,8 +8,6 @@
 #ifndef FMT_PRINTF_H_
 #define FMT_PRINTF_H_
 
-#define FMT_HEADER_ONLY
-
 #include <algorithm>  // std::max
 #include <limits>     // std::numeric_limits
 
