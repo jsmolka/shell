@@ -309,8 +309,8 @@ public:
 
     OptionsResult parse(int argc, char* argv[])
     {
-        uint pos = 1;
-        uint idx = 0;
+        int pos = 1;
+        int idx = 0;
 
         while (pos < argc)
         {
