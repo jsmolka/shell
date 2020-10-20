@@ -94,6 +94,7 @@ public:
     virtual void parse(const std::string& data) = 0;
     virtual bool hasValue() const = 0;
     virtual bool hasDefaultValue() const = 0;
+    virtual bool isBoolValue() const = 0;
     virtual std::string info() const = 0;
 
 protected:
@@ -139,6 +140,11 @@ public:
     bool hasDefaultValue() const override
     {
         return default_value.has_value();
+    }
+
+    bool isBoolValue() const override
+    {
+        return std::is_same_v<T, bool>;
     }
 
     std::string info() const override
@@ -318,7 +324,7 @@ public:
 
             if (auto value = keyword.options.find(key))
             {
-                if (pos < argc && !keyword.options.has(argv[pos]))
+                if (pos < argc && !keyword.options.has(argv[pos]) && (!value->isBoolValue() || shell::parse<bool>(argv[pos])))
                     value->parse(argv[pos++]);
                 else
                     value->parse();

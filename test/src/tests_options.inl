@@ -104,7 +104,6 @@ TEST_CASE("options::ParseError1")
 {
     char* argv1[] = { "program.exe", "-x" };
     char* argv2[] = { "program.exe", "-x", "wrong" };
-    char* argv3[] = { "program.exe", "-x", "wrong" };
 
     Options options1("program");
     Options options2("program");
@@ -112,11 +111,9 @@ TEST_CASE("options::ParseError1")
 
     options1.add({ "-x" }, "", Options::value<int>());
     options2.add({ "-x" }, "", Options::value<int>());
-    options3.add({ "-x" }, "", Options::value<bool>());
 
     CHECK_THROWS_AS(options1.parse(ARGC(argv1), argv1), ParseError);
     CHECK_THROWS_AS(options2.parse(ARGC(argv2), argv2), ParseError);
-    CHECK_THROWS_AS(options3.parse(ARGC(argv3), argv3), ParseError);
 }
 
 TEST_CASE("options::ParseError2")
