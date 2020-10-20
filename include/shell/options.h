@@ -13,30 +13,69 @@ namespace shell
 namespace options
 {
 
+class OptionSpec
+{
+public:
+    friend class Options;
+
+    OptionSpec(
+            const std::string& opt1,
+            const std::string& opt2 = std::string(),
+            const std::string& name = std::string())
+        : opt1(opt1), opt2(opt2), name(name)
+    {
+        throwIf<Error>(opt1.empty() && opt2.empty(), "Expected non-empty specification");
+    }
+
+    std::string option() const
+    {
+        return opt1.empty() ? opt2 : opt1;
+    }
+
+    std::string options() const
+    {
+        if (opt1.empty()) return opt2;
+        if (opt2.empty()) return opt1;
+
+        return fmt::format("{}, {}", opt1, opt2);
+    }
+
+    std::string argument() const
+    {
+        if (positional)
+            return fmt::format("<{}>", option());
+
+        return name.empty()
+            ? fmt::format("{}", option())
+            : fmt::format("{} <{}>", option(), name);
+    }
+
+    std::string opt1;
+    std::string opt2;
+    std::string name;
+
+private:
+    bool positional = false;
+};
+
 namespace detail
 {
 
 class Value : public std::enable_shared_from_this<Value>
 {
 public:
-    using Shared = std::shared_ptr<Value>;
+    using Pointer = std::shared_ptr<Value>;
 
     virtual ~Value() = default;
-
-    Shared optional()
-    {
-        is_optional = true;
-        return shared_from_this();
-    }
 
     bool isOptional() const
     {
         return is_optional;
     }
 
-    Shared positional()
+    Pointer optional()
     {
-        is_positional = true;
+        is_optional = true;
         return shared_from_this();
     }
 
@@ -45,12 +84,16 @@ public:
         return is_positional;
     }
 
+    Pointer positional()
+    {
+        is_positional = true;
+        return shared_from_this();
+    }
+
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
-
     virtual bool hasValue() const = 0;
     virtual bool hasDefaultValue() const = 0;
-
     virtual std::string info() const = 0;
 
 protected:
@@ -104,7 +147,7 @@ public:
             return fmt::format(" (default: {})", *default_value);
 
         if (isOptional())
-            return fmt::format(" (optional)");
+            return " (optional)";
 
         return std::string();
     }
@@ -117,19 +160,19 @@ private:
 
 struct Option
 {
-    std::vector<std::string> keys;
-    Value::Shared value;
+    OptionSpec spec;
+    Value::Pointer value;
     std::string desc;
 };
 
 class OptionVector : public std::vector<Option>
 {
 public:
-    Value::Shared find(const std::string& key) const
+    Value::Pointer find(const std::string& key) const
     {
-        for (const auto& [keys, value, desc] : *this)
+        for (const auto& [spec, value, desc] : *this)
         {
-            if (std::find(keys.begin(), keys.end(), key) != keys.end())
+            if (spec.opt1 == key || spec.opt2 == key)
                 return value;
         }
         return nullptr;
@@ -147,29 +190,29 @@ public:
     explicit OptionGroup(const std::string& name)
         : name(name) {}
 
-    std::string args() const
+    std::string arguments() const
     {
         std::string result;
-        for (const auto& [keys, value, desc] : options)
-            result.append(fmt::format(value->isOptional() ? " [{}]" : " {}", keys.front()));
+        for (const auto& [spec, value, desc] : options)
+            result.append(fmt::format(value->isOptional() ? " [{}]" : " {}", spec.argument()));
 
         return result;
     }
 
-    std::string help() const
+    std::string argumentsHelp() const
     {
         if (options.empty())
             return std::string();
 
+        std::size_t size = maxOptionsSize();
         std::string result = fmt::format("\n{} arguments:\n", name);
-        std::size_t padding = this->padding();
 
-        for (const auto& [keys, value, desc] : options)
+        for (const auto& [spec, value, desc] : options)
         {
             result.append(fmt::format(
                 "{:<{}}{}{}\n",
-                join(keys, kDelimiter),
-                padding,
+                spec.options(),
+                size,
                 desc,
                 value->info()));
         }
@@ -179,19 +222,12 @@ public:
     OptionVector options;
 
 private:
-    static constexpr std::string_view kDelimiter = ", ";
-
-    std::size_t padding() const
+    std::size_t maxOptionsSize() const
     {
         std::size_t padding = 0;
-        for (const auto& option : options)
-        {
-            std::size_t size = 2;
-            for (const auto& key : option.keys)
-                size += key.size() + kDelimiter.size();
+        for (const auto& [spec, value, dec] : options)
+            padding = std::max(spec.options().size() + 2, padding);
 
-            padding = std::max(size, padding);
-        }
         return padding;
     }
 
@@ -228,12 +264,12 @@ public:
 private:
     void populate(detail::OptionVector& other)
     {
-        for (const auto& [keys, value, desc] : other)
+        for (const auto& [spec, value, desc] : other)
         {
             if (value->hasValue())
-                options.push_back({ keys, value, desc });
+                options.push_back({ spec, value, desc });
             else
-                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", keys.front());
+                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", spec.option());
         }
     }
 
@@ -249,34 +285,36 @@ public:
         , positional("Positional") {}
 
     template<typename T>
-    static detail::Value::Shared value()
+    static detail::Value::Pointer value()
     {
         return std::make_shared<detail::OptionValue<T>>();
     }
 
     template<typename T>
-    static detail::Value::Shared value(const T& value)
+    static detail::Value::Pointer value(const T& value)
     {
         return std::make_shared<detail::OptionValue<T>>(value);
     }
 
-    void add(const std::vector<std::string>& keys, const std::string& desc, detail::Value::Shared value)
+    void add(OptionSpec spec, const std::string& desc, detail::Value::Pointer value)
     {
+        spec.positional = value->isPositional();
+
         auto& options = value->isPositional()
             ? positional.options
             : keyword.options;
 
-        options.push_back({ keys, value, desc });
+        options.push_back({ spec, value, desc });
     }
 
     OptionsResult parse(int argc, char* argv[])
     {
-        int pos = 1;
-        int idx = 0;
+        uint pos = 1;
+        uint idx = 0;
 
         while (pos < argc)
         {
-            std::string key = argv[pos++];
+            const std::string key = argv[pos++];
 
             if (auto value = keyword.options.find(key))
             {
@@ -304,10 +342,10 @@ public:
         return fmt::format(
             "Usage: {}{}{}\n{}{}",
             program,
-            keyword.args(),
-            positional.args(),
-            keyword.help(),
-            positional.help());
+            keyword.arguments(),
+            positional.arguments(),
+            keyword.argumentsHelp(),
+            positional.argumentsHelp());
     }
 
 private:
@@ -319,6 +357,7 @@ private:
 }  // namespace options
 
 using options::Options;
+using options::OptionSpec;
 using options::OptionsResult;
 
 }  // namespace shell

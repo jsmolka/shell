@@ -137,12 +137,12 @@ TEST_CASE("options::ParseError2")
 TEST_CASE("options::help")
 {
     Options options("program");
-    options.add({ "--aa", "-a" }, "This is a", Options::value<bool>());
-    options.add({ "--bb", "-b" }, "This is b", Options::value<int>()->optional());
-    options.add({ "--cc", "-c" }, "This is c", Options::value<double>(1.1));
-    options.add({   "dd",  "d" }, "This is d", Options::value<std::string>()->positional());
-    options.add({   "ee",  "e" }, "This is e", Options::value<bool>()->positional()->optional());
-    options.add({   "ff",  "f" }, "This is f", Options::value<std::string>("test")->positional());
+    options.add({ "--aa", "-a", "bool" }, "This is a", Options::value<bool>());
+    options.add({ "--bb", "-b"         }, "This is b", Options::value<int>()->optional());
+    options.add({ "--cc", "-c", "data" }, "This is c", Options::value<double>(1.1));
+    options.add({   "dd",  "d"         }, "This is d", Options::value<std::string>()->positional());
+    options.add({   "ee",  "e"         }, "This is e", Options::value<bool>()->positional()->optional());
+    options.add({   "ff",  "f"         }, "This is f", Options::value<std::string>("test")->positional());
 
     fmt::print(options.help());
 }
