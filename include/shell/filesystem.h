@@ -9,8 +9,8 @@
 #endif
 
 #include <shell/fmt/format.h>
-#include <shell/parse.h>
 #include <shell/traits.h>
+#include <shell/utility.h>
 
 namespace shell::filesystem
 {
@@ -108,7 +108,7 @@ struct fmt::formatter<shell::filesystem::path>
 };
 
 template<>
-inline std::optional<shell::filesystem::path> shell::parse(const std::string& data)
+inline std::optional<shell::filesystem::path> shell::utility::parse(const std::string& data)
 {
     return shell::filesystem::u8path(data);
 }

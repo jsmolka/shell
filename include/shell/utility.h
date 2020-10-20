@@ -1,5 +1,8 @@
 #pragma once
 
+#include <optional>
+#include <sstream>
+#include <string>
 #include <tuple>
 #include <utility>
 
@@ -7,6 +10,9 @@
 #include <shell/traits.h>
 
 namespace shell
+{
+
+namespace utility
 {
 
 template<typename T, typename... Args>
@@ -55,7 +61,7 @@ private:
 
 template<typename Range, typename Integral = int>
 IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
-    enumerate(Range& range, Integral start = 0)
+enumerate(Range& range, Integral start = 0)
 {
     using Iterator = range_iterator_t<Range>;
 
@@ -63,5 +69,31 @@ IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
         EnumerateIterator<Integral, Iterator>(start, std::begin(range)),
         EnumerateIterator<Integral, Iterator>(start, std::end(range)));
 }
+
+template<typename T>
+std::optional<T> parse(const std::string& data)
+{
+    T value{};
+    std::stringstream stream(data);
+    stream << std::boolalpha;
+    stream >> value;
+
+    return stream
+        ? std::optional(value)
+        : std::nullopt;
+}
+
+template<>
+inline std::optional<std::string> parse(const std::string& data)
+{
+    return data;
+}
+
+}  // namespace utility
+
+using utility::enumerate;
+using utility::EnumerateIterator;
+using utility::parse;
+using utility::reconstruct;
 
 }  // namespace shell

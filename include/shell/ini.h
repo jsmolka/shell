@@ -6,9 +6,12 @@
 #include <shell/algorithm.h>
 #include <shell/errors.h>
 #include <shell/functional.h>
-#include <shell/parse.h>
+#include <shell/utility.h>
 
 namespace shell
+{
+
+namespace ini
 {
 
 namespace detail
@@ -146,13 +149,13 @@ public:
         Consumer consumer(line);
 
         throwIf<ParseError>(
-            !consumer.eatOne([](char ch) {
+                !consumer.eatOne([](char ch) {
                 return ch == '[';
             }),
             PARSE_ERROR_EXPECTED("'['"));
 
         throwIf<ParseError>(
-            !consumer.consumeSome([](char ch) {
+                !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
             }),
@@ -189,7 +192,7 @@ public:
         Consumer consumer(line);
 
         throwIf<ParseError>(
-            !consumer.consumeSome([](char ch) {
+                !consumer.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
             }),
@@ -250,8 +253,9 @@ public:
         lines.reserve(tokens.size());
 
         for (const auto& token : tokens)
+        {
             lines.push_back(token->string());
-
+        }
         return filesystem::write(file, join(lines, "\n"));
     }
 
@@ -306,7 +310,7 @@ private:
                 break;
 
             case detail::Token::Kind::Value:
-                if (section == active 
+                if (section == active
                         && std::static_pointer_cast<detail::ValueToken>(token)->key == key)
                     return std::static_pointer_cast<detail::ValueToken>(token);
                 break;
@@ -317,5 +321,9 @@ private:
 
     std::vector<Token> tokens;
 };
+
+}  // namespace ini
+
+using ini::Ini;
 
 }  // namespace shell

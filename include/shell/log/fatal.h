@@ -4,7 +4,7 @@
 #include <shell/log/sinks.h>
 
 #ifdef SHELL_LOG_FATAL
-#undef SHELL_LOG_FATAL
+#  undef SHELL_LOG_FATAL
 #endif
 
 #define SHELL_LOG_FATAL(...) SHELL_LOG("[F]", shell::Level::Fatal, __VA_ARGS__)

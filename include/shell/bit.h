@@ -12,7 +12,10 @@
 #  include <x86intrin.h>
 #endif
 
-namespace shell::bit
+namespace shell
+{
+
+namespace bit
 {
 
 template<typename T>
@@ -162,7 +165,7 @@ constexpr Integral msb(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    return shr(value, bits_v<Integral> - 1);
+    return shr(value, bits_v<Integral> -1);
 }
 
 template<typename Integral>
@@ -171,20 +174,20 @@ Integral ror(Integral value, uint amount)
     static_assert(std::is_integral_v<Integral>);
 
     #if SHELL_CC_MSVC
-    if constexpr (sizeof(Integral) == 1) return _rotr8 (value, amount);
+    if constexpr (sizeof(Integral) == 1) return _rotr8(value, amount);
     if constexpr (sizeof(Integral) == 2) return _rotr16(value, amount);
-    if constexpr (sizeof(Integral) == 4) return _rotr  (value, amount);
+    if constexpr (sizeof(Integral) == 4) return _rotr(value, amount);
     if constexpr (sizeof(Integral) == 8) return _rotr64(value, amount);
     #elif SHELL_CC_CLANG
-    if constexpr (sizeof(Integral) == 1) return __builtin_rotateright8 (value, amount);
+    if constexpr (sizeof(Integral) == 1) return __builtin_rotateright8(value, amount);
     if constexpr (sizeof(Integral) == 2) return __builtin_rotateright16(value, amount);
     if constexpr (sizeof(Integral) == 4) return __builtin_rotateright32(value, amount);
     if constexpr (sizeof(Integral) == 8) return __builtin_rotateright64(value, amount);
     #else
-    constexpr Integral kMask = bits_v<Integral> - 1;
+    constexpr Integral kMask = bits_v<Integral> -1;
 
     amount &= kMask;
-    return shr(value, amount) | (value << (-amount & kMask));  
+    return shr(value, amount) | (value << (-amount & kMask));
     #endif
 }
 
@@ -194,17 +197,17 @@ Integral rol(Integral value, uint amount)
     static_assert(std::is_integral_v<Integral>);
 
     #if SHELL_CC_MSVC
-    if constexpr (sizeof(Integral) == 1) return _rotl8 (value, amount);
+    if constexpr (sizeof(Integral) == 1) return _rotl8(value, amount);
     if constexpr (sizeof(Integral) == 2) return _rotl16(value, amount);
-    if constexpr (sizeof(Integral) == 4) return _rotl  (value, amount);
+    if constexpr (sizeof(Integral) == 4) return _rotl(value, amount);
     if constexpr (sizeof(Integral) == 8) return _rotl64(value, amount);
     #elif SHELL_CC_CLANG
-    if constexpr (sizeof(Integral) == 1) return __builtin_rotateleft8 (value, amount);
+    if constexpr (sizeof(Integral) == 1) return __builtin_rotateleft8(value, amount);
     if constexpr (sizeof(Integral) == 2) return __builtin_rotateleft16(value, amount);
     if constexpr (sizeof(Integral) == 4) return __builtin_rotateleft32(value, amount);
     if constexpr (sizeof(Integral) == 8) return __builtin_rotateleft64(value, amount);
     #else
-    constexpr Integral kMask = bits_v<Integral> - 1;
+    constexpr Integral kMask = bits_v<Integral> -1;
 
     amount &= kMask;
     return (value << amount) | shr(value, -amount & kMask);
@@ -219,7 +222,7 @@ Integral bswap(Integral value)
 
     #if SHELL_CC_MSVC
     if constexpr (sizeof(Integral) == 2) return _byteswap_ushort(value);
-    if constexpr (sizeof(Integral) == 4) return _byteswap_ulong (value);
+    if constexpr (sizeof(Integral) == 4) return _byteswap_ulong(value);
     if constexpr (sizeof(Integral) == 8) return _byteswap_uint64(value);
     #else
     if constexpr (sizeof(Integral) == 2) return __builtin_bswap16(value);
@@ -235,10 +238,10 @@ uint popcnt(Integral value)
 
     #if SHELL_CC_MSVC
     if constexpr (sizeof(Integral) <= 2) return __popcnt16(value);
-    if constexpr (sizeof(Integral) == 4) return __popcnt  (value);
+    if constexpr (sizeof(Integral) == 4) return __popcnt(value);
     if constexpr (sizeof(Integral) == 8) return __popcnt64(value);
     #else
-    if constexpr (sizeof(Integral) <= 4) return __builtin_popcount  (value);
+    if constexpr (sizeof(Integral) <= 4) return __builtin_popcount(value);
     if constexpr (sizeof(Integral) == 8) return __builtin_popcountll(value);
     #endif
 }
@@ -251,11 +254,11 @@ uint clz(Integral value)
 
     #if SHELL_CC_MSVC
     unsigned long index;
-    if constexpr (sizeof(Integral) <= 4) _BitScanReverse  (&index, value);
+    if constexpr (sizeof(Integral) <= 4) _BitScanReverse(&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
-    return bits_v<Integral> - static_cast<uint>(index) - 1;
+    return bits_v<Integral> -static_cast<uint>(index) - 1;
     #else
-    if constexpr (sizeof(Integral) <= 4) return __builtin_clz  (value);
+    if constexpr (sizeof(Integral) <= 4) return __builtin_clz(value);
     if constexpr (sizeof(Integral) == 8) return __builtin_clzll(value);
     #endif
 }
@@ -268,11 +271,11 @@ uint ctz(Integral value)
 
     #if SHELL_CC_MSVC
     unsigned long index;
-    if constexpr (sizeof(Integral) <= 4) _BitScanForward  (&index, value);
+    if constexpr (sizeof(Integral) <= 4) _BitScanForward(&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanForward64(&index, value);
     return static_cast<uint>(index);
     #else
-    if constexpr (sizeof(Integral) <= 4) return __builtin_ctz  (value);
+    if constexpr (sizeof(Integral) <= 4) return __builtin_ctz(value);
     if constexpr (sizeof(Integral) == 8) return __builtin_ctzll(value);
     #endif
 }
@@ -284,10 +287,10 @@ class BitIterator
 
 public:
     using iterator_category = std::forward_iterator_tag;
-    using difference_type   = std::ptrdiff_t;
-    using value_type        = uint;
-    using reference         = uint&;
-    using pointer           = uint*;
+    using difference_type = std::ptrdiff_t;
+    using value_type = uint;
+    using reference = uint&;
+    using pointer = uint*;
 
     explicit BitIterator(Integral value)
         : value(value) {}
@@ -311,7 +314,7 @@ private:
 };
 
 template<typename Integral>
-IteratorRange<BitIterator<Integral>> iterate(Integral value)
+IteratorRange<BitIterator<Integral>> iterateBits(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
@@ -320,4 +323,26 @@ IteratorRange<BitIterator<Integral>> iterate(Integral value)
         BitIterator<Integral>(0));
 }
 
-}  // namespace shell::bit
+}  // namespace bit
+
+using bit::BitIterator;
+using bit::bits;
+using bit::bits_v;
+using bit::bswap;
+using bit::byte;
+using bit::clz;
+using bit::ctz;
+using bit::iterateBits;
+using bit::mask;
+using bit::msb;
+using bit::nibble;
+using bit::ones;
+using bit::popcnt;
+using bit::rol;
+using bit::ror;
+using bit::sar;
+using bit::seq;
+using bit::shr;
+using bit::signEx;
+
+}  // namespace shell

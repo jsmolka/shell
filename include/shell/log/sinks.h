@@ -14,19 +14,22 @@
 namespace shell
 {
 
+namespace log
+{
+
 enum class Level { Debug, Info, Warn, Error, Fatal };
 
-class SinkInterface
+class BasicSink
 {
 public:
-    using Shared = std::shared_ptr<SinkInterface>;
+    using Pointer = std::shared_ptr<BasicSink>;
 
-    virtual ~SinkInterface() = default;
+    virtual ~BasicSink() = default;
 
     virtual void sink(const std::string& location, const std::string& message, Level level) = 0;
 };
 
-class ConsoleSink : public SinkInterface
+class ConsoleSink : public BasicSink
 {
 public:
     void sink(const std::string& location, const std::string& message, Level) override
@@ -35,7 +38,7 @@ public:
     }
 };
 
-class ColoredConsoleSink : public SinkInterface
+class ColoredConsoleSink : public BasicSink
 {
 public:
     ColoredConsoleSink()
@@ -53,19 +56,24 @@ public:
 
     void sink(const std::string& location, const std::string& message, Level level) override
     {
-        fmt::text_style style;
+        fmt::print(style(level), "{}: {}\n", location, message);
+    }
+
+private:
+    static fmt::text_style style(Level level)
+    {
         switch (level)
         {
-        case Level::Debug: style = fmt::fg(fmt::rgb( 97, 214, 214)); break;
-        case Level::Warn:  style = fmt::fg(fmt::rgb(249, 241, 165)); break;
-        case Level::Error: style = fmt::fg(fmt::rgb(231,  72,  86)); break;
-        case Level::Fatal: style = fmt::fg(fmt::rgb(180,   0, 158)); break;
+        case Level::Debug: return fmt::fg(fmt::rgb( 97, 214, 214));
+        case Level::Warn:  return fmt::fg(fmt::rgb(249, 241, 165));
+        case Level::Error: return fmt::fg(fmt::rgb(231,  72,  86));
+        case Level::Fatal: return fmt::fg(fmt::rgb(180,   0, 158));
         }
-        fmt::print(style, "{}: {}\n", location, message);
+        return fmt::text_style();
     }
 };
 
-class FileSink : public SinkInterface
+class FileSink : public BasicSink
 {
 public:
     FileSink(const filesystem::path& file, bool trunc = false)
@@ -86,7 +94,7 @@ namespace detail
 {
 
 template<typename... Sinks>
-class MultiSink : public SinkInterface
+class MultiSink : public BasicSink
 {
     static_assert(sizeof...(Sinks) > 0);
 
@@ -101,18 +109,18 @@ public:
     }
 
 private:
-    std::array<SinkInterface::Shared, sizeof...(Sinks)> sinks;
+    std::array<BasicSink::Pointer, sizeof...(Sinks)> sinks;
 };
 
-inline SinkInterface::Shared default_sink = std::make_shared<ColoredConsoleSink>();
+inline BasicSink::Pointer default_sink = std::make_shared<ColoredConsoleSink>();
 
 }  // namespace detail
 
 template<typename Sink, typename... Sinks>
 void setSink(Sink&& sink, Sinks&&... sinks)
 {
-    static_assert(std::is_base_of_v<SinkInterface, Sink>);
-    static_assert(std::conjunction_v<std::is_base_of<SinkInterface, Sinks>...>);
+    static_assert(std::is_base_of_v<BasicSink, Sink>);
+    static_assert(std::conjunction_v<std::is_base_of<BasicSink, Sinks>...>);
 
     if constexpr (sizeof...(Sinks) == 0)
         detail::default_sink = std::make_shared<Sink>(std::move(sink));
@@ -122,10 +130,19 @@ void setSink(Sink&& sink, Sinks&&... sinks)
                 std::move(sink), std::move(sinks)...);
 }
 
+}  // namespace log
+
+using log::BasicSink;
+using log::ConsoleSink;
+using log::ColoredConsoleSink;
+using log::FileSink;
+using log::Level;
+using log::setSink;
+
 }  // namespace shell
 
 #define SHELL_LOG(prefix, level, ...)                  \
-    shell::detail::default_sink->sink(                 \
+    shell::log::detail::default_sink->sink(            \
         fmt::format("{} {}", prefix, SHELL_FUNCTION),  \
         fmt::format(__VA_ARGS__),                      \
         level)

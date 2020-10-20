@@ -5,6 +5,9 @@
 namespace shell
 {
 
+namespace functional
+{
+
 struct Identity
 {
     template<typename T>
@@ -31,5 +34,11 @@ struct Contradiction
         return false;
     }
 };
+
+}  // namespace functional
+
+using functional::Contradiction;
+using functional::Identity;
+using functional::Tautology;
 
 }  // namespace shell

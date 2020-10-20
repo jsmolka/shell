@@ -5,9 +5,12 @@
 
 #include <shell/algorithm.h>
 #include <shell/errors.h>
-#include <shell/parse.h>
+#include <shell/utility.h>
 
 namespace shell
+{
+
+namespace options
 {
 
 namespace detail
@@ -312,5 +315,10 @@ private:
     detail::OptionGroup keyword;
     detail::OptionGroup positional;
 };
+
+}  // namespace options
+
+using options::Options;
+using options::OptionsResult;
 
 }  // namespace shell

@@ -117,7 +117,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="shell\algorithm.h" />
-    <ClInclude Include="shell\bitfield.h" />
     <ClInclude Include="shell\errors.h" />
     <ClInclude Include="shell\env.h" />
     <ClInclude Include="shell\fmt\chrono.h" />
@@ -152,7 +151,6 @@
     <ClInclude Include="shell\main.h" />
     <ClInclude Include="shell\int.h" />
     <ClInclude Include="shell\ini.h" />
-    <ClInclude Include="shell\parse.h" />
     <ClInclude Include="shell\traits.h" />
     <ClInclude Include="shell\windows.h" />
     <ClInclude Include="shell\macros.h" />

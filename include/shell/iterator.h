@@ -5,6 +5,9 @@
 namespace shell
 {
 
+namespace iterator
+{
+
 template<typename Iterator>
 class IteratorRange
 {
@@ -42,5 +45,11 @@ IteratorRange<range_reverse_iterator_t<Range>>
         std::rbegin(range),
         std::rend(range));
 }
+
+}  // namespace iterator
+
+using iterator::IteratorRange;
+using iterator::makeIteratorRange;
+using iterator::reversed;
 
 }  // namespace shell

@@ -10,6 +10,9 @@
 namespace shell
 {
 
+namespace algorithm
+{
+
 namespace detail
 {
 
@@ -47,7 +50,7 @@ Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
     return Sequence(
         std::find_if_not(
             std::begin(seq),
-            std::end(seq), 
+            std::end(seq),
             pred),
         std::end(seq));
 }
@@ -111,7 +114,7 @@ Sequence trimCopyIf(const Sequence& seq, Predicate pred)
     return Sequence(
         std::find_if_not(
             std::begin(seq),
-            std::end(seq), 
+            std::end(seq),
             pred),
         std::find_if_not(
             std::rbegin(seq),
@@ -179,7 +182,7 @@ template<typename Sequence, typename SequenceFrom, typename SequenceTo>
 void replaceFirst(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
 {
     auto pos = seq.find(from);
-    if ( pos != Sequence::npos)
+    if (pos != Sequence::npos)
     {
         seq.replace(pos, detail::size(from), to);
     }
@@ -190,7 +193,7 @@ Sequence replaceFirstCopy(const Sequence& seq, const SequenceFrom& from, const S
 {
     Sequence res(seq);
     replaceFirst(res, from, to);
-    
+
     return res;
 }
 
@@ -198,7 +201,7 @@ template<typename Sequence, typename SequenceFrom, typename SequenceTo>
 void replaceLast(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
 {
     auto pos = seq.rfind(from);
-    if ( pos != Sequence::npos)
+    if (pos != Sequence::npos)
     {
         seq.replace(pos, detail::size(from), to);
     }
@@ -209,7 +212,7 @@ Sequence replaceLastCopy(const Sequence& seq, const SequenceFrom& from, const Se
 {
     Sequence res(seq);
     replaceLast(res, from, to);
-    
+
     return res;
 }
 
@@ -265,5 +268,32 @@ range_value_t<SequenceRange> join(const SequenceRange& range, const SequenceDeli
     }
     return res;
 }
+
+}  // namespace algorithm
+
+using algorithm::join;
+using algorithm::replaceAll;
+using algorithm::replaceAllCopy;
+using algorithm::replaceFirst;
+using algorithm::replaceFirstCopy;
+using algorithm::replaceLast;
+using algorithm::replaceLastCopy;
+using algorithm::split;
+using algorithm::toLower;
+using algorithm::toLowerCopy;
+using algorithm::toUpper;
+using algorithm::toUpperCopy;
+using algorithm::trim;
+using algorithm::trimCopy;
+using algorithm::trimCopyIf;
+using algorithm::trimIf;
+using algorithm::trimLeft;
+using algorithm::trimLeftCopy;
+using algorithm::trimLeftCopyIf;
+using algorithm::trimLeftIf;
+using algorithm::trimRight;
+using algorithm::trimRightCopy;
+using algorithm::trimRightCopyIf;
+using algorithm::trimRightIf;
 
 }  // namespace shell

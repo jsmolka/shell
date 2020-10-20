@@ -5,6 +5,9 @@
 namespace shell
 {
 
+namespace hash
+{
+
 template<typename T>
 void hashCombine(std::size_t& seed, const T& value)
 {
@@ -20,5 +23,10 @@ std::size_t hashRange(Iterator begin, Iterator end)
 
     return seed;
 }
+
+}  // namespace hash
+
+using hash::hashCombine;
+using hash::hashRange;
 
 }  // namespace shell
