@@ -93,6 +93,14 @@ TEST_CASE("bit::nibble2")
     REQUIRE(nibble(0xABC, 2) == 0xA);
 }
 
+TEST_CASE("bit::twos")
+{
+    REQUIRE(twos(0) ==  0);
+    REQUIRE(twos(1) == -1);
+    REQUIRE(twos(2) == -2);
+    REQUIRE(twos(3) == -3);
+}
+
 TEST_CASE("bit::signEx")
 {
     REQUIRE(signEx< 1>(0x0000'0001) == 0xFFFF'FFFF);

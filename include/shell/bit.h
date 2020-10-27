@@ -122,6 +122,12 @@ u8 nibble(Integral value, uint index)
     return (value >> ((CHAR_BIT / 2) * index)) & 0xF;
 }
 
+template<typename Integral>
+Integral twos(Integral value)
+{
+    return ~value + 1;
+}
+
 template<uint Size, typename Integral>
 constexpr Integral signEx(Integral value)
 {
@@ -344,5 +350,6 @@ using bit::sar;
 using bit::seq;
 using bit::shr;
 using bit::signEx;
+using bit::twos;
 
 }  // namespace shell
