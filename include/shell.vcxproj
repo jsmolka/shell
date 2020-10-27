@@ -117,6 +117,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="shell\algorithm.h" />
+    <ClInclude Include="shell\buffer.h" />
     <ClInclude Include="shell\errors.h" />
     <ClInclude Include="shell\env.h" />
     <ClInclude Include="shell\fmt\chrono.h" />

@@ -56,5 +56,8 @@
     <None Include="src\tests_ini.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_buffer.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include <shell/algorithm.h>
 #include <shell/bit.h>
+#include <shell/buffer.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/ini.h>
@@ -18,6 +19,7 @@ using namespace std::string_literals;
 
 #include "tests_algorithm.inl"
 #include "tests_bit.inl"
+#include "tests_buffer.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_ini.inl"

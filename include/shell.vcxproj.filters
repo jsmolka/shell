@@ -132,5 +132,8 @@
     <ClInclude Include="shell\fmt\printf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
