@@ -22,7 +22,9 @@ public:
             const std::string& opt1,
             const std::string& opt2 = std::string(),
             const std::string& name = std::string())
-        : opt1(opt1), opt2(opt2), name(name)
+        : opt1(opt1)
+        , opt2(opt2)
+        , name(name)
     {
         throwIf<Error>(opt1.empty() && opt2.empty(), "Expected non-empty specification");
     }
@@ -73,7 +75,7 @@ public:
         return is_optional;
     }
 
-    Pointer optional()
+    virtual Pointer optional()
     {
         is_optional = true;
         return shared_from_this();
@@ -84,18 +86,19 @@ public:
         return is_positional;
     }
 
-    Pointer positional()
+    virtual Pointer positional()
     {
         is_positional = true;
         return shared_from_this();
     }
-
+       
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
+
     virtual bool hasValue() const = 0;
-    virtual bool hasDefaultValue() const = 0;
-    virtual bool isBoolValue() const = 0;
-    virtual std::string info() const = 0;
+    virtual bool isBoolean() const = 0;
+
+    virtual std::string details() const = 0;
 
 protected:
     bool is_optional = false;
@@ -103,33 +106,16 @@ protected:
 };
 
 template<typename T>
-class OptionValue : public Value
+class BasicValue : public Value
 {
 public:
-    OptionValue() = default;
-
-    explicit OptionValue(const T& value)
-        : value(value)
-        , default_value(value)
-    {
-        is_optional = true;
-    }
-
-    void parse() override
-    {
-        if constexpr (std::is_same_v<T, bool>)
-            value = true;
-        else
-            throw ParseError("Expected value for non-bool option but got none");
-    }
-
     void parse(const std::string& data) override
     {
         const auto optional = shell::parse<T>(data);
 
-        throwIf<ParseError>(!optional.has_value(), "Expected valid data but got '{}'", data);
+        throwIf<ParseError>(!optional, "Expected valid data but got '{}'", data);
 
-        value = *optional;
+        this->value = optional;
     }
 
     bool hasValue() const override
@@ -137,22 +123,17 @@ public:
         return value.has_value();
     }
 
-    bool hasDefaultValue() const override
-    {
-        return default_value.has_value();
-    }
-
-    bool isBoolValue() const override
+    bool isBoolean() const override
     {
         return std::is_same_v<T, bool>;
     }
 
-    std::string info() const override
+    std::string details() const override
     {
-        if (hasDefaultValue())
+        if (default_value)
             return fmt::format(" (default: {})", *default_value);
 
-        if (isOptional())
+        if (is_optional)
             return " (optional)";
 
         return std::string();
@@ -160,8 +141,49 @@ public:
 
     std::optional<T> value;
 
-private:
+protected:
     std::optional<T> default_value;
+};
+
+template<typename T>
+class OptionValue : public BasicValue<T>
+{
+public:
+    OptionValue() = default;
+
+    explicit OptionValue(const T& value)
+    {
+        this->value = value;
+        this->default_value = value;
+        this->is_optional = true;
+    }
+
+    void parse() override
+    {
+        throw ParseError("Expected value for non-bool option but got none");
+    }
+};
+
+template<>
+class OptionValue<bool> : public BasicValue<bool>
+{
+public:
+    OptionValue()
+    {
+        this->value = false;
+        this->default_value = false;
+        this->is_optional = true;
+    }
+
+    Pointer positional() override
+    {
+        throw Error("Bool options cannot be positional");
+    }
+
+    void parse() override
+    {
+        this->value = true;
+    }
 };
 
 struct Option
@@ -205,7 +227,7 @@ public:
         return result;
     }
 
-    std::string argumentsHelp() const
+    std::string explanation() const
     {
         if (options.empty())
             return std::string();
@@ -220,7 +242,7 @@ public:
                 spec.options(),
                 size,
                 desc,
-                value->info()));
+                value->details()));
         }
         return result;
     }
@@ -296,7 +318,7 @@ public:
         return std::make_shared<detail::OptionValue<T>>();
     }
 
-    template<typename T>
+    template<typename T, std::enable_if_t<!std::is_same_v<T, bool>, int> = 0>
     static detail::Value::Pointer value(const T& value)
     {
         return std::make_shared<detail::OptionValue<T>>(value);
@@ -324,7 +346,7 @@ public:
 
             if (auto value = keyword.options.find(key))
             {
-                if (pos < argc && !keyword.options.has(argv[pos]) && (!value->isBoolValue() || shell::parse<bool>(argv[pos])))
+                if (pos < argc && !keyword.options.has(argv[pos]) && !value->isBoolean())
                     value->parse(argv[pos++]);
                 else
                     value->parse();
@@ -350,8 +372,8 @@ public:
             program,
             keyword.arguments(),
             positional.arguments(),
-            keyword.argumentsHelp(),
-            positional.argumentsHelp());
+            keyword.explanation(),
+            positional.explanation());
     }
 
 private:

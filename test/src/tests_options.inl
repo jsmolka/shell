@@ -6,7 +6,7 @@ TEST_CASE("options::bool")
     { 
         "program.exe",
         "-b",
-        "-c", "true",
+        "-c",
         "true"
     };
 
@@ -14,15 +14,13 @@ TEST_CASE("options::bool")
     options.add({ "-a" }, "", Options::value<bool>()->optional());
     options.add({ "-b" }, "", Options::value<bool>());
     options.add({ "-c" }, "", Options::value<bool>());
-    options.add({ "-d" }, "", Options::value<bool>(true));
-    options.add({  "e" }, "", Options::value<bool>()->positional());
+    options.add({ "-d" }, "", Options::value<bool>());
     
     OptionsResult result = options.parse(ARGC(argv), argv);
-    REQUIRE(!result.has("-a"));
-    REQUIRE(*result.find<bool>("-b"));
-    REQUIRE(*result.find<bool>("-c"));
-    REQUIRE(*result.find<bool>("-d"));
-    REQUIRE(*result.find<bool>( "e"));
+    REQUIRE(  result.has("-a"));
+    REQUIRE( *result.find<bool>("-b"));
+    REQUIRE( *result.find<bool>("-c"));
+    REQUIRE(!*result.find<bool>("-d"));
 }
 
 TEST_CASE("options::int")
@@ -134,11 +132,11 @@ TEST_CASE("options::ParseError2")
 TEST_CASE("options::help")
 {
     Options options("program");
-    options.add({ "--aa", "-a", "bool" }, "This is a", Options::value<bool>());
+    options.add({ "--aa", "-a",        }, "This is a", Options::value<bool>());
     options.add({ "--bb", "-b"         }, "This is b", Options::value<int>()->optional());
     options.add({ "--cc", "-c", "data" }, "This is c", Options::value<double>(1.1));
     options.add({   "dd",  "d"         }, "This is d", Options::value<std::string>()->positional());
-    options.add({   "ee",  "e"         }, "This is e", Options::value<bool>()->positional()->optional());
+    options.add({   "ee",  "e"         }, "This is e", Options::value<bool>()->optional());
     options.add({   "ff",  "f"         }, "This is f", Options::value<std::string>("test")->positional());
 
     fmt::print(options.help());
