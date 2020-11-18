@@ -180,6 +180,14 @@ TEST_CASE("bit::popcnt")
     REQUIRE(popcnt(0xFFFF'FFFF) == 32);
 }
 
+TEST_CASE("bit::ceilPow2")
+{
+    REQUIRE(ceilPow2(5) == 8);
+    REQUIRE(ceilPow2(6) == 8);
+    REQUIRE(ceilPow2(7) == 8);
+    REQUIRE(ceilPow2(8) == 8);
+}
+
 template<typename T>
 bool compare(T value, const std::vector<uint>& expected)
 {

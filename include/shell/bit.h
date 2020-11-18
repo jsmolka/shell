@@ -171,7 +171,7 @@ constexpr Integral msb(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    return shr(value, bits_v<Integral> -1);
+    return shr(value, bits_v<Integral> - 1);
 }
 
 template<typename Integral>
@@ -262,7 +262,7 @@ uint clz(Integral value)
     unsigned long index;
     if constexpr (sizeof(Integral) <= 4) _BitScanReverse(&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
-    return bits_v<Integral> -static_cast<uint>(index) - 1;
+    return bits_v<Integral> - static_cast<uint>(index) - 1;
     #else
     if constexpr (sizeof(Integral) <= 4) return __builtin_clz(value);
     if constexpr (sizeof(Integral) == 8) return __builtin_clzll(value);
@@ -284,6 +284,15 @@ uint ctz(Integral value)
     if constexpr (sizeof(Integral) <= 4) return __builtin_ctz(value);
     if constexpr (sizeof(Integral) == 8) return __builtin_ctzll(value);
     #endif
+}
+
+template<typename Integral>
+Integral ceilPow2(Integral value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(value != 0, "Undefined");
+
+    return 1ULL << (bits_v<Integral> - clz(value - 1));
 }
 
 template<typename Integral>
@@ -336,6 +345,7 @@ using bit::bits;
 using bit::bits_v;
 using bit::bswap;
 using bit::byte;
+using bit::ceilPow2;
 using bit::clz;
 using bit::ctz;
 using bit::iterateBits;
