@@ -1,16 +1,16 @@
 TEST_CASE("buffer::FixedBuffer")
 {
     FixedBuffer<int, 3> buffer;
-    buffer.push(0);
+    buffer.push_back(0);
     REQUIRE(buffer.size() == 1);
     REQUIRE(buffer.capacity() == 3);
-    buffer.push(1);
+    buffer.push_back(1);
     REQUIRE(buffer.size() == 2);
     REQUIRE(buffer.capacity() == 3);
-    buffer.push(2);
+    buffer.push_back(2);
     REQUIRE(buffer.size() == 3);
     REQUIRE(buffer.capacity() == 3);
-    CHECK_THROWS_AS(buffer.push(3), std::bad_alloc);
+    CHECK_THROWS_AS(buffer.push_back(3), std::bad_alloc);
 
     FixedBuffer<int, 3> a = { 1, 2 };
     FixedBuffer<int, 3> b(a);
@@ -31,19 +31,19 @@ TEST_CASE("buffer::SmallBuffer")
 {
     SmallBuffer<int, 3> buffer;
     int* data = buffer.data();
-    buffer.push(0);
+    buffer.push_back(0);
     REQUIRE(buffer.size() == 1);
     REQUIRE(buffer.capacity() == 3);
     REQUIRE(buffer.data() == data);
-    buffer.push(1);
+    buffer.push_back(1);
     REQUIRE(buffer.size() == 2);
     REQUIRE(buffer.capacity() == 3);
     REQUIRE(buffer.data() == data);
-    buffer.push(2);
+    buffer.push_back(2);
     REQUIRE(buffer.size() == 3);
     REQUIRE(buffer.capacity() == 3);
     REQUIRE(buffer.data() == data);
-    buffer.push(4);
+    buffer.push_back(4);
     REQUIRE(buffer.size() == 4);
     REQUIRE(buffer.capacity() == 4);
     REQUIRE(buffer.data() != data);
@@ -76,4 +76,11 @@ TEST_CASE("buffer::SmallBuffer")
     auto fp = f.data();
     SmallBuffer<int, 3> g = std::move(f);
     REQUIRE(g.data() == fp);
+
+    int hc = 9;
+    SmallBuffer<int, 10> h = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    for (const auto& v : reversed(h))
+    {
+        REQUIRE(v == hc--);
+    }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 
@@ -12,25 +13,96 @@ class Buffer
 {
 public:
     using value_type = T;
-    using reference = T&;
-    using const_reference = const T&;
-    using iterator = T*;
-    using const_iterator = const T*;
+    using reference = value_type&;
+    using const_reference = const reference;
+    using pointer = value_type*;
+    using const_pointer = const pointer;
+    using iterator = pointer;
+    using const_iterator = const iterator;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     Buffer() = default;
 
-    std::size_t size() const { return size_; }
-    std::size_t capacity() const { return capacity_; }
+    std::size_t size() const
+    {
+        return size_;
+    }
 
-    T* data() { return buffer_; }
-    const T* data() const { return buffer_; }
+    std::size_t capacity() const
+    {
+        return capacity_;
+    }
 
-    T* begin() { return buffer_; }
-    T* end() { return buffer_ + size_; };
-    const T* begin() const { return buffer_; }
-    const T* end() const { return buffer_ + size_; }
-    const T* cbegin() const { return buffer_; }
-    const T* cend() const { return buffer_ + size_; }
+    T* data()
+    {
+        return pointer_;
+    }
+    
+    const T* data() const
+    {
+        return pointer_;
+    }
+
+    iterator begin()
+    {
+        return pointer_;
+    }
+
+    iterator end()
+    {
+        return pointer_ + size_;
+    }
+
+    const_iterator begin() const
+    {
+        return pointer_;
+    }
+
+    const_iterator end() const
+    {
+        return pointer_ + size_;
+    }
+
+    const_iterator cbegin() const
+    {
+        return pointer_;
+    }
+
+    const_iterator cend() const
+    {
+        return pointer_ + size_;
+    }
+
+    reverse_iterator rbegin()
+    {
+        return std::make_reverse_iterator(end());
+    }
+
+    reverse_iterator rend()
+    {
+        return std::make_reverse_iterator(begin());
+    }
+
+    const_reverse_iterator rbegin() const
+    {
+        return std::make_reverse_iterator(end());
+    }
+
+    const_reverse_iterator rend() const
+    {
+        return std::make_reverse_iterator(begin());
+    }
+
+    const_reverse_iterator crbegin() const
+    {
+        return std::make_reverse_iterator(cend());
+    }
+
+    const_reverse_iterator crend() const
+    {
+        return std::make_reverse_iterator(cbegin());
+    }
 
     void clear()
     {
@@ -52,39 +124,44 @@ public:
     void push_back(const T& value)
     {
         reserve(size_ + 1);
-        buffer_[size_++] = value;
+        pointer_[size_++] = value;
     }
 
     void push_back(T&& value)
     {
         reserve(size_ + 1);
-        buffer_[size++] = std::move(value);
+        pointer_[size_++] = std::move(value);
     }
 
     T& operator[](std::size_t index)
     {
-        return buffer_[index];
+        return pointer_[index];
     }
 
     const T& operator[](std::size_t index) const
     {
-        return buffer_[index];
+        return pointer_[index];
     }
 
 protected:
-    void set(T* buffer, std::size_t capacity)
-    {
-        buffer_ = buffer;
-        capacity_ = capacity;
-    }
+    Buffer(const Buffer&) = default;
+    Buffer(Buffer&&) = default;
+    Buffer& operator=(const Buffer&) = default;
+    Buffer& operator=(Buffer&&) = default;
 
     virtual void grow(std::size_t size) = 0;
+
+    void set(T* pointer, std::size_t capacity)
+    {
+        pointer_ = pointer;
+        capacity_ = capacity;
+    }
 
     std::size_t size_ = 0;
     std::size_t capacity_ = 0;
 
 private:
-    T* buffer_ = nullptr;
+    T* pointer_ = nullptr;
 };
 
 template<typename T, std::size_t N>
@@ -96,8 +173,12 @@ public:
     using typename Buffer<T>::value_type;
     using typename Buffer<T>::reference;
     using typename Buffer<T>::const_reference;
+    using typename Buffer<T>::pointer;
+    using typename Buffer<T>::const_pointer;
     using typename Buffer<T>::iterator;
     using typename Buffer<T>::const_iterator;
+    using typename Buffer<T>::reverse_iterator;
+    using typename Buffer<T>::const_reverse_iterator;
 
     FixedBuffer()
     {
@@ -161,8 +242,12 @@ public:
     using typename Buffer<T>::value_type;
     using typename Buffer<T>::reference;
     using typename Buffer<T>::const_reference;
+    using typename Buffer<T>::pointer;
+    using typename Buffer<T>::const_pointer;
     using typename Buffer<T>::iterator;
     using typename Buffer<T>::const_iterator;
+    using typename Buffer<T>::reverse_iterator;
+    using typename Buffer<T>::const_reverse_iterator;
 
     SmallBuffer()
     {
