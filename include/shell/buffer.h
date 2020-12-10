@@ -49,10 +49,16 @@ public:
             grow(size);
     }
 
-    void push(const T& value)
+    void push_back(const T& value)
     {
         reserve(size_ + 1);
         buffer_[size_++] = value;
+    }
+
+    void push_back(T&& value)
+    {
+        reserve(size_ + 1);
+        buffer_[size++] = std::move(value);
     }
 
     T& operator[](std::size_t index)
