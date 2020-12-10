@@ -5,8 +5,7 @@
 #include <type_traits>
 
 #include <shell/filesystem.h>
-#include <shell/fmt/color.h>
-#include <shell/fmt/format.h>
+#include <shell/fmt.h>
 #include <shell/int.h>
 #include <shell/macros.h>
 #include <shell/windows.h>

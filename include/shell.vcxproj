@@ -118,8 +118,20 @@
   <ItemGroup>
     <ClInclude Include="shell\algorithm.h" />
     <ClInclude Include="shell\buffer.h" />
+    <ClInclude Include="shell\detail\fmt\chrono.h" />
+    <ClInclude Include="shell\detail\fmt\color.h" />
+    <ClInclude Include="shell\detail\fmt\compile.h" />
+    <ClInclude Include="shell\detail\fmt\core.h" />
+    <ClInclude Include="shell\detail\fmt\format-inl.h" />
+    <ClInclude Include="shell\detail\fmt\format.h" />
+    <ClInclude Include="shell\detail\fmt\locale.h" />
+    <ClInclude Include="shell\detail\fmt\os.h" />
+    <ClInclude Include="shell\detail\fmt\ostream.h" />
+    <ClInclude Include="shell\detail\fmt\printf.h" />
+    <ClInclude Include="shell\detail\fmt\ranges.h" />
     <ClInclude Include="shell\errors.h" />
     <ClInclude Include="shell\env.h" />
+    <ClInclude Include="shell\fmt.h" />
     <ClInclude Include="shell\fmt\chrono.h" />
     <ClInclude Include="shell\fmt\color.h" />
     <ClInclude Include="shell\fmt\compile.h" />
@@ -156,6 +168,9 @@
     <ClInclude Include="shell\windows.h" />
     <ClInclude Include="shell\macros.h" />
     <ClInclude Include="shell\utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shell\detail\fmt\LICENSE" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,7 +8,7 @@
 #  include <experimental/filesystem>
 #endif
 
-#include <shell/fmt/format.h>
+#include <shell/fmt.h>
 #include <shell/traits.h>
 #include <shell/utility.h>
 
