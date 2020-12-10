@@ -119,11 +119,13 @@ public:
     FixedBuffer& operator=(const FixedBuffer<T, N>& other)
     {
         this->copy(other.begin(), other.end());
+        return *this;
     }
 
     FixedBuffer& operator=(FixedBuffer<T, N>&& other)
     {
         this->copy(other.begin(), other.end());
+        return *this;
     }
 
 protected:
@@ -158,7 +160,37 @@ public:
 
     SmallBuffer()
     {
-        this->set(&stack_[0], N);
+        this->set(stack_, N);
+    }
+
+    SmallBuffer(const SmallBuffer<T, N>& other)
+        : SmallBuffer()
+    {
+        this->copy(other.begin(), other.end());
+    }
+
+    SmallBuffer(SmallBuffer<T, N>&& other)
+        : SmallBuffer()
+    {
+        this->move(std::move(other));
+    }
+
+    SmallBuffer(std::initializer_list<T> value)
+        : SmallBuffer()
+    {
+        this->copy(value.begin(), value.end());
+    }
+
+    SmallBuffer& operator=(const SmallBuffer<T, N>& other)
+    {
+        this->copy(other.begin(), other.end());
+        return *this;
+    }
+
+    SmallBuffer& operator=(SmallBuffer<T, N>&& other)
+    {
+        this->move(std::move(other));
+        return *this;
     }
 
     ~SmallBuffer()
@@ -185,6 +217,35 @@ protected:
     }
 
 private:
+    template<typename Iterator>
+    void copy(Iterator begin, Iterator end)
+    {
+        std::size_t size = std::distance(begin, end);
+
+        this->reserve(size);
+        this->size_ = size;
+
+        std::copy(begin, end, this->begin());
+    }
+
+    void move(SmallBuffer<T, N>&& other)
+    {
+        if (other.data() == other.stack_)
+        {
+            this->copy(other.begin(), other.end());
+        }
+        else
+        {
+            if (this->data() != stack_)
+                delete[] this->data();
+
+            this->set(other.data(), other.capacity());
+            this->size_ = other.size_;
+
+            other.set(other.stack_, 0);
+        }
+    }
+
     T stack_[N];
 };
 
