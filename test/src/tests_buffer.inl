@@ -11,6 +11,20 @@ TEST_CASE("buffer::FixedBuffer")
     REQUIRE(buffer.size() == 3);
     REQUIRE(buffer.capacity() == 3);
     CHECK_THROWS_AS(buffer.push(3), std::bad_alloc);
+
+    FixedBuffer<int, 3> a = { 1, 2 };
+    FixedBuffer<int, 3> b(a);
+    FixedBuffer<int, 3> c = a;
+
+    REQUIRE(a.size() == 2);
+    REQUIRE(b.size() == 2);
+    REQUIRE(c.size() == 2);
+    REQUIRE(a[0] == 1);
+    REQUIRE(b[0] == 1);
+    REQUIRE(c[0] == 1);
+    REQUIRE(a[1] == 2);
+    REQUIRE(b[1] == 2);
+    REQUIRE(c[1] == 2);
 }
 
 TEST_CASE("buffer::SmallBuffer")

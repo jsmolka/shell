@@ -7,9 +7,6 @@
 namespace shell
 {
 
-namespace buffer
-{
-
 template<typename T>
 class Buffer
 {
@@ -21,10 +18,6 @@ public:
     using const_iterator = const T*;
 
     Buffer() = default;
-    Buffer(Buffer&&) = delete;
-    Buffer(const Buffer&) = delete;
-    Buffer& operator=(Buffer&&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
 
     std::size_t size() const { return size_; }
     std::size_t capacity() const { return capacity_; }
@@ -81,10 +74,11 @@ protected:
 
     virtual void grow(std::size_t size) = 0;
 
-private:
-    T* buffer_ = nullptr;
     std::size_t size_ = 0;
     std::size_t capacity_ = 0;
+
+private:
+    T* buffer_ = nullptr;
 };
 
 template<typename T, std::size_t N>
@@ -101,7 +95,35 @@ public:
 
     FixedBuffer()
     {
-        this->set(&stack_[0], N);
+        this->set(stack_, N);
+    }
+
+    FixedBuffer(const FixedBuffer<T, N>& other)
+        : FixedBuffer()
+    {
+        this->copy(other.begin(), other.end());
+    }
+
+    FixedBuffer(FixedBuffer<T, N>&& other)
+        : FixedBuffer()
+    {
+        this->copy(other.begin(), other.end());
+    }
+
+    FixedBuffer(std::initializer_list<T> value)
+        : FixedBuffer()
+    {
+        this->copy(value.begin(), value.end());
+    }
+
+    FixedBuffer& operator=(const FixedBuffer<T, N>& other)
+    {
+        this->copy(other.begin(), other.end());
+    }
+
+    FixedBuffer& operator=(FixedBuffer<T, N>&& other)
+    {
+        this->copy(other.begin(), other.end());
     }
 
 protected:
@@ -111,6 +133,14 @@ protected:
     }
 
 private:
+    template<typename Iterator>
+    void copy(Iterator begin, Iterator end)
+    {
+        std::copy(begin, end, this->begin());
+
+        this->size_ = std::distance(begin, end);
+    }
+
     T stack_[N];
 };
 
@@ -157,11 +187,5 @@ protected:
 private:
     T stack_[N];
 };
-
-}  // namespace buffer
-
-using buffer::Buffer;
-using buffer::FixedBuffer;
-using buffer::SmallBuffer;
 
 }  // namespace shell
