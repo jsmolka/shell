@@ -10,290 +10,267 @@
 namespace shell
 {
 
-namespace algorithm
-{
-
 namespace detail
 {
 
-template<typename Sequence>
-std::size_t size(const Sequence& seq)
+template<typename String>
+std::size_t sizeExcludingTerminator(const String& str)
 {
-    if constexpr (std::is_array_v<Sequence>)
-        return sizeof(seq) - 1;
+    if constexpr (std::is_array_v<String>)
+        return sizeof(str) - 1;
     else
-        return seq.size();
+        return str.size();
 }
 
 }  // namespace detail
 
-template<typename Sequence, typename Predicate>
-void trimLeftIf(Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+void trimLeftIf(String& str, Predicate pred)
 {
-    seq.erase(
-        std::begin(seq),
+    str.erase(
+        std::begin(str),
         std::find_if_not(
-            std::begin(seq),
-            std::end(seq),
+            std::begin(str),
+            std::end(str),
             pred));
 }
 
-template<typename Sequence>
-void trimLeft(Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+void trimLeft(String& str, const std::locale& locale = std::locale())
 {
-    trimLeftIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimLeftIf(str, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-Sequence trimLeftCopyIf(const Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+String trimLeftCopyIf(const String& str, Predicate pred)
 {
-    return Sequence(
+    return String(
         std::find_if_not(
-            std::begin(seq),
-            std::end(seq),
+            std::begin(str),
+            std::end(str),
             pred),
-        std::end(seq));
+        std::end(str));
 }
 
-template<typename Sequence>
-Sequence trimLeftCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+String trimLeftCopy(const String& str, const std::locale& locale = std::locale())
 {
-    return trimLeftCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimLeftCopyIf(str, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-void trimRightIf(Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+void trimRightIf(String& str, Predicate pred)
 {
-    seq.erase(
+    str.erase(
         std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
+            std::rbegin(str),
+            std::rend(str),
             pred).base(),
-        std::end(seq));
+        std::end(str));
 }
 
-template<typename Sequence>
-void trimRight(Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+void trimRight(String& str, const std::locale& locale = std::locale())
 {
-    trimRightIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimRightIf(str, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-Sequence trimRightCopyIf(const Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+String trimRightCopyIf(const String& str, Predicate pred)
 {
-    return Sequence(
-        std::begin(seq),
+    return String(
+        std::begin(str),
         std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
+            std::rbegin(str),
+            std::rend(str),
             pred).base());
 }
 
-template<typename Sequence>
-Sequence trimRightCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+String trimRightCopy(const String& str, const std::locale& locale = std::locale())
 {
-    return trimRightCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimRightCopyIf(str, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-void trimIf(Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+void trimIf(String& str, Predicate pred)
 {
-    trimLeftIf(seq, pred);
-    trimRightIf(seq, pred);
+    trimLeftIf(str, pred);
+    trimRightIf(str, pred);
 }
 
-template<typename Sequence>
-void trim(Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+void trim(String& str, const std::locale& locale = std::locale())
 {
-    trimIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    trimIf(str, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence, typename Predicate>
-Sequence trimCopyIf(const Sequence& seq, Predicate pred)
+template<typename String, typename Predicate>
+String trimCopyIf(const String& str, Predicate pred)
 {
-    return Sequence(
+    return String(
         std::find_if_not(
-            std::begin(seq),
-            std::end(seq),
+            std::begin(str),
+            std::end(str),
             pred),
         std::find_if_not(
-            std::rbegin(seq),
-            std::rend(seq),
+            std::rbegin(str),
+            std::rend(str),
             pred).base());
 }
 
-template<typename Sequence>
-Sequence trimCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+String trimCopy(const String& seq, const std::locale& locale = std::locale())
 {
-    return trimCopyIf(seq, IsSpace<range_value_t<Sequence>>(locale));
+    return trimCopyIf(seq, IsSpace<range_value_t<String>>(locale));
 }
 
-template<typename Sequence>
-void toLower(Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+void toLower(String& str, const std::locale& locale = std::locale())
 {
     std::transform(
-        std::begin(seq),
-        std::end(seq),
-        std::begin(seq),
-        ToLower<range_value_t<Sequence>>(locale));
+        std::begin(str),
+        std::end(str),
+        std::begin(str),
+        ToLower<range_value_t<String>>(locale));
 }
 
-template<typename Sequence>
-Sequence toLowerCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+String toLowerCopy(const String& str, const std::locale& locale = std::locale())
 {
-    Sequence res;
-    res.reserve(detail::size(seq));
+    String res{};
+    res.reserve(detail::sizeExcludingTerminator(str));
 
     std::transform(
-        std::begin(seq),
-        std::end(seq),
+        std::begin(str),
+        std::end(str),
         std::back_inserter(res),
-        ToLower<range_value_t<Sequence>>(locale));
+        ToLower<range_value_t<String>>(locale));
 
     return res;
 }
 
-template<typename Sequence>
-void toUpper(Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+void toUpper(String& str, const std::locale& locale = std::locale())
 {
     std::transform(
-        std::begin(seq),
-        std::end(seq),
-        std::begin(seq),
-        ToUpper<range_value_t<Sequence>>(locale));
+        std::begin(str),
+        std::end(str),
+        std::begin(str),
+        ToUpper<range_value_t<String>>(locale));
 }
 
-template<typename Sequence>
-Sequence toUpperCopy(const Sequence& seq, const std::locale& locale = std::locale())
+template<typename String>
+String toUpperCopy(const String& str, const std::locale& locale = std::locale())
 {
-    Sequence res;
-    res.reserve(detail::size(seq));
+    String res{};
+    res.reserve(detail::sizeExcludingTerminator(str));
 
     std::transform(
-        std::begin(seq),
-        std::end(seq),
+        std::begin(str),
+        std::end(str),
         std::back_inserter(res),
-        ToUpper<range_value_t<Sequence>>(locale));
+        ToUpper<range_value_t<String>>(locale));
 
     return res;
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-void replaceFirst(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+void replaceFirst(String& str, const StringFrom& from, const StringTo& to)
 {
-    auto pos = seq.find(from);
-    if (pos != Sequence::npos)
-    {
-        seq.replace(pos, detail::size(from), to);
-    }
+    typename String::size_type pos = str.find(from);
+
+    if (pos != String::npos)
+        str.replace(pos, detail::sizeExcludingTerminator(from), to);
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-Sequence replaceFirstCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+String replaceFirstCopy(const String& str, const StringFrom& from, const StringTo& to)
 {
-    Sequence res(seq);
+    String res(str);
     replaceFirst(res, from, to);
 
     return res;
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-void replaceLast(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+void replaceLast(String& str, const StringFrom& from, const StringTo& to)
 {
-    auto pos = seq.rfind(from);
-    if (pos != Sequence::npos)
-    {
-        seq.replace(pos, detail::size(from), to);
-    }
+    typename String::size_type pos = str.rfind(from);
+
+    if (pos != String::npos)
+        str.replace(pos, detail::sizeExcludingTerminator(from), to);
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-Sequence replaceLastCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+String replaceLastCopy(const String& str, const StringFrom& from, const StringTo& to)
 {
-    Sequence res(seq);
+    String res(str);
     replaceLast(res, from, to);
 
     return res;
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-void replaceAll(Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+void replaceAll(String& str, const StringFrom& from, const StringTo& to)
 {
-    typename Sequence::size_type pos = 0;
-    while ((pos = seq.find(from, pos)) != Sequence::npos)
+    typename String::size_type pos = 0;
+
+    while ((pos = str.find(from, pos)) != String::npos)
     {
-        seq.replace(pos, detail::size(from), to);
-        pos += detail::size(to);
+        str.replace(pos, detail::sizeExcludingTerminator(from), to);
+        pos += detail::sizeExcludingTerminator(to);
     }
 }
 
-template<typename Sequence, typename SequenceFrom, typename SequenceTo>
-Sequence replaceAllCopy(const Sequence& seq, const SequenceFrom& from, const SequenceTo& to)
+template<typename String, typename StringFrom, typename StringTo>
+String replaceAllCopy(const String& str, const StringFrom& from, const StringTo& to)
 {
-    Sequence res(seq);
+    String res(str);
     replaceAll(res, from, to);
 
     return res;
 }
 
-template<typename Sequence, typename SequenceDelimiter>
-std::vector<Sequence> split(const Sequence& seq, const SequenceDelimiter& del)
+template<typename OutputIterator, typename String, typename StringDelimiter>
+OutputIterator split(OutputIterator out, const String& str, const StringDelimiter& del)
 {
-    auto end = seq.find(del);
-    auto res = std::vector<Sequence>();
-    auto pos = static_cast<typename Sequence::size_type>(0);
+    auto end = str.find(del);
+    auto pos = static_cast<typename String::size_type>(0);
 
-    while (end != Sequence::npos)
+    while (end != String::npos)
     {
-        res.push_back(seq.substr(pos, end - pos));
-        pos = end + detail::size(del);
-        end = seq.find(del, pos);
+        *out = str.substr(pos, end - pos);
+         pos = end + detail::sizeExcludingTerminator(del);
+         end = str.find(del, pos);
     }
-    res.push_back(seq.substr(pos, end));
+    *out = str.substr(pos, end);
+
+    return out;
+}
+
+template<typename String, typename StringDelimiter>
+std::vector<String> split(const String& str, const StringDelimiter& del)
+{
+    std::vector<String> res;
+    split(std::back_inserter(res), str, del);
 
     return res;
 }
 
-template<typename SequenceRange, typename SequenceDelimiter>
-range_value_t<SequenceRange> join(const SequenceRange& range, const SequenceDelimiter& del)
+template<typename Range, typename StringDelimiter>
+range_value_t<Range> join(const Range& range, const StringDelimiter& del)
 {
-    range_value_t<SequenceRange> res;
+    range_value_t<Range> res{};
 
-    for (auto [pos, seq] : enumerate(range))
+    for (auto [pos, str] : enumerate(range))
     {
         if (pos != 0)
             res.append(del);
 
-        res.append(seq);
+        res.append(str);
     }
     return res;
 }
-
-}  // namespace algorithm
-
-using algorithm::join;
-using algorithm::replaceAll;
-using algorithm::replaceAllCopy;
-using algorithm::replaceFirst;
-using algorithm::replaceFirstCopy;
-using algorithm::replaceLast;
-using algorithm::replaceLastCopy;
-using algorithm::split;
-using algorithm::toLower;
-using algorithm::toLowerCopy;
-using algorithm::toUpper;
-using algorithm::toUpperCopy;
-using algorithm::trim;
-using algorithm::trimCopy;
-using algorithm::trimCopyIf;
-using algorithm::trimIf;
-using algorithm::trimLeft;
-using algorithm::trimLeftCopy;
-using algorithm::trimLeftCopyIf;
-using algorithm::trimLeftIf;
-using algorithm::trimRight;
-using algorithm::trimRightCopy;
-using algorithm::trimRightCopyIf;
-using algorithm::trimRightIf;
 
 }  // namespace shell

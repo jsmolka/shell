@@ -59,9 +59,9 @@ private:
     Iterator iter;
 };
 
-template<typename Range, typename Integral = int>
+template<typename Range, typename Integral = std::size_t>
 IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
-enumerate(Range& range, Integral start = 0)
+    enumerate(Range& range, Integral start = 0)
 {
     using Iterator = range_iterator_t<Range>;
 

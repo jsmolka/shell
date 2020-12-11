@@ -7,9 +7,9 @@ TEST_CASE("iterator")
         REQUIRE(value == expected--);
 
     uint x = 0;
-    for (auto& [i, v] : enumerate(makePointerRange(reinterpret_cast<u8*>(&x), 4)))
+    for (auto& v : PointerRange(reinterpret_cast<u8*>(&x), 4))
     {
-        v = i;
+        v++;
     }
-    REQUIRE(x == 0x0302'0100);
+    REQUIRE(x == 0x01010101);
 }

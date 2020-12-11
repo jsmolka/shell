@@ -162,6 +162,11 @@ TEST_CASE("replaceAllCopy")
 TEST_CASE("split")
 {
     REQUIRE(split("xxx|xxx"s, "|") == std::vector<std::string>{ "xxx", "xxx" });
+
+    shell::SmallBuffer<std::string, 10> parts;
+    split(std::back_inserter(parts), "xxx|xxx"s, "|");
+    REQUIRE(parts[0] == "xxx");
+    REQUIRE(parts[1] == "xxx");
 }
 
 TEST_CASE("join")
