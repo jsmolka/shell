@@ -12,14 +12,14 @@ template<typename T>
 class Buffer
 {
 public:
-    using value_type = T;
-    using reference = value_type&;
-    using const_reference = const reference;
-    using pointer = value_type*;
-    using const_pointer = const pointer;
-    using iterator = pointer;
-    using const_iterator = const iterator;
-    using reverse_iterator = std::reverse_iterator<iterator>;
+    using value_type             = T;
+    using reference              = value_type&;
+    using const_reference        = const reference;
+    using pointer                = value_type*;
+    using const_pointer          = const pointer;
+    using iterator               = pointer;
+    using const_iterator         = const iterator;
+    using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     Buffer() = default;
