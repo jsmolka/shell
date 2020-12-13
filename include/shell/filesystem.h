@@ -4,6 +4,7 @@
 
 #include <shell/fmt.h>
 #include <shell/parse.h>
+#include <shell/predef.h>
 #include <shell/traits.h>
 
 #ifdef __cpp_lib_filesystem
@@ -30,26 +31,7 @@ using resize_t = decltype(std::declval<T>().resize(1));
 template<typename T>
 inline constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
-inline path base_path = current_path();
-
 }  // namespace detail
-
-inline void setBasePath(const path& path)
-{
-    detail::base_path = path;
-}
-
-inline void setBasePath(int argc, char* argv[])
-{
-    if (argc > 0) setBasePath(u8path(argv[0]).parent_path());
-}
-
-inline path makeAbsolute(const path& path)
-{
-    return path.is_relative()
-        ? detail::base_path / path
-        : path;
-}
 
 enum class Status
 {
@@ -103,7 +85,129 @@ Status write(const path& file, const Container& src)
     return Status::Ok;
 }
 
-}  // shell::filesystem
+}  // namespace shell::filesystem
+
+#if SHELL_OS_WINDOWS
+
+#include <shell/windows.h>
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    WCHAR path[MAX_PATH];
+    GetModuleFileNameW(NULL, path, MAX_PATH);
+
+    return filesystem::path(path);
+}
+
+}  // namespace shell::filesystem
+
+#elif SHELL_OS_MACOS
+
+#include <mach-o/dyld.h>
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    char path[1024];
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0)
+        return filesystem::path(path);
+
+    char* buffer = new char[size];
+    _NSGetExecutablePath(buffer, &size);
+
+    filesystem::path result(buffer);
+    delete[] buffer;
+
+    return result;
+}
+
+}  // namespace shell::filesystem
+
+#elif SHELL_OS_BSD_FREE
+
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <stdlib.h>
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    int mib[4];
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PATHNAME;
+    mib[3] = -1;
+    char buffer[10240];
+    size_t cb = sizeof(buffer);
+    sysctl(mib, 4, buffer, &cb, NULL, 0);
+
+    return path(buffer);
+}
+
+}  // namespace shell::filesystem
+
+#elif SHELL_OS_BSD_NET
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    return read_symlink("/proc/curproc/exe");
+}
+
+}  // namespace shell::filesystem
+
+#elif SHELL_OS_BSD_DRAGONFLY
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    return read_symlink("/proc/curproc/file");
+}
+
+}  // namespace shell::filesystem
+
+#else
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    return read_symlink("/proc/self/exe");
+}
+
+}  // namespace shell::filesystem
+
+#endif
+
+namespace shell::filesystem
+{
+
+inline path absolute(const path& path)
+{
+    return path.is_relative()
+        ? program().parent_path() / path
+        : path;
+}
+
+inline path absolute(const path& path, std::error_code&)
+{
+    return shell::filesystem::absolute(path);
+}
+
+}  // namespace shell::filesystem
 
 template<>
 struct fmt::formatter<shell::filesystem::path>

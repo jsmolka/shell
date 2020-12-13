@@ -4,6 +4,11 @@ TEST_CASE("filesystem::format")
     REQUIRE(fmt::format("{}", path) == "test");
 }
 
+TEST_CASE("filesystem::absolute")
+{
+    fmt::print("{}\n", filesystem::absolute("relative/path"));
+}
+
 TEST_CASE("filesystem::read/write<vector>")
 {
     std::vector<char> src = { 0x00, 0x01, 0x02, 0x03, 0x04 };

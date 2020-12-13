@@ -76,7 +76,7 @@ class FileSink : public BasicSink
 {
 public:
     FileSink(const filesystem::path& file, bool trunc = false)
-        : stream(filesystem::makeAbsolute(file),
+        : stream(filesystem::absolute(file),
             trunc ? std::ios::trunc : std::ios::app) {}
 
     void sink(const std::string& location, const std::string& message, Level) override
