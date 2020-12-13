@@ -9,9 +9,6 @@
 namespace shell
 {
 
-namespace errors
-{
-
 class Error : public std::exception
 {
 public:
@@ -50,12 +47,5 @@ void throwIf(bool condition, Args&&... args)
     if (condition)
         throw Exception(std::forward<Args>(args)...);
 }
-
-}  // namespace errors
-
-using errors::Error;
-using errors::FormattedError;
-using errors::ParseError;
-using errors::throwIf;
 
 }  // namespace shell

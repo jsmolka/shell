@@ -28,3 +28,13 @@ TEST_CASE("is_detected")
     REQUIRE( is_detected_v<Test, test3_t>);
     REQUIRE(!is_detected_v<Test, test4_t>);
 }
+
+TEST_CASE("unqualified")
+{
+    REQUIRE(std::is_same_v<unqualified_t<int>, int>);
+    REQUIRE(std::is_same_v<unqualified_t<const int>, int>);
+    REQUIRE(std::is_same_v<unqualified_t<const int&>, int>);
+    REQUIRE(std::is_same_v<unqualified_t<int*>, int>);
+    REQUIRE(std::is_same_v<unqualified_t<const int*>, int>);
+    REQUIRE(std::is_same_v<unqualified_t<int[2]>, int>);
+}

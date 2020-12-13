@@ -186,12 +186,12 @@ TEST_CASE("bit::popcnt")
     REQUIRE(bit::popcnt(0xFFFF'FFFF) == 32);
 }
 
-TEST_CASE("bit::ceilPow2")
+TEST_CASE("bit::ceilPowTwo")
 {
-    REQUIRE(bit::ceilPow2(5) == 8);
-    REQUIRE(bit::ceilPow2(6) == 8);
-    REQUIRE(bit::ceilPow2(7) == 8);
-    REQUIRE(bit::ceilPow2(8) == 8);
+    REQUIRE(bit::ceilPowTwo(5) == 8);
+    REQUIRE(bit::ceilPowTwo(6) == 8);
+    REQUIRE(bit::ceilPowTwo(7) == 8);
+    REQUIRE(bit::ceilPowTwo(8) == 8);
 }
 
 template<typename T>

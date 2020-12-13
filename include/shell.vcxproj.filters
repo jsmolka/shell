@@ -171,6 +171,9 @@
     <ClInclude Include="shell\fmt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\parse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shell\detail\fmt\LICENSE" />

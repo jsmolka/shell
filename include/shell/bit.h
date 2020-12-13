@@ -12,10 +12,7 @@
 #  include <x86intrin.h>
 #endif
 
-namespace shell
-{
-
-namespace bit
+namespace shell::bit
 {
 
 template<typename T>
@@ -330,7 +327,7 @@ std::size_t ctz(Integral value)
 }
 
 template<typename Integral>
-Integral ceilPow2(Integral value)
+Integral ceilPowTwo(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(value != 0, "Undefined");
@@ -381,6 +378,4 @@ IteratorRange<BitIterator<Integral>> iterate(Integral value)
         BitIterator<Integral>(0));
 }
 
-}  // namespace bit
-
-}  // namespace shell
+}  // namespace shell::bit

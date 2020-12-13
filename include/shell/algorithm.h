@@ -1,6 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <cstring>
+#include <cwchar>
+#include <string>
 #include <vector>
 
 #include <shell/locale.h>
@@ -13,13 +16,36 @@ namespace shell
 namespace detail
 {
 
+template<typename T, typename = void>
+inline constexpr bool has_value_type_v = false;
+
+template<typename T>
+inline constexpr bool has_value_type_v<T, std::void_t<typename T::value_type>> = true;
+
 template<typename String>
-std::size_t sizeExcludingTerminator(const String& str)
+std::size_t len(const String& str)
 {
-    if constexpr (std::is_array_v<String>)
-        return sizeof(str) - 1;
-    else
+    if constexpr (has_value_type_v<String>)
+    {
+        static_assert(std::is_same_v<String, std::basic_string<typename String::value_type>>);
+
         return str.size();
+    }
+    else
+    {
+        using Char = unqualified_t<String>;
+    
+        static_assert(is_any_of_v<Char, char, wchar_t>);
+
+        if constexpr (std::is_array_v<String>)
+            return sizeof(str) - sizeof(Char);
+
+        if constexpr (std::is_pointer_v<String> && std::is_same_v<Char, char>)
+            return std::strlen(str);
+
+        if constexpr (std::is_pointer_v<String> && std::is_same_v<Char, wchar_t>)
+            return std::wcslen(str);
+    }
 }
 
 }  // namespace detail
@@ -139,7 +165,7 @@ template<typename String>
 String toLowerCopy(const String& str, const std::locale& locale = std::locale())
 {
     String res{};
-    res.reserve(detail::sizeExcludingTerminator(str));
+    res.reserve(detail::len(str));
 
     std::transform(
         std::begin(str),
@@ -164,7 +190,7 @@ template<typename String>
 String toUpperCopy(const String& str, const std::locale& locale = std::locale())
 {
     String res{};
-    res.reserve(detail::sizeExcludingTerminator(str));
+    res.reserve(detail::len(str));
 
     std::transform(
         std::begin(str),
@@ -178,10 +204,10 @@ String toUpperCopy(const String& str, const std::locale& locale = std::locale())
 template<typename String, typename StringFrom, typename StringTo>
 void replaceFirst(String& str, const StringFrom& from, const StringTo& to)
 {
-    typename String::size_type pos = str.find(from);
+    std::size_t pos = str.find(from);
 
     if (pos != String::npos)
-        str.replace(pos, detail::sizeExcludingTerminator(from), to);
+        str.replace(pos, detail::len(from), to);
 }
 
 template<typename String, typename StringFrom, typename StringTo>
@@ -196,10 +222,10 @@ String replaceFirstCopy(const String& str, const StringFrom& from, const StringT
 template<typename String, typename StringFrom, typename StringTo>
 void replaceLast(String& str, const StringFrom& from, const StringTo& to)
 {
-    typename String::size_type pos = str.rfind(from);
+    std::size_t pos = str.rfind(from);
 
     if (pos != String::npos)
-        str.replace(pos, detail::sizeExcludingTerminator(from), to);
+        str.replace(pos, detail::len(from), to);
 }
 
 template<typename String, typename StringFrom, typename StringTo>
@@ -214,12 +240,14 @@ String replaceLastCopy(const String& str, const StringFrom& from, const StringTo
 template<typename String, typename StringFrom, typename StringTo>
 void replaceAll(String& str, const StringFrom& from, const StringTo& to)
 {
-    typename String::size_type pos = 0;
+    std::size_t pos = 0;
+    std::size_t len_to = detail::len(to);
+    std::size_t len_from = detail::len(from);
 
     while ((pos = str.find(from, pos)) != String::npos)
     {
-        str.replace(pos, detail::sizeExcludingTerminator(from), to);
-        pos += detail::sizeExcludingTerminator(to);
+        str.replace(pos, len_from, to);
+        pos += len_to;
     }
 }
 
@@ -235,13 +263,14 @@ String replaceAllCopy(const String& str, const StringFrom& from, const StringTo&
 template<typename OutputIterator, typename String, typename StringDelimiter>
 OutputIterator split(OutputIterator out, const String& str, const StringDelimiter& del)
 {
-    auto end = str.find(del);
-    auto pos = static_cast<typename String::size_type>(0);
+    std::size_t pos = 0;
+    std::size_t end = str.find(del);
+    std::size_t len = detail::len(del);
 
     while (end != String::npos)
     {
         *out = str.substr(pos, end - pos);
-         pos = end + detail::sizeExcludingTerminator(del);
+         pos = end + len;
          end = str.find(del, pos);
     }
     *out = str.substr(pos, end);

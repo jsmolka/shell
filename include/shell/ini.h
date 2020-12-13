@@ -5,6 +5,7 @@
 
 #include <shell/algorithm.h>
 #include <shell/errors.h>
+#include <shell/filesystem.h>
 #include <shell/functional.h>
 #include <shell/utility.h>
 
@@ -228,11 +229,17 @@ public:
 class Ini
 {
 public:
-    bool load(const filesystem::path& file)
+    filesystem::Status load(const filesystem::path& file)
     {
-        auto stream = std::ifstream(file);
+        using namespace filesystem;
+
+        std::ifstream stream(file);
+
         if (!stream.is_open())
-            return false;
+            return Status::BadFile;
+
+        if (!stream)
+            return Status::BadStream;
 
         std::string line;
         while (std::getline(stream, line))
@@ -244,10 +251,10 @@ public:
 
             tokens.push_back(token);
         }
-        return true;
+        return Status::Ok;
     }
 
-    bool save(const filesystem::path& file) const
+    filesystem::Status save(const filesystem::path& file) const
     {
         std::vector<std::string> lines;
         lines.reserve(tokens.size());

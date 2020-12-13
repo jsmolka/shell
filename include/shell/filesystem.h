@@ -2,24 +2,24 @@
 
 #include <fstream>
 
+#include <shell/fmt.h>
+#include <shell/parse.h>
+#include <shell/traits.h>
+
 #ifdef __cpp_lib_filesystem
 #  include <filesystem>
+#  define SHELL_FILESYSTEM_NAMESPACE std::filesystem
+#  define SHELL_FILESYSTEM_EXPERIMENTAL 0
 #else
 #  include <experimental/filesystem>
+#  define SHELL_FILESYSTEM_NAMESPACE std::experimental::filesystem
+#  define SHELL_FILESYSTEM_EXPERIMENTAL 1
 #endif
-
-#include <shell/fmt.h>
-#include <shell/traits.h>
-#include <shell/utility.h>
 
 namespace shell::filesystem
 {
 
-#ifdef __cpp_lib_filesystem
-using namespace std::filesystem;
-#else
-using namespace std::experimental::filesystem;
-#endif
+using namespace SHELL_FILESYSTEM_NAMESPACE;
 
 namespace detail
 {
@@ -51,45 +51,59 @@ inline path makeAbsolute(const path& path)
         : path;
 }
 
+enum class Status
+{
+    Ok,
+    BadFile,
+    BadStream,
+    BadSize
+};
+
 template<typename Container>
-bool read(const path& file, Container& dst)
+Status read(const path& file, Container& dst)
 {
     static_assert(sizeof(typename Container::value_type) == 1);
 
-    auto stream = std::ifstream(file, std::ios::binary);
-    if (!stream.is_open())
-        return false;
+    std::ifstream stream(file, std::ios::binary);
 
-    stream.seekg(0, std::ios::end);
-    std::size_t size = stream.tellg();
-    stream.seekg(0, std::ios::beg);
+    if (!stream.is_open())
+        return Status::BadFile;
+
+    if (!stream)
+        return Status::BadStream;
+
+    std::size_t size = file_size(file);
 
     if constexpr (detail::is_resizable_v<Container>)
         dst.resize(size);
 
     if (dst.size() != size)
-        return false;
+        return Status::BadSize;
 
     stream.read(reinterpret_cast<char*>(dst.data()), size);
 
-    return true;
+    return Status::Ok;
 }
 
 template<typename Container>
-bool write(const path& file, const Container& src)
+Status write(const path& file, const Container& src)
 {
     static_assert(sizeof(typename Container::value_type) == 1);
 
-    auto stream = std::ofstream(file, std::ios::binary);
+    std::ofstream stream(file, std::ios::binary);
+
     if (!stream.is_open())
-        return false;
+        return Status::BadFile;
+
+    if (!stream)
+        return Status::BadStream;
 
     stream.write(reinterpret_cast<const char*>(src.data()), src.size());
 
-    return true;
+    return Status::Ok;
 }
 
-}  // namespace shell::filesystem
+}  // shell::filesystem
 
 template<>
 struct fmt::formatter<shell::filesystem::path>
@@ -103,12 +117,12 @@ struct fmt::formatter<shell::filesystem::path>
     template<typename FormatContext>
     auto format(const shell::filesystem::path& path, FormatContext& ctx)
     {
-        return fmt::format_to(ctx.out(), "{}", path.string());
+        return fmt::format_to(ctx.out(), path.string());
     }
 };
 
 template<>
-inline std::optional<shell::filesystem::path> shell::utility::parse(const std::string& data)
+inline std::optional<shell::filesystem::path> shell::parse(const std::string& data)
 {
     return shell::filesystem::u8path(data);
 }

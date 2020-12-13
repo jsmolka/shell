@@ -33,6 +33,15 @@ inline constexpr bool is_specialization_v<Template<Ts...>, Template> = true;
 template<typename T, template<typename...> typename Template>
 struct is_specialization : std::bool_constant<is_specialization_v<T, Template>> {};
 
+template<typename T>
+struct unqualified
+{
+    using type = std::remove_cv_t<std::remove_pointer_t<std::decay_t<T>>>;
+};
+
+template<typename T>
+using unqualified_t = typename unqualified<T>::type;
+
 template<typename Range>
 struct range_traits
 {
@@ -103,5 +112,7 @@ using traits::range_reverse_iterator_t;
 using traits::range_traits;
 using traits::range_value;
 using traits::range_value_t;
+using traits::unqualified;
+using traits::unqualified_t;
 
 }  // namespace shell
