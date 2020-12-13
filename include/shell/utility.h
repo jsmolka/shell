@@ -9,9 +9,6 @@
 namespace shell
 {
 
-namespace utility
-{
-
 template<typename T, typename... Args>
 void reconstruct(T& instance, Args&&... args)
 {
@@ -24,9 +21,9 @@ void reconstruct(T& instance, Args&&... args)
 template<typename Integral, typename Iterator>
 class EnumerateIterator
 {
+public:
     static_assert(std::is_integral_v<Integral>);
 
-public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = std::tuple<const Integral&, typename std::iterator_traits<Iterator>::reference>;
@@ -48,8 +45,15 @@ public:
         return *this;
     }
 
-    bool operator==(const EnumerateIterator& other) const { return iter == other.iter; }
-    bool operator!=(const EnumerateIterator& other) const { return iter != other.iter; }
+    bool operator==(const EnumerateIterator& other) const
+    {
+        return iter == other.iter;
+    }
+
+    bool operator!=(const EnumerateIterator& other) const
+    {
+        return iter != other.iter;
+    }
 
 private:
     Integral index;
@@ -62,15 +66,9 @@ IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
 {
     using Iterator = range_iterator_t<Range>;
 
-    return makeIteratorRange(
+    return IteratorRange(
         EnumerateIterator<Integral, Iterator>(start, std::begin(range)),
         EnumerateIterator<Integral, Iterator>(start, std::end(range)));
 }
-
-}  // namespace utility
-
-using utility::enumerate;
-using utility::EnumerateIterator;
-using utility::reconstruct;
 
 }  // namespace shell

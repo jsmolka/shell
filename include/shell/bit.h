@@ -380,7 +380,7 @@ IteratorRange<BitIterator<Integral>> iterate(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    return makeIteratorRange(
+    return IteratorRange(
         BitIterator<Integral>(value),
         BitIterator<Integral>(0));
 }

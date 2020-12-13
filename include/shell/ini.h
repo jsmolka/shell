@@ -12,9 +12,6 @@
 namespace shell
 {
 
-namespace ini
-{
-
 namespace detail
 {
 
@@ -328,9 +325,5 @@ private:
 
     std::vector<Token> tokens;
 };
-
-}  // namespace ini
-
-using ini::Ini;
 
 }  // namespace shell

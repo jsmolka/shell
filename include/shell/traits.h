@@ -6,9 +6,6 @@
 namespace shell
 {
 
-namespace traits
-{
-
 template<typename T, typename... Ts>
 inline constexpr bool is_any_of_v = std::disjunction_v<std::is_same<T, Ts>...>;
 
@@ -55,9 +52,9 @@ template<typename Range, std::size_t N>
 struct range_traits<Range[N]>
 {
     using iterator               = Range*;
-    using const_iterator         = const Range*;
-    using reverse_iterator       = Range*;
-    using const_reverse_iterator = const Range*;
+    using const_iterator         = const iterator;
+    using reverse_iterator       = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 };
 
 template<typename Range>
@@ -95,24 +92,5 @@ struct range_value
 
 template<typename Range>
 using range_value_t = typename range_value<Range>::type;
-
-}  // namespace traits
-
-using traits::is_any_of;
-using traits::is_any_of_v;
-using traits::is_detected;
-using traits::is_detected_v;
-using traits::is_specialization;
-using traits::is_specialization_v;
-using traits::range_iterator;
-using traits::range_iterator_t;
-using traits::range_iterator_traits;
-using traits::range_reverse_iterator;
-using traits::range_reverse_iterator_t;
-using traits::range_traits;
-using traits::range_value;
-using traits::range_value_t;
-using traits::unqualified;
-using traits::unqualified_t;
 
 }  // namespace shell

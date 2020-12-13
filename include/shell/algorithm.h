@@ -16,19 +16,11 @@ namespace shell
 namespace detail
 {
 
-template<typename T, typename = void>
-inline constexpr bool has_value_type_v = false;
-
-template<typename T>
-inline constexpr bool has_value_type_v<T, std::void_t<typename T::value_type>> = true;
-
 template<typename String>
 std::size_t len(const String& str)
 {
-    if constexpr (has_value_type_v<String>)
+    if constexpr (is_specialization_v<String, std::basic_string>)
     {
-        static_assert(std::is_same_v<String, std::basic_string<typename String::value_type>>);
-
         return str.size();
     }
     else

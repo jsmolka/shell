@@ -4,7 +4,7 @@
 #include <codecvt>
 #include <vector>
 
-#include <shell/env.h>
+#include <shell/predef.h>
 
 #if SHELL_OS_WINDOWS
 

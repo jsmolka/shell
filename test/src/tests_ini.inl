@@ -1,6 +1,6 @@
 TEST_CASE("SectionToken")
 {
-    ini::detail::SectionToken token;
+    detail::SectionToken token;
     
     token.parse("[test]");
     REQUIRE(token.section == "test");
@@ -22,7 +22,7 @@ TEST_CASE("SectionToken")
 
 TEST_CASE("CommentToken")
 {
-    ini::detail::CommentToken token;
+    detail::CommentToken token;
     
     token.parse("# test");
     REQUIRE(token.token == "#");
@@ -61,7 +61,7 @@ TEST_CASE("CommentToken")
 
 TEST_CASE("ValueToken")
 {
-    ini::detail::ValueToken token;
+    detail::ValueToken token;
     
     token.parse("test = test");
     REQUIRE(token.key == "test");

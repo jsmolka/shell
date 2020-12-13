@@ -5,9 +5,6 @@
 namespace shell
 {
 
-namespace locale
-{
-
 namespace detail
 {
 
@@ -74,22 +71,5 @@ public:
 private:
     const std::locale& locale;
 };
-
-}  // namespace locale
-
-using locale::IsAlnum;
-using locale::IsAlpha;
-using locale::IsBlank;
-using locale::IsCntrl;
-using locale::IsDigit;
-using locale::IsGraph;
-using locale::IsLower;
-using locale::IsPrint;
-using locale::IsPunct;
-using locale::IsSpace;
-using locale::IsUpper;
-using locale::IsXDigit;
-using locale::ToLower;
-using locale::ToUpper;
 
 }  // namespace shell

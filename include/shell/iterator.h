@@ -52,12 +52,6 @@ private:
     Iterator end_;
 };
 
-template<typename Iterator>
-IteratorRange<Iterator> makeIteratorRange(Iterator begin, Iterator end)
-{
-    return IteratorRange<Iterator>(begin, end);
-}
-
 template<typename T>
 class PointerRange
 {
@@ -138,23 +132,10 @@ private:
     T* end_;
 };
 
-template<typename T>
-PointerRange<T> makePointerRange(T* begin, T* end)
-{
-    return PointerRange<T>(begin, end);
-}
-
-template<typename T>
-PointerRange<T> makePointerRange(T* begin, std::size_t size)
-{
-    return PointerRange<T>(begin, size);
-}
-
 template<typename Range>
-IteratorRange<range_reverse_iterator_t<Range>>
-    reversed(Range& range)
+IteratorRange<range_reverse_iterator_t<Range>> reversed(Range& range)
 {
-    return makeIteratorRange(std::rbegin(range), std::rend(range));
+    return IteratorRange(std::rbegin(range), std::rend(range));
 }
 
 }  // namespace shell
