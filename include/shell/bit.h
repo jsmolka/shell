@@ -119,12 +119,6 @@ constexpr Integral nibble(Integral value, std::size_t index)
     return (value >> ((CHAR_BIT / 2) * index)) & 0xF;
 }
 
-template<typename Integral>
-constexpr Integral twos(Integral value)
-{
-    return ~value + 1;
-}
-
 template<std::size_t Size, typename Integral>
 constexpr Integral signEx(Integral value)
 {
@@ -189,6 +183,12 @@ constexpr Integral msb(Integral value)
     static_assert(std::is_integral_v<Integral>);
 
     return shr(value, bits_v<Integral> - 1);
+}
+
+template<typename Integral>
+constexpr Integral twos(Integral value)
+{
+    return ~value + 1;
 }
 
 template<typename Integral>
