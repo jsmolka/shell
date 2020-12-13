@@ -1,6 +1,6 @@
 #pragma once
 
-#include <shell/env.h>
+#include <shell/predef.h>
 
 #if SHELL_OS_WINDOWS
 #  ifndef WIN32_LEAN_AND_MEAN

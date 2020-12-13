@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <shell/env.h>
+#include <shell/predef.h>
 
 #if SHELL_CC_MSVC
 #  define SHELL_INLINE    __forceinline

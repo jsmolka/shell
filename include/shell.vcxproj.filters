@@ -54,9 +54,6 @@
     <ClInclude Include="shell\int.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shell\env.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shell\log\all.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -172,6 +169,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\parse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\predef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
