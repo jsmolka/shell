@@ -8,13 +8,15 @@ TEST_CASE("SectionToken")
     token.parse("[test_test]");
     REQUIRE(token.section == "test_test");
 
+    token.parse("[test test]");
+    REQUIRE(token.section == "test test");
+
     REQUIRE_THROWS_AS(token.parse(""), ParseError);
     REQUIRE_THROWS_AS(token.parse("["), ParseError);
     REQUIRE_THROWS_AS(token.parse("]"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[]"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[[]"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[test.]"), ParseError);
-    REQUIRE_THROWS_AS(token.parse("[test-]"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[test][]"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[test]test"), ParseError);
     REQUIRE_THROWS_AS(token.parse("[[test]"), ParseError);

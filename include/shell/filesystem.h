@@ -33,13 +33,7 @@ inline constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
 
 }  // namespace detail
 
-enum class Status
-{
-    Ok,
-    BadFile,
-    BadStream,
-    BadSize
-};
+enum class Status { Ok, BadFile, BadStream, BadSize };
 
 template<typename Container>
 Status read(const path& file, Container& dst)

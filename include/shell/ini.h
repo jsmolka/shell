@@ -7,7 +7,7 @@
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/functional.h>
-#include <shell/utility.h>
+#include <shell/parse.h>
 
 namespace shell
 {
@@ -15,23 +15,32 @@ namespace shell
 namespace detail
 {
 
-class Consumer
+class Parser
 {
 public:
-    Consumer(const std::string& data)
+    Parser(const std::string& data)
         : data(data)
     {
         value.reserve(data.size());
+    }
+
+    void error(const std::string& expected) const
+    {
+        std::string got = index < data.size()
+            ? std::string(1, data[index])
+            : std::string();
+
+        throw ParseError("Expected {} at index {} in line '{}' but got '{}'", expected, index, data, got);
     }
 
     template<typename Predicate>
     void eat(Predicate pred)
     {
         value.clear();
-        if (pos < data.size() && pred(data[pos]))
+        if (index < data.size() && pred(data[index]))
         {
-            value.push_back(data[pos]);
-            ++pos;
+            value.push_back(data[index]);
+            ++index;
         }
     }
 
@@ -46,10 +55,10 @@ public:
     void consume(Predicate pred)
     {
         value.clear();
-        while (pos < data.size() && pred(data[pos]))
+        while (index < data.size() && pred(data[index]))
         {
-            value.push_back(data[pos]);
-            ++pos;
+            value.push_back(data[index]);
+            ++index;
         }
     }
 
@@ -67,7 +76,7 @@ public:
         return value.size() != 0;
     }
 
-    std::size_t pos = 0;
+    std::size_t index = 0;
     std::string value;
 
 private:
@@ -88,46 +97,45 @@ public:
     Kind kind;
 };
 
-class BlankToken : public Token
+class BlankToken final : public Token
 {
 public:
     BlankToken()
         : Token(Kind::Blank) {}
 
-    void parse(const std::string& line) override {}
+    void parse(const std::string& line) final {}
 
-    std::string string() const override
+    std::string string() const final
     {
         return std::string();
     }
 };
 
-#define PARSE_ERROR_EXPECTED(expected) "Expected {} at position {} in line '{}' but got '{}'", expected, consumer.pos, line, line[consumer.pos]
-
-class CommentToken : public Token
+class CommentToken final : public Token
 {
 public:
     CommentToken()
         : Token(Kind::Comment) {}
 
-    void parse(const std::string& line) override
+    void parse(const std::string& line) final
     {
-        Consumer consumer(line);
+        Parser parser(line);
 
-        throwIf<ParseError>(
-            !consumer.eatOne([](char ch) {
-                return ch == '#'
-                    || ch == ';';
-            }),
-            PARSE_ERROR_EXPECTED("'#' or ';'"));
-        token = consumer.value;
+        if (!parser.eatOne([](char ch) {
+            return ch == '#'
+                || ch == ';';
+            }))
+            parser.error("'#' or ';'");
 
-        consumer.consume(IsSpace<char>());
-        consumer.consume(Tautology());
-        comment = consumer.value;
+        token = parser.value;
+
+        parser.consume(IsSpace<char>());
+        parser.consume(Tautology());
+
+        comment = parser.value;
     }
 
-    std::string string() const override
+    std::string string() const final
     {
         return fmt::format("{} {}", token, comment);
     }
@@ -136,42 +144,41 @@ public:
     std::string comment;
 };
 
-class SectionToken : public Token
+class SectionToken final : public Token
 {
 public:
     SectionToken()
         : Token(Kind::Section) {}
 
-    void parse(const std::string& line) override
+    void parse(const std::string& line) final
     {
-        Consumer consumer(line);
+        Parser parser(line);
 
-        throwIf<ParseError>(
-                !consumer.eatOne([](char ch) {
-                return ch == '[';
-            }),
-            PARSE_ERROR_EXPECTED("'['"));
+        if (!parser.eatOne([](char ch) {
+                return ch == '['; 
+            }))
+            parser.error("'['");
 
-        throwIf<ParseError>(
-                !consumer.consumeSome([](char ch) {
-                return std::isalnum(ch)
-                    || ch == '_';
-            }),
-            PARSE_ERROR_EXPECTED("section char"));
-        section = consumer.value;
+        if (!parser.consumeSome([](char ch) {
+            return IsAlnum<char>()(ch)
+                || IsSpace<char>()(ch)
+                || ch == '-'
+                || ch == '_';
+            }))
+            parser.error("section char");
 
-        throwIf<ParseError>(
-            !consumer.eatOne([](char ch) {
+        section = parser.value;
+
+        if (!parser.eatOne([](char ch) {
                 return ch == ']';
-            }),
-            PARSE_ERROR_EXPECTED("']'"));
+            }))
+            parser.error("']'");
 
-        throwIf<ParseError>(
-            consumer.consumeSome(Tautology()),
-            PARSE_ERROR_EXPECTED("no char"));
+        if (parser.consumeSome(Tautology()))
+            parser.error("no char");
     }
 
-    std::string string() const override
+    std::string string() const final
     {
         return fmt::format("[{}]", section);
     }
@@ -179,38 +186,38 @@ public:
     std::string section;
 };
 
-class ValueToken : public Token
+class ValueToken final : public Token
 {
 public:
     ValueToken()
         : Token(Kind::Value) {}
 
-    void parse(const std::string& line) override
+    void parse(const std::string& line) final
     {
-        Consumer consumer(line);
+        Parser parser(line);
 
-        throwIf<ParseError>(
-                !consumer.consumeSome([](char ch) {
+        if (!parser.consumeSome([](char ch) {
                 return std::isalnum(ch)
                     || ch == '_';
-            }),
-            PARSE_ERROR_EXPECTED("key char"));
-        key = consumer.value;
+            }))
+            parser.error("key char");
 
-        consumer.consume(IsSpace<char>());
+        key = parser.value;
 
-        throwIf<ParseError>(
-            !consumer.eatOne([](char ch) {
+        parser.consume(IsSpace<char>());
+
+        if (!parser.eatOne([](char ch) {
                 return ch == '=';
-            }),
-            PARSE_ERROR_EXPECTED("'='"));
+            }))
+            parser.error("'='");
 
-        consumer.consume(IsSpace<char>());
-        consumer.consume(Tautology());
-        value = consumer.value;
+        parser.consume(IsSpace<char>());
+        parser.consume(Tautology());
+
+        value = parser.value;
     }
 
-    std::string string() const override
+    std::string string() const final
     {
         return fmt::format("{} = {}", key, value);
     }
@@ -218,8 +225,6 @@ public:
     std::string key;
     std::string value;
 };
-
-#undef PARSE_ERROR_EXPECTED
 
 }  // namespace detail
 
