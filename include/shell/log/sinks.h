@@ -6,14 +6,10 @@
 
 #include <shell/filesystem.h>
 #include <shell/fmt.h>
-#include <shell/int.h>
 #include <shell/macros.h>
 #include <shell/windows.h>
 
 namespace shell
-{
-
-namespace log
 {
 
 enum class Level { Debug, Info, Warn, Error, Fatal };
@@ -75,13 +71,12 @@ private:
 class FileSink : public BasicSink
 {
 public:
-    FileSink(const filesystem::path& file, bool trunc = false)
-        : stream(filesystem::absolute(file),
-            trunc ? std::ios::trunc : std::ios::app) {}
+    FileSink(const filesystem::path& file, std::ios::openmode mode = std::ios::trunc)
+        : stream(file, mode) {}
 
     void sink(const std::string& location, const std::string& message, Level) override
     {
-        if (stream.is_open())
+        if (stream && stream.is_open())
             stream << location << ": " << message << "\n";
     }
 
@@ -89,15 +84,12 @@ private:
     std::ofstream stream;
 };
 
-namespace detail
-{
-
 template<typename... Sinks>
 class MultiSink : public BasicSink
 {
+public:
     static_assert(sizeof...(Sinks) > 0);
 
-public:
     MultiSink(Sinks&&... sinks)
         : sinks({ std::make_shared<Sinks>(std::move(sinks))... }) {}
 
@@ -110,6 +102,9 @@ public:
 private:
     std::array<BasicSink::Pointer, sizeof...(Sinks)> sinks;
 };
+
+namespace detail
+{
 
 inline BasicSink::Pointer default_sink = std::make_shared<ColoredConsoleSink>();
 
@@ -124,24 +119,14 @@ void setSink(Sink&& sink, Sinks&&... sinks)
     if constexpr (sizeof...(Sinks) == 0)
         detail::default_sink = std::make_shared<Sink>(std::move(sink));
     else 
-        detail::default_sink = std::make_shared<
-            detail::MultiSink<Sink, Sinks...>>(
-                std::move(sink), std::move(sinks)...);
+        detail::default_sink = std::make_shared<MultiSink<Sink, Sinks...>>(
+            std::move(sink), std::move(sinks)...);
 }
 
-}  // namespace log
-
-using log::BasicSink;
-using log::ConsoleSink;
-using log::ColoredConsoleSink;
-using log::FileSink;
-using log::Level;
-using log::setSink;
-
-}  // namespace shell
-
 #define SHELL_LOG(prefix, level, ...)                  \
-    shell::log::detail::default_sink->sink(            \
+    shell::detail::default_sink->sink(                 \
         fmt::format("{} {}", prefix, SHELL_FUNCTION),  \
         fmt::format(__VA_ARGS__),                      \
         level)
+
+}  // namespace shell

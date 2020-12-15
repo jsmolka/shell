@@ -4,6 +4,7 @@
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/ini.h>
+#include <shell/int.h>
 #include <shell/iterator.h>
 #include <shell/locale.h>
 #include <shell/log/all.h>
