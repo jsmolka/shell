@@ -27,5 +27,6 @@ using namespace std::string_literals;
 #include "tests_locale.inl"
 #include "tests_log.inl"
 #include "tests_options.inl"
+#include "tests_parse.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"

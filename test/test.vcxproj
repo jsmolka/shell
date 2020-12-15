@@ -132,6 +132,7 @@
     <None Include="src\tests_log.inl" />
     <None Include="src\tests_options.inl" />
     <None Include="src\tests_ini.inl" />
+    <None Include="src\tests_parse.inl" />
     <None Include="src\tests_traits.inl" />
     <None Include="src\tests_utility.inl" />
     <None Include="src\tests_errors.inl" />
