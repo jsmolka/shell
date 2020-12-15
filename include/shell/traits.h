@@ -82,12 +82,9 @@ template<typename Range>
 using range_reverse_iterator_t = typename range_reverse_iterator<Range>::type;
 
 template<typename Range>
-struct range_iterator_traits : std::iterator_traits<range_iterator_t<Range>> {};
-
-template<typename Range>
 struct range_value
 {
-    using type = typename range_iterator_traits<Range>::value_type;
+    using type = typename std::iterator_traits<range_iterator_t<Range>>::value_type;
 };
 
 template<typename Range>

@@ -290,7 +290,7 @@ public:
     }
 
 private:
-    using Token = std::shared_ptr<detail::Token>;
+    using Token      = std::shared_ptr<detail::Token>;
     using ValueToken = std::shared_ptr<detail::ValueToken>;
 
     static Token tokenize(const std::string& line)

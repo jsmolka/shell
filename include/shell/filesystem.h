@@ -198,7 +198,7 @@ inline path absolute(const path& path)
 
 inline path absolute(const path& path, std::error_code&)
 {
-    return shell::filesystem::absolute(path);
+    return filesystem::absolute(path);
 }
 
 }  // namespace shell::filesystem

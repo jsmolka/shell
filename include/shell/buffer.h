@@ -1,9 +1,10 @@
 #pragma once
 
 #include <algorithm>
-#include <iterator>
 #include <memory>
 #include <stdexcept>
+
+#include <shell/iterator.h>
 
 namespace shell
 {
@@ -24,16 +25,6 @@ public:
 
     Buffer() = default;
 
-    std::size_t size() const
-    {
-        return size_;
-    }
-
-    std::size_t capacity() const
-    {
-        return capacity_;
-    }
-
     T* data()
     {
         return pointer_;
@@ -44,64 +35,14 @@ public:
         return pointer_;
     }
 
-    iterator begin()
+    std::size_t size() const
     {
-        return pointer_;
+        return size_;
     }
 
-    iterator end()
+    std::size_t capacity() const
     {
-        return pointer_ + size_;
-    }
-
-    const_iterator begin() const
-    {
-        return pointer_;
-    }
-
-    const_iterator end() const
-    {
-        return pointer_ + size_;
-    }
-
-    const_iterator cbegin() const
-    {
-        return pointer_;
-    }
-
-    const_iterator cend() const
-    {
-        return pointer_ + size_;
-    }
-
-    reverse_iterator rbegin()
-    {
-        return std::make_reverse_iterator(end());
-    }
-
-    reverse_iterator rend()
-    {
-        return std::make_reverse_iterator(begin());
-    }
-
-    const_reverse_iterator rbegin() const
-    {
-        return std::make_reverse_iterator(end());
-    }
-
-    const_reverse_iterator rend() const
-    {
-        return std::make_reverse_iterator(begin());
-    }
-
-    const_reverse_iterator crbegin() const
-    {
-        return std::make_reverse_iterator(cend());
-    }
-
-    const_reverse_iterator crend() const
-    {
-        return std::make_reverse_iterator(cbegin());
+        return capacity_;
     }
 
     void clear()
@@ -132,6 +73,9 @@ public:
         reserve(size_ + 1);
         pointer_[size_++] = std::move(value);
     }
+
+    SHELL_FORWARD_ITERATORS(pointer_, pointer_ + size_)
+    SHELL_REVERSE_ITERATORS(pointer_, pointer_ + size_)
 
     T& operator[](std::size_t index)
     {
