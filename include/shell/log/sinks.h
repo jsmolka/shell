@@ -24,16 +24,16 @@ public:
     virtual void sink(const std::string& location, const std::string& message, Level level) = 0;
 };
 
-class ConsoleSink : public BasicSink
+class ConsoleSink final : public BasicSink
 {
 public:
-    void sink(const std::string& location, const std::string& message, Level) override
+    void sink(const std::string& location, const std::string& message, Level) final
     {
         fmt::print("{}: {}\n", location, message);
     }
 };
 
-class ColoredConsoleSink : public BasicSink
+class ColoredConsoleSink final : public BasicSink
 {
 public:
     ColoredConsoleSink()
@@ -49,7 +49,7 @@ public:
         #endif
     }
 
-    void sink(const std::string& location, const std::string& message, Level level) override
+    void sink(const std::string& location, const std::string& message, Level level) final
     {
         fmt::print(style(level), "{}: {}\n", location, message);
     }
@@ -68,13 +68,13 @@ private:
     }
 };
 
-class FileSink : public BasicSink
+class FileSink final : public BasicSink
 {
 public:
     FileSink(const filesystem::path& file, std::ios::openmode mode = std::ios::trunc)
         : stream(file, mode) {}
 
-    void sink(const std::string& location, const std::string& message, Level) override
+    void sink(const std::string& location, const std::string& message, Level) final
     {
         if (stream && stream.is_open())
             stream << location << ": " << message << "\n";
@@ -85,7 +85,7 @@ private:
 };
 
 template<typename... Sinks>
-class MultiSink : public BasicSink
+class MultiSink final : public BasicSink
 {
 public:
     static_assert(sizeof...(Sinks) > 0);
@@ -93,7 +93,7 @@ public:
     MultiSink(Sinks&&... sinks)
         : sinks({ std::make_shared<Sinks>(std::move(sinks))... }) {}
 
-    void sink(const std::string& location, const std::string& message, Level level) override
+    void sink(const std::string& location, const std::string& message, Level level) final
     {
         for (auto& sink : sinks)
             sink->sink(location, message, level);
