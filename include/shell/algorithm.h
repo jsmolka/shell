@@ -294,4 +294,16 @@ range_value_t<Range> join(const Range& range, const StringDelimiter& del)
     return res;
 }
 
+template<typename Iterator, typename T>
+bool contains(Iterator begin, Iterator end, const T& value)
+{
+    return std::find(begin, end, value) != end;
+}
+
+template<typename Range, typename T>
+bool contains(const Range& range, const T& value)
+{
+    return contains(std::cbegin(range), std::cend(range), value);
+}
+
 }  // namespace shell

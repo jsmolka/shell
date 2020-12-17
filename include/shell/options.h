@@ -10,8 +10,11 @@
 namespace shell
 {
 
-namespace options
+class OptionSpecError : public Error
 {
+public:
+    using Error::Error;
+};
 
 class OptionSpec
 {
@@ -19,41 +22,40 @@ public:
     friend class Options;
 
     OptionSpec(
-            const std::string& opt1,
-            const std::string& opt2 = std::string(),
+            const std::string& opts,
+            const std::string& desc = std::string(),
             const std::string& name = std::string())
-        : opt1(opt1)
-        , opt2(opt2)
-        , name(name)
+        : opts(split(opts, ",")), desc(desc), name(name)
     {
-        throwIf<Error>(opt1.empty() && opt2.empty(), "Expected non-empty specification");
+        if (opts.empty()) throw OptionSpecError("Expected non-empty specification");
     }
 
-    std::string option() const
+    // Todo: remove?
+    bool contains(const std::string& opt) const
     {
-        return opt1.empty() ? opt2 : opt1;
+        return shell::contains(opts, opt);
     }
 
+    // Todo: remove?
     std::string options() const
     {
-        if (opt1.empty()) return opt2;
-        if (opt2.empty()) return opt1;
-
-        return fmt::format("{}, {}", opt1, opt2);
+        return join(opts, ", ");
     }
 
     std::string argument() const
     {
+        const std::string& option = opts.front();
+
         if (positional)
-            return fmt::format("<{}>", option());
+            return fmt::format("<{}>", option);
 
         return name.empty()
-            ? fmt::format("{}", option())
-            : fmt::format("{} <{}>", option(), name);
+            ? fmt::format("{}", option)
+            : fmt::format("{} <{}>", option, name);
     }
 
-    std::string opt1;
-    std::string opt2;
+    std::vector<std::string> opts;
+    std::string desc;
     std::string name;
 
 private:
@@ -109,26 +111,25 @@ template<typename T>
 class BasicValue : public Value
 {
 public:
-    void parse(const std::string& data) override
+    void parse(const std::string& data) final
     {
-        const auto optional = shell::parse<T>(data);
-
-        throwIf<ParseError>(!optional, "Expected valid data but got '{}'", data);
-
-        this->value = optional;
+        if (const auto value = shell::parse<T>(data))
+            this->value = value;
+        else
+            throw ParseError("Expected valid data but got '{}'", data);
     }
 
-    bool hasValue() const override
+    bool hasValue() const final
     {
         return value.has_value();
     }
 
-    bool isBoolean() const override
+    bool isBoolean() const final
     {
         return std::is_same_v<T, bool>;
     }
 
-    std::string details() const override
+    std::string details() const final
     {
         if (default_value)
             return fmt::format(" (default: {})", *default_value);
@@ -190,7 +191,6 @@ struct Option
 {
     OptionSpec spec;
     Value::Pointer value;
-    std::string desc;
 };
 
 class OptionVector : public std::vector<Option>
@@ -198,9 +198,9 @@ class OptionVector : public std::vector<Option>
 public:
     Value::Pointer find(const std::string& key) const
     {
-        for (const auto& [spec, value, desc] : *this)
+        for (const auto& [spec, value] : *this)
         {
-            if (spec.opt1 == key || spec.opt2 == key)
+            if (spec.contains(key))
                 return value;
         }
         return nullptr;
@@ -212,16 +212,16 @@ public:
     }
 };
 
-class OptionGroup
+class Group
 {
 public:
-    explicit OptionGroup(const std::string& name)
+    explicit Group(const std::string& name)
         : name(name) {}
 
     std::string arguments() const
     {
         std::string result;
-        for (const auto& [spec, value, desc] : options)
+        for (const auto& [spec, value] : options)
             result.append(fmt::format(value->isOptional() ? " [{}]" : " {}", spec.argument()));
 
         return result;
@@ -235,13 +235,13 @@ public:
         std::size_t size = maxOptionsSize();
         std::string result = fmt::format("\n{} arguments:\n", name);
 
-        for (const auto& [spec, value, desc] : options)
+        for (const auto& [spec, value] : options)
         {
             result.append(fmt::format(
                 "{:<{}}{}{}\n",
                 spec.options(),
                 size,
-                desc,
+                spec.desc,
                 value->details()));
         }
         return result;
@@ -253,7 +253,7 @@ private:
     std::size_t maxOptionsSize() const
     {
         std::size_t padding = 0;
-        for (const auto& [spec, value, dec] : options)
+        for (const auto& [spec, value] : options)
             padding = std::max(spec.options().size() + 2, padding);
 
         return padding;
@@ -292,12 +292,12 @@ public:
 private:
     void populate(detail::OptionVector& other)
     {
-        for (const auto& [spec, value, desc] : other)
+        for (const auto& [spec, value] : other)
         {
             if (value->hasValue())
-                options.push_back({ spec, value, desc });
+                options.push_back({ spec, value });
             else
-                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", spec.option());
+                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", spec.opts.front());
         }
     }
 
@@ -324,7 +324,7 @@ public:
         return std::make_shared<detail::OptionValue<T>>(value);
     }
 
-    void add(OptionSpec spec, const std::string& desc, detail::Value::Pointer value)
+    void add(OptionSpec spec, detail::Value::Pointer value)
     {
         spec.positional = value->isPositional();
 
@@ -332,7 +332,7 @@ public:
             ? positional.options
             : keyword.options;
 
-        options.push_back({ spec, value, desc });
+        options.push_back({ spec, value });
     }
 
     OptionsResult parse(int argc, char* argv[])
@@ -378,14 +378,8 @@ public:
 
 private:
     std::string program;
-    detail::OptionGroup keyword;
-    detail::OptionGroup positional;
+    detail::Group keyword;
+    detail::Group positional;
 };
-
-}  // namespace options
-
-using options::Options;
-using options::OptionSpec;
-using options::OptionsResult;
 
 }  // namespace shell
