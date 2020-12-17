@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <type_traits>
 
 #include <shell/fmt.h>
 
@@ -37,15 +36,5 @@ class ParseError : public FormattedError
 public:
     using FormattedError::FormattedError;
 };
-
-template<typename Exception, typename... Args>
-void throwIf(bool condition, Args&&... args)
-{
-    static_assert(std::is_base_of_v<std::exception, Exception>);
-    static_assert(std::is_constructible_v<Exception, Args...>);
-
-    if (condition)
-        throw Exception(std::forward<Args>(args)...);
-}
 
 }  // namespace shell

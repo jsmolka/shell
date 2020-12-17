@@ -30,13 +30,6 @@ public:
         if (opts.empty()) throw OptionSpecError("Expected non-empty specification");
     }
 
-    // Todo: remove?
-    bool contains(const std::string& opt) const
-    {
-        return shell::contains(opts, opt);
-    }
-
-    // Todo: remove?
     std::string options() const
     {
         return join(opts, ", ");
@@ -96,11 +89,9 @@ public:
        
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
-
     virtual bool hasValue() const = 0;
     virtual bool isBoolean() const = 0;
-
-    virtual std::string details() const = 0;
+    virtual std::string help() const = 0;
 
 protected:
     bool is_optional = false;
@@ -129,7 +120,7 @@ public:
         return std::is_same_v<T, bool>;
     }
 
-    std::string details() const final
+    std::string help() const final
     {
         if (default_value)
             return fmt::format(" (default: {})", *default_value);
@@ -147,7 +138,7 @@ protected:
 };
 
 template<typename T>
-class OptionValue : public BasicValue<T>
+class OptionValue final : public BasicValue<T>
 {
 public:
     OptionValue() = default;
@@ -159,14 +150,14 @@ public:
         this->is_optional = true;
     }
 
-    void parse() override
+    void parse() final
     {
         throw ParseError("Expected value for non-bool option but got none");
     }
 };
 
 template<>
-class OptionValue<bool> : public BasicValue<bool>
+class OptionValue<bool> final : public BasicValue<bool>
 {
 public:
     OptionValue()
@@ -176,12 +167,12 @@ public:
         this->is_optional = true;
     }
 
-    Pointer positional() override
+    Pointer positional() final
     {
-        throw Error("Bool options cannot be positional");
+        throw OptionSpecError("Bool options cannot be positional");
     }
 
-    void parse() override
+    void parse() final
     {
         this->value = true;
     }
@@ -200,7 +191,7 @@ public:
     {
         for (const auto& [spec, value] : *this)
         {
-            if (spec.contains(key))
+            if (contains(spec.opts, key))
                 return value;
         }
         return nullptr;
@@ -212,10 +203,10 @@ public:
     }
 };
 
-class Group
+class OptionGroup
 {
 public:
-    explicit Group(const std::string& name)
+    explicit OptionGroup(const std::string& name)
         : name(name) {}
 
     std::string arguments() const
@@ -227,12 +218,12 @@ public:
         return result;
     }
 
-    std::string explanation() const
+    std::string help() const
     {
         if (options.empty())
             return std::string();
 
-        std::size_t size = maxOptionsSize();
+        std::size_t padding = this->padding();
         std::string result = fmt::format("\n{} arguments:\n", name);
 
         for (const auto& [spec, value] : options)
@@ -240,9 +231,9 @@ public:
             result.append(fmt::format(
                 "{:<{}}{}{}\n",
                 spec.options(),
-                size,
+                padding,
                 spec.desc,
-                value->details()));
+                value->help()));
         }
         return result;
     }
@@ -250,7 +241,7 @@ public:
     OptionVector options;
 
 private:
-    std::size_t maxOptionsSize() const
+    std::size_t padding() const
     {
         std::size_t padding = 0;
         for (const auto& [spec, value] : options)
@@ -290,14 +281,14 @@ public:
     }
 
 private:
-    void populate(detail::OptionVector& other)
+    void copy(detail::OptionVector& other)
     {
         for (const auto& [spec, value] : other)
         {
             if (value->hasValue())
                 options.push_back({ spec, value });
-            else
-                throwIf<ParseError>(!value->isOptional(), "Expected value for option '{}' but got none", spec.opts.front());
+            else if (!value->isOptional())
+                throw ParseError("Expected value for option '{}' but got none", spec.opts.front());
         }
     }
 
@@ -309,8 +300,8 @@ class Options
 public:
     explicit Options(const std::string& program)
         : program(program)
-        , keyword("Keyword")
-        , positional("Positional") {}
+        , group_key("Keyword")
+        , group_pos("Positional") {}
 
     template<typename T>
     static detail::Value::Pointer value()
@@ -318,9 +309,11 @@ public:
         return std::make_shared<detail::OptionValue<T>>();
     }
 
-    template<typename T, std::enable_if_t<!std::is_same_v<T, bool>, int> = 0>
+    template<typename T>
     static detail::Value::Pointer value(const T& value)
     {
+        static_assert(!std::is_same_v<T, bool>);
+
         return std::make_shared<detail::OptionValue<T>>(value);
     }
 
@@ -329,8 +322,8 @@ public:
         spec.positional = value->isPositional();
 
         auto& options = value->isPositional()
-            ? positional.options
-            : keyword.options;
+            ? group_pos.options
+            : group_key.options;
 
         options.push_back({ spec, value });
     }
@@ -342,25 +335,25 @@ public:
 
         while (pos < argc)
         {
-            const std::string key = argv[pos++];
+            std::string key(argv[pos++]);
 
-            if (auto value = keyword.options.find(key))
+            if (auto value = group_key.options.find(key))
             {
-                if (pos < argc && !keyword.options.has(argv[pos]) && !value->isBoolean())
+                if (pos < argc && !group_key.options.has(argv[pos]) && !value->isBoolean())
                     value->parse(argv[pos++]);
                 else
                     value->parse();
             }
             else
             {
-                if (idx < positional.options.size())
-                    positional.options[idx++].value->parse(key);
+                if (idx < group_pos.options.size())
+                    group_pos.options[idx++].value->parse(key);
             }
         }
 
         OptionsResult result;
-        result.populate(keyword.options);
-        result.populate(positional.options);
+        result.copy(group_key.options);
+        result.copy(group_pos.options);
 
         return result;
     }
@@ -370,16 +363,16 @@ public:
         return fmt::format(
             "Usage: {}{}{}\n{}{}",
             program,
-            keyword.arguments(),
-            positional.arguments(),
-            keyword.explanation(),
-            positional.explanation());
+            group_key.arguments(),
+            group_pos.arguments(),
+            group_key.help(),
+            group_pos.help());
     }
 
 private:
     std::string program;
-    detail::Group keyword;
-    detail::Group positional;
+    detail::OptionGroup group_key;
+    detail::OptionGroup group_pos;
 };
 
 }  // namespace shell
