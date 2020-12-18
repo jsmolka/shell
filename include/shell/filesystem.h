@@ -81,7 +81,19 @@ Status write(const path& file, const Container& src)
 
 }  // namespace shell::filesystem
 
-#if SHELL_OS_WINDOWS
+#if SHELL_CC_EMSCRIPTEN
+
+namespace shell::filesystem
+{
+
+inline path program()
+{
+    return current_path() / "main.js";
+}
+
+}  // namespace shell::filesystem
+
+#elif SHELL_OS_WINDOWS
 
 #include <shell/windows.h>
 
