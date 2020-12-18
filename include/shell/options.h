@@ -281,9 +281,9 @@ public:
     }
 
 private:
-    void copy(detail::OptionVector& other)
+    void copy(const detail::OptionVector& vector)
     {
-        for (const auto& [spec, value] : other)
+        for (const auto& [spec, value] : vector)
         {
             if (value->hasValue())
                 options.push_back({ spec, value });
