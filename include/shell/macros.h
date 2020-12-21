@@ -9,7 +9,7 @@
 #  define SHELL_NO_INLINE __declspec(noinline)
 #  define SHELL_FUNCTION  __FUNCSIG__
 #else
-#  define SHELL_INLINE    __attribute__((always_inline))
+#  define SHELL_INLINE    inline __attribute__((always_inline))
 #  define SHELL_NO_INLINE __attribute__((noinline))
 #  define SHELL_FUNCTION  __PRETTY_FUNCTION__
 #endif
