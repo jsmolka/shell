@@ -5,6 +5,9 @@
 #include <shell/iterator.h>
 #include <shell/macros.h>
 
+namespace shell
+{
+
 template<typename T, std::size_t N>
 class RingBufferIterator
 {
@@ -62,7 +65,7 @@ public:
     using iterator               = RingBufferIterator<T, N>;
     using const_iterator         = const iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = const reverse_iterator;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     constexpr std::size_t capacity() const
     {
@@ -143,7 +146,7 @@ public:
 
     SHELL_FORWARD_ITERATORS(
         SHELL_ARG(data.data(), rindex),
-        SHELL_ARG(data.data(), (windex + length) % N)); 
+        SHELL_ARG(data.data(), (windex + length) % N));
     SHELL_REVERSE_ITERATORS(begin(), end());
 
 private:
@@ -152,3 +155,5 @@ private:
     std::size_t windex = 0;
     std::array<T, N> data{};
 };
+
+}  // namespace shell

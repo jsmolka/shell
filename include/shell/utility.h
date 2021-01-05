@@ -26,9 +26,9 @@ public:
 
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
-    using value_type        = std::tuple<const Integral&, typename std::iterator_traits<Iterator>::reference>;
-    using reference         = std::tuple<const Integral&, typename std::iterator_traits<Iterator>::reference>&;
-    using pointer           = std::tuple<const Integral&, typename std::iterator_traits<Iterator>::reference>*;
+    using value_type        = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>;
+    using reference         = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>&;
+    using pointer           = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>*;
 
     EnumerateIterator(Integral index, Iterator iter)
         : index(index), iter(iter) {}

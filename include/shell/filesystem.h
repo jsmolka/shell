@@ -155,7 +155,7 @@ inline path program()
     size_t cb = sizeof(buffer);
     sysctl(mib, 4, buffer, &cb, NULL, 0);
 
-    return path(buffer);
+    return filesystem::path(buffer);
 }
 
 }  // namespace shell::filesystem

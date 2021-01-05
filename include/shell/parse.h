@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+#include <shell/algorithm.h>
+
 namespace shell
 {
 
@@ -25,6 +27,17 @@ template<>
 inline std::optional<std::string> parse(const std::string& data)
 {
     return data;
+}
+
+template<>
+inline std::optional<bool> parse(const std::string& data)
+{
+    const std::string value = toLowerCopy(data);
+
+    if (value == "1" || value == "true")  return true;
+    if (value == "0" || value == "false") return false;
+
+    return std::nullopt;
 }
 
 template<>
@@ -123,7 +136,7 @@ inline std::optional<unsigned int> parse(const std::string& data)
 {
     if (const auto value = parse<long long>(data))
     {
-        if (*value > -1 && *value <= std::numeric_limits<unsigned int>::max())
+        if (*value >= 0 && *value <= std::numeric_limits<unsigned int>::max())
             return static_cast<unsigned int>(*value);
     }
     return std::nullopt;

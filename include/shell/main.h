@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cstring>
-#include <codecvt>
-#include <vector>
-
 #include <shell/predef.h>
 
 #if SHELL_OS_WINDOWS
+
+#include <cstring>
+#include <codecvt>
+#include <vector>
 
 int main(int argc, char* argv[]);
 
