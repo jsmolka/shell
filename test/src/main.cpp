@@ -9,6 +9,7 @@
 #include <shell/locale.h>
 #include <shell/log/all.h>
 #include <shell/options.h>
+#include <shell/ringbuffer.h>
 #include <shell/traits.h>
 #include <shell/utility.h>
 
@@ -29,5 +30,6 @@ using namespace std::string_literals;
 #include "tests_log.inl"
 #include "tests_options.inl"
 #include "tests_parse.inl"
+#include "tests_ringbuffer.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"

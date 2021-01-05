@@ -14,6 +14,7 @@
 #  define SHELL_FUNCTION  __PRETTY_FUNCTION__
 #endif
 
+#define SHELL_ARG(...) __VA_ARGS__
 #define SHELL_UNUSED(variable) static_cast<void>(variable)
 #define SHELL_ASSERT(condition, ...) assert((condition) && #__VA_ARGS__"")
 
