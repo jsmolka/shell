@@ -11,12 +11,7 @@ namespace shell
 {
 
 template<typename T>
-std::optional<T> parseInt(const std::string& data, int base = 10, std::size_t* index = nullptr)
-{
-    static_assert(false);
-
-    return std::nullopt;
-}
+std::optional<T> parseInt(const std::string& data, int base = 10, std::size_t* index = nullptr);
 
 template<>
 std::optional<int> parseInt(const std::string& data, int base, std::size_t* index)
@@ -95,12 +90,7 @@ std::optional<unsigned int> parseInt(const std::string& data, int base, std::siz
 }
 
 template<typename T>
-std::optional<T> parseRat(const std::string& data, std::size_t* index = nullptr)
-{
-    static_assert(false);
-
-    return std::nullopt;
-}
+std::optional<T> parseRat(const std::string& data, std::size_t* index = nullptr);
 
 template<>
 inline std::optional<float> parseRat(const std::string& data, std::size_t* index)
