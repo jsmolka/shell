@@ -15,12 +15,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build
+      - name: Build Debug
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          msbuild /property:Configuration=Debug shell.sln
+
+      - name: Test Debug
+        run: bin\Debug\test.exe
+
+      - name: Build Release
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           msbuild /property:Configuration=Release shell.sln
 
-      - name: Run
+      - name: Test Release
         run: bin\Release\test.exe
 
   test-linux:
@@ -31,14 +39,24 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build
+      - name: Build Debug
+        run: |
+          mkdir test/build
+          cd test/build
+          cmake -DCMAKE_BUILD_TYPE=Debug ..
+          make -j 4
+
+      - name: Test Debug
+        run: ./test/build/test
+
+      - name: Build Release
         run: |
           mkdir test/build
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make -j 4
 
-      - name: Run
+      - name: Test Release
         run: ./test/build/test
 
   test-macos:
@@ -49,12 +67,22 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build
+      - name: Build Debug
+        run: |
+          mkdir test/build
+          cd test/build
+          cmake -DCMAKE_BUILD_TYPE=Debug ..
+          make -j 4
+
+      - name: Test Debug
+        run: ./test/build/test
+
+      - name: Build Release
         run: |
           mkdir test/build
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make -j 4
 
-      - name: Run
+      - name: Test Release
         run: ./test/build/test
