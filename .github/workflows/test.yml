@@ -39,9 +39,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Debug
+      - name: Setup
         run: |
           mkdir test/build
+
+      - name: Build Debug
+        run: |
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Debug ..
           make -j 4
@@ -51,7 +54,6 @@ jobs:
 
       - name: Build Release
         run: |
-          mkdir test/build
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make -j 4
@@ -67,9 +69,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Debug
+      - name: Setup
         run: |
           mkdir test/build
+
+      - name: Build Debug
+        run: |
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Debug ..
           make -j 4
@@ -79,7 +84,6 @@ jobs:
 
       - name: Build Release
         run: |
-          mkdir test/build
           cd test/build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make -j 4
