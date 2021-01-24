@@ -14,7 +14,7 @@ template<typename T>
 std::optional<T> parseInt(const std::string& data, int base = 10, std::size_t* index = nullptr);
 
 template<>
-std::optional<int> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<int> parseInt(const std::string& data, int base, std::size_t* index)
 {
     try
     {
@@ -27,7 +27,7 @@ std::optional<int> parseInt(const std::string& data, int base, std::size_t* inde
 }
 
 template<>
-std::optional<long> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<long> parseInt(const std::string& data, int base, std::size_t* index)
 {
     try
     {
@@ -40,7 +40,7 @@ std::optional<long> parseInt(const std::string& data, int base, std::size_t* ind
 }
 
 template<>
-std::optional<unsigned long> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<unsigned long> parseInt(const std::string& data, int base, std::size_t* index)
 {
     try
     {
@@ -53,7 +53,7 @@ std::optional<unsigned long> parseInt(const std::string& data, int base, std::si
 }
 
 template<>
-std::optional<long long> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<long long> parseInt(const std::string& data, int base, std::size_t* index)
 {
     try
     {
@@ -66,7 +66,7 @@ std::optional<long long> parseInt(const std::string& data, int base, std::size_t
 }
 
 template<>
-std::optional<unsigned long long> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<unsigned long long> parseInt(const std::string& data, int base, std::size_t* index)
 {
     try
     {
@@ -79,7 +79,7 @@ std::optional<unsigned long long> parseInt(const std::string& data, int base, st
 }
 
 template<>
-std::optional<unsigned int> parseInt(const std::string& data, int base, std::size_t* index)
+inline std::optional<unsigned int> parseInt(const std::string& data, int base, std::size_t* index)
 {
     if (const auto value = parseInt<long long>(data, base, index))
     {
