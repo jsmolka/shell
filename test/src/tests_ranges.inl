@@ -28,6 +28,24 @@ TEST_CASE("ranges::PointerRange")
         REQUIRE(value == expected++);
 }
 
+TEST_CASE("ranges::range")
+{
+    int x = 0;
+    for (auto y : range(10))
+        REQUIRE(y == x++);
+
+    x = 5;
+    for (auto y : range(5, 10))
+        REQUIRE(y == x++);
+
+    x = 5;
+    for (auto y : range(5, 10, 2))
+    {
+        REQUIRE(y == x);
+        x += 2;
+    }
+}
+
 TEST_CASE("ranges::reversed")
 {
     int expected = 3;

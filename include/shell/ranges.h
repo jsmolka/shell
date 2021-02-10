@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iterator>
-#include <utility>
 
 #include <shell/macros.h>
 #include <shell/traits.h>
@@ -35,10 +34,14 @@ public:
     IteratorRange(Iterator begin, Iterator end)
         : range{ begin, end } {}
 
-    SHELL_FORWARD_ITERATORS(std::get<0>(range), std::get<1>(range))
+    SHELL_FORWARD_ITERATORS(range.begin, range.end)
 
 private:
-    std::tuple<Iterator, Iterator> range;
+    struct Range
+    {
+        Iterator begin;
+        Iterator end;
+    } range;
 };
 
 template<typename Iterator>
@@ -53,11 +56,41 @@ public:
     BidirectionalIteratorRange(Iterator begin, Iterator end)
         : range{ begin, end } {}
 
-    SHELL_FORWARD_ITERATORS(std::get<0>(range), std::get<1>(range))
-    SHELL_REVERSE_ITERATORS(std::get<1>(range), std::get<0>(range))
+    SHELL_FORWARD_ITERATORS(range.begin, range.end)
+    SHELL_REVERSE_ITERATORS(range.end, range.begin)
 
 private:
-    std::tuple<Iterator, Iterator> range;
+    struct Range
+    {
+        Iterator begin;
+        Iterator end;
+    } range;
+};
+
+template<typename Sentinel, typename Iterator>
+class SentinelRange
+{
+public:
+    using iterator       = Iterator;
+    using const_iterator = const iterator;
+    using sentinel       = Sentinel;
+    using const_sentinel = const sentinel;
+
+    SentinelRange(Iterator begin)
+        : range{ begin } {}
+
+          iterator begin()        { return       iterator(range.begin); }
+          sentinel end()          { return       sentinel{};            }
+    const_iterator begin()  const { return const_iterator(range.begin); }
+    const_sentinel end()    const { return const_sentinel{};            }
+    const_iterator cbegin() const { return const_iterator(range.begin); }
+    const_sentinel cend()   const { return const_sentinel{};            }
+
+private:
+    struct Range
+    {
+        Iterator begin;
+    } range;
 };
 
 template<typename T>
@@ -71,8 +104,90 @@ public:
         : PointerRange(begin, begin + size) {}
 };
 
+class RangeIteratorSentinel {};
+
+template<typename Integral>
+class RangeIterator
+{
+public:
+    static_assert(std::is_integral_v<Integral>);
+
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = Integral;
+    using reference         = Integral&;
+    using pointer           = Integral*;
+
+    RangeIterator(Integral begin, Integral end, Integral step)
+        : begin(begin), end(end), step(step) {}
+
+    RangeIterator(Integral begin, Integral end)
+        : RangeIterator(begin, end, 1) {}
+
+    RangeIterator(Integral end)
+        : RangeIterator(0, end, 1) {}
+
+    value_type operator*() const
+    {
+        return begin;
+    }
+
+    RangeIterator& operator++()
+    {
+        begin += step;
+        return *this;
+    }
+
+    bool operator==(const RangeIterator& other) const
+    {
+        return begin == other.begin && end == other.end && step == other.step;
+    }
+
+    bool operator!=(const RangeIterator& other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(RangeIteratorSentinel) const
+    {
+        return step > 0 ? begin >= end : begin >= end;
+    }
+
+    bool operator!=(RangeIteratorSentinel) const
+    {
+        return !(*this == RangeIteratorSentinel{});
+    }
+
+private:
+    Integral begin;
+    Integral end;
+    Integral step;
+};
+
+template<typename Integral>
+SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>> 
+    range(Integral end)
+{
+    return { RangeIterator<Integral>(end) };
+}
+
+template<typename Integral>
+SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>> 
+    range(Integral start, Integral end)
+{
+    return { RangeIterator<Integral>(start, end) };
+}
+
+template<typename Integral>
+SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>> 
+    range(Integral start, Integral end, Integral step)
+{
+    return { RangeIterator<Integral>(start, end, step) };
+}
+
 template<typename Range>
-IteratorRange<range_reverse_iterator_t<Range>> reversed(Range& range)
+IteratorRange<range_reverse_iterator_t<Range>>
+    reversed(Range& range)
 {
     return IteratorRange(std::rbegin(range), std::rend(range));
 }
