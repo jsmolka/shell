@@ -50,8 +50,8 @@ class BidirectionalIteratorRange
 public:
     using iterator               = Iterator;
     using const_iterator         = const iterator;
-    using reverse_iterator       = std::reverse_iterator<Iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const Iterator>;
+    using reverse_iterator       = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     BidirectionalIteratorRange(Iterator begin, Iterator end)
         : range{ begin, end } {}
@@ -119,7 +119,7 @@ public:
     using pointer           = Integral*;
 
     RangeIterator(Integral begin, Integral end, Integral step)
-        : begin(begin), end(end), step(step) {}
+        : index(begin), end(end), step(step) {}
 
     RangeIterator(Integral begin, Integral end)
         : RangeIterator(begin, end, 1) {}
@@ -129,18 +129,18 @@ public:
 
     value_type operator*() const
     {
-        return begin;
+        return index;
     }
 
     RangeIterator& operator++()
     {
-        begin += step;
+        index += step;
         return *this;
     }
 
     bool operator==(const RangeIterator& other) const
     {
-        return begin == other.begin && end == other.end && step == other.step;
+        return index == other.index && end == other.end && step == other.step;
     }
 
     bool operator!=(const RangeIterator& other) const
@@ -150,7 +150,7 @@ public:
 
     bool operator==(RangeIteratorSentinel) const
     {
-        return step > 0 ? begin >= end : begin >= end;
+        return step > 0 ? index >= end : index < end;
     }
 
     bool operator!=(RangeIteratorSentinel) const
@@ -159,7 +159,7 @@ public:
     }
 
 private:
-    Integral begin;
+    Integral index;
     Integral end;
     Integral step;
 };
@@ -173,23 +173,74 @@ SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>>
 
 template<typename Integral>
 SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>> 
-    range(Integral start, Integral end)
+    range(Integral begin, Integral end)
 {
-    return { RangeIterator<Integral>(start, end) };
+    return { RangeIterator<Integral>(begin, end) };
 }
 
 template<typename Integral>
 SentinelRange<RangeIteratorSentinel, RangeIterator<Integral>> 
-    range(Integral start, Integral end, Integral step)
+    range(Integral begin, Integral end, Integral step)
 {
-    return { RangeIterator<Integral>(start, end, step) };
+    return { RangeIterator<Integral>(begin, end, step) };
+}
+
+template<typename Integral, typename Iterator>
+class EnumerateIterator
+{
+public:
+    static_assert(std::is_integral_v<Integral>);
+
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>;
+    using reference         = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>&;
+    using pointer           = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>*;
+
+    EnumerateIterator(Integral index, Iterator iter)
+        : index(index), iter(iter) {}
+
+    value_type operator*() const
+    {
+        return { index, *iter };
+    }
+
+    EnumerateIterator& operator++()
+    {
+        ++iter;
+        ++index;
+        return *this;
+    }
+
+    bool operator==(const EnumerateIterator& other) const
+    {
+        return iter == other.iter;
+    }
+
+    bool operator!=(const EnumerateIterator& other) const
+    {
+        return !(*this == other);
+    }
+
+private:
+    Integral index;
+    Iterator iter;
+};
+
+template<typename Range, typename Integral = std::size_t>
+IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
+    enumerate(Range& range, Integral start = 0)
+{
+    using Iterator = EnumerateIterator<Integral, range_iterator_t<Range>>;
+
+    return { Iterator(start, std::begin(range)), Iterator(start, std::end(range)) };
 }
 
 template<typename Range>
 IteratorRange<range_reverse_iterator_t<Range>>
     reversed(Range& range)
 {
-    return IteratorRange(std::rbegin(range), std::rend(range));
+    return { std::rbegin(range), std::rend(range) };
 }
 
 }  // namespace shell

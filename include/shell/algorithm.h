@@ -7,8 +7,7 @@
 #include <vector>
 
 #include <shell/locale.h>
-#include <shell/traits.h>
-#include <shell/utility.h>
+#include <shell/ranges.h>
 
 namespace shell
 {

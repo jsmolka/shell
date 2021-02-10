@@ -1,10 +1,6 @@
 #pragma once
 
-#include <tuple>
 #include <utility>
-
-#include <shell/ranges.h>
-#include <shell/traits.h>
 
 namespace shell
 {
@@ -16,59 +12,6 @@ void reconstruct(T& instance, Args&&... args)
 
     instance.~T();
     new(&instance)T(std::forward<Args>(args)...);
-}
-
-template<typename Integral, typename Iterator>
-class EnumerateIterator
-{
-public:
-    static_assert(std::is_integral_v<Integral>);
-
-    using iterator_category = std::forward_iterator_tag;
-    using difference_type   = std::ptrdiff_t;
-    using value_type        = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>;
-    using reference         = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>&;
-    using pointer           = std::tuple<Integral, typename std::iterator_traits<Iterator>::reference>*;
-
-    EnumerateIterator(Integral index, Iterator iter)
-        : index(index), iter(iter) {}
-
-    value_type operator*() const
-    {
-        return { index, *iter };
-    }
-
-    EnumerateIterator& operator++()
-    {
-        ++iter;
-        ++index;
-        return *this;
-    }
-
-    bool operator==(const EnumerateIterator& other) const
-    {
-        return iter == other.iter;
-    }
-
-    bool operator!=(const EnumerateIterator& other) const
-    {
-        return iter != other.iter;
-    }
-
-private:
-    Integral index;
-    Iterator iter;
-};
-
-template<typename Range, typename Integral = std::size_t>
-IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
-    enumerate(Range& range, Integral start = 0)
-{
-    using Iterator = range_iterator_t<Range>;
-
-    return IteratorRange(
-        EnumerateIterator<Integral, Iterator>(start, std::begin(range)),
-        EnumerateIterator<Integral, Iterator>(start, std::end(range)));
 }
 
 }  // namespace shell
