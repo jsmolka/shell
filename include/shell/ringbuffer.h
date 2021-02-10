@@ -2,8 +2,7 @@
 
 #include <array>
 
-#include <shell/iterator.h>
-#include <shell/macros.h>
+#include <shell/ranges.h>
 
 namespace shell
 {

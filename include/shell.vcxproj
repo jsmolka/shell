@@ -125,11 +125,11 @@
     <ClInclude Include="shell\options.h" />
     <ClInclude Include="shell\bit.h" />
     <ClInclude Include="shell\filesystem.h" />
-    <ClInclude Include="shell\iterator.h" />
     <ClInclude Include="shell\main.h" />
     <ClInclude Include="shell\int.h" />
     <ClInclude Include="shell\ini.h" />
     <ClInclude Include="shell\parse.h" />
+    <ClInclude Include="shell\ranges.h" />
     <ClInclude Include="shell\ringbuffer.h" />
     <ClInclude Include="shell\traits.h" />
     <ClInclude Include="shell\windows.h" />

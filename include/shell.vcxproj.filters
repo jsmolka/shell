@@ -30,9 +30,6 @@
     <ClInclude Include="shell\traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shell\iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shell\macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -175,6 +172,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\ringbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

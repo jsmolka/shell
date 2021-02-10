@@ -3,7 +3,7 @@
 #include <tuple>
 #include <utility>
 
-#include <shell/iterator.h>
+#include <shell/ranges.h>
 #include <shell/traits.h>
 
 namespace shell
@@ -35,7 +35,7 @@ public:
 
     value_type operator*() const
     {
-        return std::tie(index, *iter);
+        return { index, *iter };
     }
 
     EnumerateIterator& operator++()

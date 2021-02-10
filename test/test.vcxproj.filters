@@ -44,9 +44,6 @@
     <None Include="src\tests_locale.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_iterator.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\tests_log.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -62,10 +59,11 @@
     <None Include="src\tests_parse.inl">
       <Filter>Header Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\tests_ringbuffer.inl">
+    <None Include="src\tests_ringbuffer.inl">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </None>
+    <None Include="src\tests_ranges.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

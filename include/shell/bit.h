@@ -2,9 +2,8 @@
 
 #include <climits>
 
-#include <shell/iterator.h>
-#include <shell/macros.h>
 #include <shell/predef.h>
+#include <shell/ranges.h>
 
 #if SHELL_CC_MSVC
 #  include <intrin.h>

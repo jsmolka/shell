@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include <shell/iterator.h>
+#include <shell/ranges.h>
 
 namespace shell
 {
