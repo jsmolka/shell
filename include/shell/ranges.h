@@ -26,13 +26,13 @@ namespace shell
     const_reverse_iterator crend()   const { return const_reverse_iterator(Begin); }
 
 template<typename Iterator>
-class IteratorRange
+class ForwardRange
 {
 public:
     using iterator       = Iterator;
     using const_iterator = const iterator;
 
-    IteratorRange(Iterator begin, Iterator end)
+    ForwardRange(Iterator begin, Iterator end)
         : range{ begin, end } {}
 
     SHELL_FORWARD_ITERATORS(range.begin, range.end)
@@ -46,7 +46,7 @@ private:
 };
 
 template<typename Iterator>
-class BidirectionalIteratorRange
+class BidirectionalRange
 {
 public:
     using iterator               = Iterator;
@@ -54,7 +54,7 @@ public:
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    BidirectionalIteratorRange(Iterator begin, Iterator end)
+    BidirectionalRange(Iterator begin, Iterator end)
         : range{ begin, end } {}
 
     SHELL_FORWARD_ITERATORS(range.begin, range.end)
@@ -95,11 +95,11 @@ private:
 };
 
 template<typename T>
-class PointerRange : public BidirectionalIteratorRange<T*>
+class PointerRange : public BidirectionalRange<T*>
 {
 public:
     PointerRange(T* begin, T* end)
-        : BidirectionalIteratorRange<T*>(begin, end) {}
+        : BidirectionalRange<T*>(begin, end) {}
 
     PointerRange(T* begin, std::size_t size)
         : PointerRange(begin, begin + size) {}
@@ -229,7 +229,7 @@ private:
 };
 
 template<typename Range, typename Integral = std::size_t>
-IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
+ForwardRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
     enumerate(Range& range, Integral start = 0)
 {
     using Iterator = EnumerateIterator<Integral, range_iterator_t<Range>>;
@@ -305,7 +305,7 @@ SentinelRange<ZipIteratorSentinel, ZipIterator<range_iterator_t<Ranges>...>>
 }
 
 template<typename Range>
-IteratorRange<range_reverse_iterator_t<Range>>
+ForwardRange<range_reverse_iterator_t<Range>>
     reversed(Range& range)
 {
     return { std::rbegin(range), std::rend(range) };

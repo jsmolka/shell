@@ -1,15 +1,15 @@
-TEST_CASE("ranges::IteratorRange")
+TEST_CASE("ranges::ForwardRange")
 {
     int expected = 1;
     
     std::vector<int> values = { 1, 2, 3 };
-    for (auto& value : IteratorRange(values.begin(), values.end()))
+    for (auto& value : ForwardRange(values.begin(), values.end()))
         REQUIRE(value == expected++);
 
     expected = 1;
 
     const std::vector<int> const_values = { 1, 2, 3 };
-    for (const auto& value : IteratorRange(const_values.begin(), const_values.end()))
+    for (const auto& value : ForwardRange(const_values.begin(), const_values.end()))
         REQUIRE(value == expected++);
 }
 
