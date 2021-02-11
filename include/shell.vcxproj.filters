@@ -177,6 +177,9 @@
     <ClInclude Include="shell\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\mp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shell\detail\fmt\LICENSE" />

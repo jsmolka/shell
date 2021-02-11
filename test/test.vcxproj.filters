@@ -65,5 +65,8 @@
     <None Include="src\tests_ranges.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_mp.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

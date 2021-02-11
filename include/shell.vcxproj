@@ -95,6 +95,7 @@
     <ClInclude Include="shell\detail\fmt\printf.h" />
     <ClInclude Include="shell\detail\fmt\ranges.h" />
     <ClInclude Include="shell\errors.h" />
+    <ClInclude Include="shell\mp.h" />
     <ClInclude Include="shell\predef.h" />
     <ClInclude Include="shell\fmt.h" />
     <ClInclude Include="shell\fmt\chrono.h" />

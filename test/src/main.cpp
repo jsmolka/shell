@@ -7,6 +7,7 @@
 #include <shell/int.h>
 #include <shell/locale.h>
 #include <shell/log/all.h>
+#include <shell/mp.h>
 #include <shell/options.h>
 #include <shell/ranges.h>
 #include <shell/ringbuffer.h>
@@ -28,6 +29,7 @@ using namespace std::string_literals;
 #include "tests_locale.inl"
 #include "tests_log.inl"
 #include "tests_options.inl"
+#include "tests_mp.inl"
 #include "tests_parse.inl"
 #include "tests_ranges.inl"
 #include "tests_ringbuffer.inl"
