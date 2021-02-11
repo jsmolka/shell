@@ -3,6 +3,7 @@
 #include <iterator>
 
 #include <shell/macros.h>
+#include <shell/mp.h>
 #include <shell/traits.h>
 
 namespace shell
@@ -234,6 +235,73 @@ IteratorRange<EnumerateIterator<Integral, range_iterator_t<Range>>>
     using Iterator = EnumerateIterator<Integral, range_iterator_t<Range>>;
 
     return { Iterator(start, std::begin(range)), Iterator(start, std::end(range)) };
+}
+
+class ZipIteratorSentinel {};
+
+template<typename... Iterators>
+class ZipIterator
+{
+public:
+    static_assert(sizeof...(Iterators) > 0);
+
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = std::tuple<typename std::iterator_traits<Iterators>::reference...>;
+    using reference         = std::tuple<typename std::iterator_traits<Iterators>::reference...>&;
+    using pointer           = std::tuple<typename std::iterator_traits<Iterators>::reference...>*;
+
+    ZipIterator(mp::head_t<Iterators...> end, Iterators... iters)
+        : end(end), iters(iters...) {}
+
+    value_type operator*()
+    {
+        auto dereference = [](Iterators&... iters) -> value_type { return { *iters... }; } ;
+
+        return std::apply(dereference, iters);
+    }
+
+    ZipIterator& operator++()
+    {
+        auto advance = [](Iterators&... iters) { (++iters, ...); };
+
+        std::apply(advance, iters);
+
+        return *this;
+    }
+
+    bool operator==(const ZipIterator& other) const
+    {
+        return iters == other.iters && end == other.end;
+    }
+
+    bool operator!=(const ZipIterator& other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(ZipIteratorSentinel) const
+    {
+        return std::get<0>(iters) == end;
+    }
+
+    bool operator!=(ZipIteratorSentinel) const
+    {
+        return !(*this == ZipIteratorSentinel{});
+    }
+
+private:
+    mp::head_t<Iterators...> end;
+    std::tuple<Iterators...> iters;
+};
+
+template<typename... Ranges>
+SentinelRange<ZipIteratorSentinel, ZipIterator<range_iterator_t<Ranges>...>>
+    zip(Ranges&... ranges)
+{
+    using Iterator = ZipIterator<range_iterator_t<Ranges>...>;
+
+    return { Iterator(std::end(mp::head_element(ranges...)), std::begin(ranges)...) };
 }
 
 template<typename Range>

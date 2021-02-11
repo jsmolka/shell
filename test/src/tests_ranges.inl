@@ -73,13 +73,30 @@ TEST_CASE("ranges::enumerate")
     int x2[5] = { 1, 2, 3, 4, 5 };
     int y2[5] = { 2, 3, 4, 5, 6 };
 
-    for (auto& [index, value] : enumerate(x2, 1))
+    for (auto [index, value] : enumerate(x2, 1))
     {
         REQUIRE(value == index);
         REQUIRE(value == x2[index - 1]);
         value++;
     }
     REQUIRE(std::memcmp(x2, y2, sizeof(x2)) == 0);
+}
+
+TEST_CASE("ranges::zip")
+{
+    int t1[4]             = { 0, 1, 2, 3 };
+    std::vector<int> t2   = { 1, 2, 3, 4 };
+    std::array<int, 4> t3 = { 2, 3, 4, 5 };
+
+    int x = 0;
+    for (auto [i, j, k] : zip(t1, t2, t3))
+    {
+        REQUIRE(i == x + 0);
+        REQUIRE(j == x + 1);
+        REQUIRE(k == x + 2);
+        x++;
+    }
+    REQUIRE(x == 4);
 }
 
 TEST_CASE("ranges::reversed")
