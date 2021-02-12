@@ -62,7 +62,7 @@ template<typename Range, std::size_t N>
 struct range_traits<Range[N]>
 {
     using iterator               = Range*;
-    using const_iterator         = const iterator;
+    using const_iterator         = iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 };
