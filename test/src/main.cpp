@@ -7,6 +7,7 @@
 #include <shell/int.h>
 #include <shell/locale.h>
 #include <shell/log/all.h>
+#include <shell/main.h>
 #include <shell/mp.h>
 #include <shell/options.h>
 #include <shell/ranges.h>

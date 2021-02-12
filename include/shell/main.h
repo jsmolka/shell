@@ -1,11 +1,13 @@
 #pragma once
 
 #include <shell/predef.h>
+#include <shell/ranges.h>
 
 #if SHELL_OS_WINDOWS
 
-#include <cstring>
+#include <algorithm>
 #include <codecvt>
+#include <cstring>
 #include <vector>
 
 int main(int argc, char* argv[]);
@@ -19,20 +21,19 @@ int wmain(int argc, wchar_t* argv[])
     std::vector<char*> args;
     args.reserve(argc);
 
-    for (int x = 0; x < argc; ++x)
+    for (const auto& arg : shell::PointerRange(argv, argc))
     {
-        auto cvt = std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>();
-        auto utf = cvt.to_bytes(reinterpret_cast<char16_t*>(argv[x]));
+        auto converter = std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>();
+        auto converted = converter.to_bytes(reinterpret_cast<char16_t*>(arg));
 
-        args.push_back(strdup(utf.c_str()));
+        args.push_back(strdup(converted.c_str()));
     }
 
-    int value = main(argc, args.data());
+    int ret = main(argc, args.data());
 
-    for (char* arg : args)
-        free(arg);
+    std::for_each(args.begin(), args.end(), free);
 
-    return value;
+    return ret;
 }
 
 #endif
