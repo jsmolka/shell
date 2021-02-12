@@ -84,18 +84,22 @@ TEST_CASE("ranges::enumerate")
 
 TEST_CASE("ranges::zip")
 {
-    int t1[4]             = { 0, 1, 2, 3 };
-    std::vector<int> t2   = { 1, 2, 3, 4 };
-    std::array<int, 4> t3 = { 2, 3, 4, 5 };
-    constexpr int t4[4]   = { 3, 4, 5, 6 };
+    int t1[4]                       = { 0, 1, 2, 3 };
+    std::vector<int> t2             = { 1, 2, 3, 4 };
+    std::array<int, 4> t3           = { 2, 3, 4, 5 };
+    constexpr int t4[4]             = { 3, 4, 5, 6 };
+    const std::vector<int> t5       = { 4, 5, 6, 7 };
+    constexpr std::array<int, 4> t6 = { 5, 6, 7, 8 };
 
     int x = 0;
-    for (auto [i, j, k, l] : zip(t1, t2, t3, t4))
+    for (auto [i, j, k, l, m, n] : zip(t1, t2, t3, t4, t5, t6))
     {
         REQUIRE(i == x + 0);
         REQUIRE(j == x + 1);
         REQUIRE(k == x + 2);
         REQUIRE(l == x + 3);
+        REQUIRE(m == x + 4);
+        REQUIRE(n == x + 5);
         x++;
     }
     REQUIRE(x == 4);

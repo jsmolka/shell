@@ -262,13 +262,9 @@ public:
 
     ZipIterator& operator++()
     {
-        //auto advance = [](Iterators&... iters) { ++iters...; };
+        auto advance = [](Iterators&... iters) { (++iters, ...); };
 
-        //std::apply(advance, iters);
-        std::get<0>(iters)++;
-        std::get<1>(iters)++;
-        std::get<2>(iters)++;
-        std::get<3>(iters)++;
+        std::apply(advance, iters);
 
         return *this;
     }
