@@ -80,6 +80,13 @@ TEST_CASE("ranges::enumerate")
         value++;
     }
     REQUIRE(std::memcmp(x2, y2, sizeof(x2)) == 0);
+
+    constexpr int z1[4] = { 1, 2, 3, 4 };
+
+    for (auto [index, value] : enumerate(z1, 1))
+    {
+        REQUIRE(value == index);
+    }
 }
 
 TEST_CASE("ranges::zip")
