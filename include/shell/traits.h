@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <type_traits>
+#include <utility>
 
 namespace shell
 {
@@ -38,6 +39,15 @@ struct unqualified
 
 template<typename T>
 using unqualified_t = typename unqualified<T>::type;
+
+template<typename T>
+struct dereferenced
+{
+    using type = decltype(*std::declval<T>());
+};
+
+template<typename T>
+using dereferenced_t = typename dereferenced<T>::type;
 
 template<typename Range>
 struct range_traits
@@ -89,5 +99,23 @@ struct range_value
 
 template<typename Range>
 using range_value_t = typename range_value<Range>::type;
+
+template<typename Range>
+struct range_reference
+{
+    using type = typename std::iterator_traits<range_iterator_t<Range>>::reference;
+};
+
+template<typename Range>
+using range_reference_t = typename range_reference<Range>::type;
+
+template<typename Range>
+struct range_pointer
+{
+    using type = typename std::iterator_traits<range_iterator_t<Range>>::pointer;
+};
+
+template<typename Range>
+using range_pointer_t = typename range_pointer<Range>::type;
 
 }  // namespace shell
