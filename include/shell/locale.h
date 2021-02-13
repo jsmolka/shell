@@ -12,10 +12,10 @@ template<typename Char, typename std::ctype_base::mask Mask>
 class IsClassifiedAs
 {
 public:
-    explicit IsClassifiedAs(const std::locale& locale = std::locale())
+    IsClassifiedAs(const std::locale& locale = std::locale())
         : locale(locale) {}
 
-    bool operator()(const Char& ch) const
+    bool operator()(Char ch) const
     {
         return std::use_facet<std::ctype<Char>>(locale).is(Mask, ch);
     }
@@ -44,10 +44,10 @@ template<typename Char>
 class ToLower
 {
 public:
-    explicit ToLower(const std::locale& locale = std::locale())
+    ToLower(const std::locale& locale = std::locale())
         : locale(locale) {}
 
-    Char operator()(const Char& ch) const
+    Char operator()(Char ch) const
     {
         return std::tolower(ch, locale);
     }
@@ -60,10 +60,10 @@ template<typename Char>
 class ToUpper
 {
 public:
-    explicit ToUpper(const std::locale& locale = std::locale())
+    ToUpper(const std::locale& locale = std::locale())
         : locale(locale) {}
 
-    Char operator()(const Char& ch) const
+    Char operator()(Char ch) const
     {
         return std::toupper(ch, locale);
     }
