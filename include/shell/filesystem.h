@@ -26,7 +26,7 @@ namespace detail
 {
 
 template<typename T>
-using resize_t = decltype(std::declval<T>().resize(1));
+using resize_t = decltype(std::declval<T>().resize(0));
 
 template<typename T>
 inline constexpr bool is_resizable_v = is_detected_v<T, resize_t>;
@@ -137,9 +137,9 @@ inline path program()
 
 #elif SHELL_OS_BSD_FREE
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include <stdlib.h>
 
 namespace shell::filesystem
 {

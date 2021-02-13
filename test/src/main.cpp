@@ -3,6 +3,7 @@
 #include <shell/buffer.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
+#include <shell/hash.h>
 #include <shell/ini.h>
 #include <shell/int.h>
 #include <shell/locale.h>
@@ -26,6 +27,7 @@ using namespace std::string_literals;
 #include "tests_buffer.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
+#include "tests_hash.inl"
 #include "tests_ini.inl"
 #include "tests_locale.inl"
 #include "tests_log.inl"

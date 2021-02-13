@@ -284,7 +284,7 @@ private:
         }
     }
 
-    T  stack_[N];
+    T stack_[N];
     T* data_ = stack_;
     std::size_t size_ = 0;
     std::size_t capacity_ = N;

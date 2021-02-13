@@ -346,7 +346,7 @@ public:
     using reference         = std::size_t&;
     using pointer           = std::size_t*;
 
-    explicit BitIterator(Integral value)
+    BitIterator(Integral value)
         : value(value) {}
 
     std::size_t operator*() const

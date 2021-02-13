@@ -91,6 +91,7 @@
     <None Include="src\tests_bit.inl" />
     <None Include="src\tests_buffer.inl" />
     <None Include="src\tests_filesystem.inl" />
+    <None Include="src\tests_hash.inl" />
     <None Include="src\tests_mp.inl" />
     <None Include="src\tests_ranges.inl" />
     <None Include="src\tests_locale.inl" />
