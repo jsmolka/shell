@@ -122,12 +122,6 @@ public:
     RangeIterator(Integral begin, Integral end, Integral step)
         : index(begin), end(end), step(step) {}
 
-    RangeIterator(Integral begin, Integral end)
-        : RangeIterator(begin, end, 1) {}
-
-    RangeIterator(Integral end)
-        : RangeIterator(0, end, 1) {}
-
     value_type operator*() const
     {
         return index;
@@ -171,7 +165,7 @@ SentinelRange<RangeIterator<Integral>>
 {
     using Iterator = RangeIterator<Integral>;
 
-    return { Iterator(end) };
+    return { Iterator(0, end, 1) };
 }
 
 template<typename Integral>
@@ -180,7 +174,7 @@ SentinelRange<RangeIterator<Integral>>
 {
     using Iterator = RangeIterator<Integral>;
 
-    return { Iterator(begin, end) };
+    return { Iterator(begin, end, 1) };
 }
 
 template<typename Integral>
@@ -204,8 +198,8 @@ public:
     using reference         = std::tuple<Integral, dereferenced_t<Iterator>>&;
     using pointer           = std::tuple<Integral, dereferenced_t<Iterator>>*;
 
-    EnumerateIterator(Integral index, Iterator iter, Iterator end)
-        : index(index), iter(iter), end(end) {}
+    EnumerateIterator(Integral index, Iterator begin, Iterator end)
+        : index(index), iter(begin), end(end) {}
 
     value_type operator*() const
     {
@@ -266,12 +260,12 @@ public:
     using reference         = std::tuple<dereferenced_t<Iterators>...>&;
     using pointer           = std::tuple<dereferenced_t<Iterators>...>*;
 
-    ZipIterator(Iterators... iters, mp::head_t<Iterators...> end)
-        : iters(iters...), end(end) {}
+    ZipIterator(Iterators... begins, mp::head_t<Iterators...> end)
+        : iters(begins...), end(end) {}
 
-    value_type operator*()
+    value_type operator*() const
     {
-        auto dereference = [](Iterators&... iters) -> value_type { return { *iters... }; } ;
+        auto dereference = [](const Iterators&... iters) -> value_type { return { *iters... }; } ;
 
         return std::apply(dereference, iters);
     }
