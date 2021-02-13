@@ -1,18 +1,20 @@
 #pragma once
 
-#include <algorithm>
 #include <memory>
-#include <stdexcept>
+#include <utility>
 
+#include <shell/macros.h>
 #include <shell/ranges.h>
 
 namespace shell
 {
 
-template<typename T>
-class Buffer
+template<typename T, std::size_t N>
+class FixedBuffer
 {
 public:
+    static_assert(N > 0);
+
     using value_type             = T;
     using reference              = value_type&;
     using const_reference        = const reference;
@@ -23,16 +25,177 @@ public:
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    Buffer() = default;
+    FixedBuffer() = default;
 
-    T* data()
+    FixedBuffer(const FixedBuffer<T, N>& other)
     {
-        return pointer_;
+        copy(other.begin(), other.end());
     }
-    
-    const T* data() const
+
+    FixedBuffer(FixedBuffer<T, N>&& other)
     {
-        return pointer_;
+        copy(other.begin(), other.end());
+    }
+
+    FixedBuffer(std::initializer_list<T> values)
+    {
+        copy(values.begin(), values.end());
+    }
+
+    FixedBuffer& operator=(const FixedBuffer<T, N>& other)
+    {
+        copy(other.begin(), other.end());
+        return *this;
+    }
+
+    FixedBuffer& operator=(FixedBuffer<T, N>&& other)
+    {
+        copy(other.begin(), other.end());
+        return *this;
+    }
+
+    reference operator[](std::size_t index)
+    {
+        SHELL_ASSERT(index < size_);
+        return stack_[index];
+    }
+
+    const_reference operator[](std::size_t index) const
+    {
+        SHELL_ASSERT(index < size_);
+        return stack_[index];
+    }
+
+    pointer data()
+    {
+        return stack_;
+    }
+
+    const_pointer data() const
+    {
+        return stack_;
+    }
+
+    std::size_t size() const
+    {
+        return size_;
+    }
+
+    constexpr std::size_t capacity() const
+    {
+        return N;
+    }
+
+    void clear()
+    {
+        size_ = 0;
+    }
+
+    void resize(std::size_t size)
+    {
+        SHELL_ASSERT(size <= N);
+        size_ = size;
+    }
+
+    void push_back(const T& value)
+    {
+        SHELL_ASSERT(size_ < N);
+        stack_[size_++] = value;
+    }
+
+    void push_back(T&& value)
+    {
+        SHELL_ASSERT(size_ < N);
+        stack_[size_++] = std::move(value);
+    }
+
+    SHELL_FORWARD_ITERATORS(stack_, stack_ + size_)
+    SHELL_REVERSE_ITERATORS(stack_, stack_ + size_)
+
+private:
+    template<typename Iterator>
+    void copy(Iterator begin, Iterator end)
+    {
+        std::copy(begin, end, this->begin());
+
+        size_ = std::distance(begin, end);
+    }
+
+    T stack_[N];
+    std::size_t size_ = 0;
+};
+
+template<typename T, std::size_t N>
+class SmallBuffer
+{
+public:
+    static_assert(N > 0);
+
+    using value_type             = T;
+    using reference              = value_type&;
+    using const_reference        = const reference;
+    using pointer                = value_type*;
+    using const_pointer          = const pointer;
+    using iterator               = pointer;
+    using const_iterator         = const iterator;
+    using reverse_iterator       = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+    SmallBuffer() = default;
+
+    SmallBuffer(const SmallBuffer<T, N>& other)
+    {
+        copy(other.begin(), other.end());
+    }
+
+    SmallBuffer(SmallBuffer<T, N>&& other)
+    {
+        move(std::move(other));
+    }
+
+    SmallBuffer(std::initializer_list<T> values)
+    {
+        copy(values.begin(), values.end());
+    }
+
+    ~SmallBuffer()
+    {
+        if (data_ != stack_)
+            delete[] data_;
+    }
+
+    SmallBuffer& operator=(const SmallBuffer<T, N>& other)
+    {
+        copy(other.begin(), other.end());
+        return *this;
+    }
+
+    SmallBuffer& operator=(SmallBuffer<T, N>&& other)
+    {
+        move(std::move(other));
+        return *this;
+    }
+
+    reference operator[](std::size_t index)
+    {
+        SHELL_ASSERT(index < size_);
+        return data_[index];
+    }
+
+    const_reference operator[](std::size_t index) const
+    {
+        SHELL_ASSERT(index < size_);
+        return data_[index];
+    }
+
+    pointer data()
+    {
+        return data_;
+    }
+
+    const_pointer data() const
+    {
+        return data_;
     }
 
     std::size_t size() const
@@ -50,238 +213,81 @@ public:
         size_ = 0;
     }
 
-    void resize(std::size_t size)
-    {
-        reserve(size);
-        size_ = size <= capacity_ ? size : capacity_;
-    }
-
     void reserve(std::size_t size)
     {
         if (size > capacity_)
             grow(size);
     }
 
+    void resize(std::size_t size)
+    {
+        reserve(size);
+        size_ = size;
+    }
+
     void push_back(const T& value)
     {
         reserve(size_ + 1);
-        pointer_[size_++] = value;
+        data_[size_++] = value;
     }
 
     void push_back(T&& value)
     {
         reserve(size_ + 1);
-        pointer_[size_++] = std::move(value);
+        data_[size_++] = std::move(value);
     }
 
-    SHELL_FORWARD_ITERATORS(pointer_, pointer_ + size_)
-    SHELL_REVERSE_ITERATORS(pointer_, pointer_ + size_)
-
-    T& operator[](std::size_t index)
-    {
-        return pointer_[index];
-    }
-
-    const T& operator[](std::size_t index) const
-    {
-        return pointer_[index];
-    }
-
-protected:
-    Buffer(const Buffer&) = default;
-    Buffer(Buffer&&) = default;
-    Buffer& operator=(const Buffer&) = default;
-    Buffer& operator=(Buffer&&) = default;
-
-    virtual void grow(std::size_t size) = 0;
-
-    void set(T* pointer, std::size_t capacity)
-    {
-        pointer_ = pointer;
-        capacity_ = capacity;
-    }
-
-    std::size_t size_ = 0;
-    std::size_t capacity_ = 0;
+    SHELL_FORWARD_ITERATORS(data_, data_ + size_)
+    SHELL_REVERSE_ITERATORS(data_, data_ + size_)
 
 private:
-    T* pointer_ = nullptr;
-};
-
-template<typename T, std::size_t N>
-class FixedBuffer final : public Buffer<T>
-{
-public:
-    static_assert(N > 0);
-
-    using typename Buffer<T>::value_type;
-    using typename Buffer<T>::reference;
-    using typename Buffer<T>::const_reference;
-    using typename Buffer<T>::pointer;
-    using typename Buffer<T>::const_pointer;
-    using typename Buffer<T>::iterator;
-    using typename Buffer<T>::const_iterator;
-    using typename Buffer<T>::reverse_iterator;
-    using typename Buffer<T>::const_reverse_iterator;
-
-    FixedBuffer()
+    void grow(std::size_t size)
     {
-        this->set(stack_, N);
-    }
+        std::size_t capacity_old = capacity_;
+        std::size_t capacity_new = std::max(2 * capacity_, size);
 
-    FixedBuffer(const FixedBuffer<T, N>& other)
-        : FixedBuffer()
-    {
-        this->copy(other.begin(), other.end());
-    }
-
-    FixedBuffer(FixedBuffer<T, N>&& other)
-        : FixedBuffer()
-    {
-        this->copy(other.begin(), other.end());
-    }
-
-    FixedBuffer(std::initializer_list<T> value)
-        : FixedBuffer()
-    {
-        this->copy(value.begin(), value.end());
-    }
-
-    FixedBuffer& operator=(const FixedBuffer<T, N>& other)
-    {
-        this->copy(other.begin(), other.end());
-        return *this;
-    }
-
-    FixedBuffer& operator=(FixedBuffer<T, N>&& other)
-    {
-        this->copy(other.begin(), other.end());
-        return *this;
-    }
-
-protected:
-    void grow(std::size_t size) final
-    {
-        throw std::bad_alloc();
-    }
-
-private:
-    template<typename Iterator>
-    void copy(Iterator begin, Iterator end)
-    {
-        std::copy(begin, end, this->begin());
-
-        this->size_ = std::distance(begin, end);
-    }
-
-    T stack_[N];
-};
-
-template<typename T, std::size_t N>
-class SmallBuffer final : public Buffer<T>
-{
-public:
-    static_assert(N > 0);
-
-    using typename Buffer<T>::value_type;
-    using typename Buffer<T>::reference;
-    using typename Buffer<T>::const_reference;
-    using typename Buffer<T>::pointer;
-    using typename Buffer<T>::const_pointer;
-    using typename Buffer<T>::iterator;
-    using typename Buffer<T>::const_iterator;
-    using typename Buffer<T>::reverse_iterator;
-    using typename Buffer<T>::const_reverse_iterator;
-
-    SmallBuffer()
-    {
-        this->set(stack_, N);
-    }
-
-    SmallBuffer(const SmallBuffer<T, N>& other)
-        : SmallBuffer()
-    {
-        this->copy(other.begin(), other.end());
-    }
-
-    SmallBuffer(SmallBuffer<T, N>&& other)
-        : SmallBuffer()
-    {
-        this->move(std::move(other));
-    }
-
-    SmallBuffer(std::initializer_list<T> value)
-        : SmallBuffer()
-    {
-        this->copy(value.begin(), value.end());
-    }
-
-    SmallBuffer& operator=(const SmallBuffer<T, N>& other)
-    {
-        this->copy(other.begin(), other.end());
-        return *this;
-    }
-
-    SmallBuffer& operator=(SmallBuffer<T, N>&& other)
-    {
-        this->move(std::move(other));
-        return *this;
-    }
-
-    ~SmallBuffer()
-    {
-        if (this->data() != stack_)
-            delete[] this->data();
-    }
-
-protected:
-    void grow(std::size_t size) final
-    {
-        std::size_t capacity_old = this->capacity();
-        std::size_t capacity_new = std::max(capacity_old + capacity_old / 2, size);
-
-        T* data_old = this->data();
+        T* data_old = data_;
         T* data_new = new T[capacity_new];
 
-        std::uninitialized_copy(this->begin(), this->end(), data_new);
+        std::uninitialized_copy(begin(), end(), data_new);
 
-        this->set(data_new, capacity_new);
+        data_ = data_new;
+        capacity_ = capacity_new;
 
         if (data_old != stack_)
             delete[] data_old;
     }
 
-private:
     template<typename Iterator>
     void copy(Iterator begin, Iterator end)
     {
-        std::size_t size = std::distance(begin, end);
-
-        this->reserve(size);
-        this->size_ = size;
+        resize(std::distance(begin, end));
 
         std::copy(begin, end, this->begin());
     }
 
     void move(SmallBuffer<T, N>&& other)
     {
-        if (other.data() == other.stack_)
+        if (other.data_ == other.stack_)
         {
-            this->copy(other.begin(), other.end());
+            copy(other.begin(), other.end());
         }
         else
         {
-            if (this->data() != stack_)
-                delete[] this->data();
+            if (data_ != stack_)
+                delete[] data_;
 
-            this->set(other.data(), other.capacity());
-            this->size_ = other.size_;
+            data_ = other.data_;
+            size_ = other.size_;
 
-            other.set(other.stack_, 0);
+            other.data_ = other.stack_;
         }
     }
 
-    T stack_[N];
+    T  stack_[N];
+    T* data_ = stack_;
+    std::size_t size_ = 0;
+    std::size_t capacity_ = N;
 };
 
 }  // namespace shell

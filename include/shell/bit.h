@@ -375,13 +375,14 @@ private:
 };
 
 template<typename Integral>
-ForwardRange<BitIterator<Integral>> iterate(Integral value)
+ForwardRange<BitIterator<Integral>>
+    iterate(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
-    return ForwardRange(
-        BitIterator<Integral>(value),
-        BitIterator<Integral>(0));
+    using Iterator = BitIterator<Integral>;
+
+    return { Iterator(value), Iterator(0) };
 }
 
 }  // namespace shell::bit
