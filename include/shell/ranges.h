@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iterator>
+#include <algorithm>
 
 #include <shell/macros.h>
 #include <shell/mp.h>
@@ -318,6 +318,18 @@ ForwardRange<range_reverse_iterator_t<Range>>
     reversed(Range& range)
 {
     return { std::rbegin(range), std::rend(range) };
+}
+
+template<typename Range, typename Function>
+void foreach(Range& range, Function func)
+{
+    std::for_each(std::begin(range), std::end(range), func);
+}
+
+template<typename Range, typename T>
+bool contains(const Range& range, const T& value)
+{
+    return std::find(std::begin(range), std::end(range), value) != std::end(range);
 }
 
 }  // namespace shell

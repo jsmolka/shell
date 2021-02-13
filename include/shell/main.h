@@ -31,7 +31,7 @@ int wmain(int argc, wchar_t* argv[])
 
     int ret = main(argc, args.data());
 
-    std::for_each(args.begin(), args.end(), free);
+    shell::foreach(args, free);
 
     return ret;
 }

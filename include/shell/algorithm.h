@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cstring>
 #include <cwchar>
 #include <string>
@@ -192,8 +191,8 @@ String toUpperCopy(const String& str, const std::locale& locale = std::locale())
     return res;
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-void replaceFirst(String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+void replaceFirst(String& str, const From& from, const To& to)
 {
     std::size_t pos = str.find(from);
 
@@ -201,8 +200,8 @@ void replaceFirst(String& str, const StringFrom& from, const StringTo& to)
         str.replace(pos, detail::len(from), to);
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-String replaceFirstCopy(const String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+String replaceFirstCopy(const String& str, const From& from, const To& to)
 {
     String res(str);
     replaceFirst(res, from, to);
@@ -210,8 +209,8 @@ String replaceFirstCopy(const String& str, const StringFrom& from, const StringT
     return res;
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-void replaceLast(String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+void replaceLast(String& str, const From& from, const To& to)
 {
     std::size_t pos = str.rfind(from);
 
@@ -219,8 +218,8 @@ void replaceLast(String& str, const StringFrom& from, const StringTo& to)
         str.replace(pos, detail::len(from), to);
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-String replaceLastCopy(const String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+String replaceLastCopy(const String& str, const From& from, const To& to)
 {
     String res(str);
     replaceLast(res, from, to);
@@ -228,11 +227,11 @@ String replaceLastCopy(const String& str, const StringFrom& from, const StringTo
     return res;
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-void replaceAll(String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+void replaceAll(String& str, const From& from, const To& to)
 {
-    std::size_t pos = 0;
-    std::size_t len_to = detail::len(to);
+    std::size_t pos      = 0;
+    std::size_t len_to   = detail::len(to);
     std::size_t len_from = detail::len(from);
 
     while ((pos = str.find(from, pos)) != String::npos)
@@ -242,8 +241,8 @@ void replaceAll(String& str, const StringFrom& from, const StringTo& to)
     }
 }
 
-template<typename String, typename StringFrom, typename StringTo>
-String replaceAllCopy(const String& str, const StringFrom& from, const StringTo& to)
+template<typename String, typename From, typename To>
+String replaceAllCopy(const String& str, const From& from, const To& to)
 {
     String res(str);
     replaceAll(res, from, to);
@@ -251,8 +250,8 @@ String replaceAllCopy(const String& str, const StringFrom& from, const StringTo&
     return res;
 }
 
-template<typename OutputIterator, typename String, typename StringDelimiter>
-OutputIterator split(OutputIterator out, const String& str, const StringDelimiter& del)
+template<typename OutputIterator, typename String, typename Delimiter>
+OutputIterator split(OutputIterator out, const String& str, const Delimiter& del)
 {
     std::size_t pos = 0;
     std::size_t end = str.find(del);
@@ -269,8 +268,8 @@ OutputIterator split(OutputIterator out, const String& str, const StringDelimite
     return out;
 }
 
-template<typename String, typename StringDelimiter>
-std::vector<String> split(const String& str, const StringDelimiter& del)
+template<typename String, typename Delimiter>
+std::vector<String> split(const String& str, const Delimiter& del)
 {
     std::vector<String> res;
     split(std::back_inserter(res), str, del);
@@ -278,8 +277,8 @@ std::vector<String> split(const String& str, const StringDelimiter& del)
     return res;
 }
 
-template<typename Range, typename StringDelimiter>
-range_value_t<Range> join(const Range& range, const StringDelimiter& del)
+template<typename Range, typename Delimiter>
+range_value_t<Range> join(const Range& range, const Delimiter& del)
 {
     range_value_t<Range> res{};
 
@@ -291,18 +290,6 @@ range_value_t<Range> join(const Range& range, const StringDelimiter& del)
         res.append(str);
     }
     return res;
-}
-
-template<typename Iterator, typename T>
-bool contains(Iterator begin, Iterator end, const T& value)
-{
-    return std::find(begin, end, value) != end;
-}
-
-template<typename Range, typename T>
-bool contains(const Range& range, const T& value)
-{
-    return contains(std::cbegin(range), std::cend(range), value);
 }
 
 }  // namespace shell
