@@ -12,21 +12,21 @@ TEST_CASE("mp::nth_element")
     REQUIRE(mp::nth_element<2>(0, 1, 2) == 2);
 }
 
-TEST_CASE("mp::head")
+TEST_CASE("mp::first")
 {
-    REQUIRE(std::is_same_v<mp::head_t<bool, long, char>, bool>);
+    REQUIRE(std::is_same_v<mp::first_t<bool, long, char>, bool>);
 }
 
-TEST_CASE("mp::head_element")
+TEST_CASE("mp::first_element")
 {
-    REQUIRE(mp::head_element(0, 1, 2) == 0);
+    REQUIRE(mp::first_element(0, 1, 2) == 0);
 }
-TEST_CASE("mp::tail")
+TEST_CASE("mp::last")
 {
-    REQUIRE(std::is_same_v<mp::tail_t<bool, long, char>, char>);
+    REQUIRE(std::is_same_v<mp::last_t<bool, long, char>, char>);
 }
 
-TEST_CASE("mp::tail_element")
+TEST_CASE("mp::last_element")
 {
-    REQUIRE(mp::tail_element(0, 1, 2) == 2);
+    REQUIRE(mp::last_element(0, 1, 2) == 2);
 }

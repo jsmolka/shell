@@ -22,27 +22,27 @@ nth_t<Index, Args...> nth_element(Args&&... args)
 }
 
 template<typename... Ts>
-struct head : nth<0, Ts...> {};
+struct first : nth<0, Ts...> {};
 
 template<typename... Ts>
-using head_t = typename head<Ts...>::type;
+using first_t = typename first<Ts...>::type;
 
 template<typename... Args>
-head_t<Args...> head_element(Args&&... args)
+first_t<Args...> first_element(Args&&... args)
 {
-    return nth_element<0>(args...);
+    return nth_element<0>(std::forward<Args>(args)...);
 }
 
 template<typename... Ts>
-struct tail : nth<sizeof...(Ts) - 1, Ts...> {};
+struct last : nth<sizeof...(Ts) - 1, Ts...> {};
 
 template<typename... Ts>
-using tail_t = typename tail<Ts...>::type;
+using last_t = typename last<Ts...>::type;
 
 template<typename... Args>
-tail_t<Args...> tail_element(Args&&... args)
+last_t<Args...> last_element(Args&&... args)
 {
-    return nth_element<sizeof...(Args) - 1>(args...);
+    return nth_element<sizeof...(Args) - 1>(std::forward<Args>(args)...);
 }
 
 }  // namespace shell::mp

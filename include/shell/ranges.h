@@ -259,7 +259,7 @@ public:
     using reference         = std::tuple<dereferenced_t<Iterators>...>&;
     using pointer           = std::tuple<dereferenced_t<Iterators>...>*;
 
-    ZipIterator(Iterators... begins, mp::head_t<Iterators...> end)
+    ZipIterator(Iterators... begins, mp::first_t<Iterators...> end)
         : iters(begins...), end(end) {}
 
     value_type operator*() const
@@ -300,7 +300,7 @@ public:
 
 private:
     std::tuple<Iterators...> iters;
-    mp::head_t<Iterators...> end;
+    mp::first_t<Iterators...> end;
 };
 
 template<typename... Ranges>
@@ -309,7 +309,7 @@ SentinelRange<ZipIterator<range_iterator_t<Ranges>...>>
 {
     using Iterator = ZipIterator<range_iterator_t<Ranges>...>;
 
-    return { Iterator(std::begin(ranges)..., std::end(mp::head_element(ranges...))) };
+    return { Iterator(std::begin(ranges)..., std::end(mp::first_element(ranges...))) };
 }
 
 template<typename Range>
