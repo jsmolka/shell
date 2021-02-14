@@ -190,7 +190,7 @@ TEST_CASE("algorithm::startsWith")
 {
     REQUIRE( startsWith(std::string("test"), "test"));
     REQUIRE( startsWith(std::string("test"), std::string("te")));
-    REQUIRE( startsWith(std::string("test"), "t"));
+    REQUIRE( startsWith(std::string("test"), std::string_view("t")));
     REQUIRE(!startsWith(std::string("test"), "tt"));
     REQUIRE(!startsWith(std::string("test"), "ttest"));
     REQUIRE( startsWith(std::string(""), ""));
@@ -200,7 +200,7 @@ TEST_CASE("algorithm::startsWith")
 TEST_CASE("algorithm::endsWith")
 {
     REQUIRE( endsWith(std::string("test"), std::string("test")));
-    REQUIRE( endsWith(std::string("test"), "st"));
+    REQUIRE( endsWith(std::string("test"), std::string_view("st")));
     REQUIRE( endsWith(std::string("test"), "t"));
     REQUIRE(!endsWith(std::string("test"), "tt"));
     REQUIRE(!endsWith(std::string("test"), "testt"));
