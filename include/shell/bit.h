@@ -368,7 +368,17 @@ public:
     
     bool operator!=(BitIterator other) const
     {
-        return value != other.value;
+        return !(*this == other);
+    }
+
+    bool operator==(Sentinel) const
+    {
+        return value == 0;
+    }
+
+    bool operator!=(Sentinel) const
+    {
+        return !(*this == Sentinel{});
     }
 
 private:
@@ -376,14 +386,14 @@ private:
 };
 
 template<typename Integral>
-ForwardRange<BitIterator<Integral>>
+SentinelRange<BitIterator<Integral>>
     iterate(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
     using Iterator = BitIterator<Integral>;
 
-    return { Iterator(value), Iterator(0) };
+    return { Iterator(value) };
 }
 
 }  // namespace shell::bit

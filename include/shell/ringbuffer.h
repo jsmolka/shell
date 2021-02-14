@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include <shell/macros.h>
 #include <shell/ranges.h>
 
 namespace shell
@@ -146,7 +147,7 @@ public:
     SHELL_FORWARD_ITERATORS(
         SHELL_ARG(data.data(), rindex),
         SHELL_ARG(data.data(), (windex + length) % N));
-    SHELL_REVERSE_ITERATORS(begin(), end());
+    SHELL_REVERSE_ITERATORS(end(), begin());
 
 private:
     std::size_t length = 0;

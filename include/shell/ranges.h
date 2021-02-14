@@ -17,12 +17,12 @@ namespace shell
     const_iterator cend()   const { return const_iterator(End);   }
 
 #define SHELL_REVERSE_ITERATORS(Begin, End)                                           \
-          reverse_iterator rbegin()        { return       reverse_iterator(End);   }  \
-          reverse_iterator rend()          { return       reverse_iterator(Begin); }  \
-    const_reverse_iterator rbegin()  const { return const_reverse_iterator(End);   }  \
-    const_reverse_iterator rend()    const { return const_reverse_iterator(Begin); }  \
-    const_reverse_iterator crbegin() const { return const_reverse_iterator(End);   }  \
-    const_reverse_iterator crend()   const { return const_reverse_iterator(Begin); }
+          reverse_iterator rbegin()        { return       reverse_iterator(Begin); }  \
+          reverse_iterator rend()          { return       reverse_iterator(End);   }  \
+    const_reverse_iterator rbegin()  const { return const_reverse_iterator(Begin); }  \
+    const_reverse_iterator rend()    const { return const_reverse_iterator(End);   }  \
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(Begin); }  \
+    const_reverse_iterator crend()   const { return const_reverse_iterator(End);   }
 
 template<typename Iterator>
 class ForwardRange

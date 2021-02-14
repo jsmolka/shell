@@ -110,7 +110,7 @@ public:
     }
 
     SHELL_FORWARD_ITERATORS(stack_, stack_ + size_)
-    SHELL_REVERSE_ITERATORS(stack_, stack_ + size_)
+    SHELL_REVERSE_ITERATORS(stack_ + size_, stack_)
 
 private:
     template<typename Iterator>
@@ -238,7 +238,7 @@ public:
     }
 
     SHELL_FORWARD_ITERATORS(data_, data_ + size_)
-    SHELL_REVERSE_ITERATORS(data_, data_ + size_)
+    SHELL_REVERSE_ITERATORS(data_ + size_, data_)
 
 private:
     void grow(std::size_t size)

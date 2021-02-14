@@ -195,16 +195,18 @@ TEST_CASE("bit::ceilPowTwo")
 }
 
 template<typename T>
-bool compare(T value, const std::vector<std::size_t>& expected)
+void compare(T value, const std::vector<std::size_t>& expected)
 {
-    auto iterator = bit::iterate(value);
+    std::size_t i = 0;
+    for (const auto& pos : bit::iterate(value))
+        REQUIRE(pos == expected[i++]);
 
-    return std::vector<std::size_t>(iterator.begin(), iterator.end()) == expected;
+    REQUIRE(i == expected.size());
 }
 
 TEST_CASE("bit::iterate")
 {
-    REQUIRE(compare(0x0000'0001, { 0 }));
-    REQUIRE(compare(0x0001'0001, { 0, 16 }));
-    REQUIRE(compare(0x8001'0001, { 0, 16, 31 }));
+    compare(0x0000'0001, { 0 });
+    compare(0x0001'0001, { 0, 16 });
+    compare(0x8001'0001, { 0, 16, 31 });
 }
