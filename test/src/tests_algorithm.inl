@@ -185,3 +185,25 @@ TEST_CASE("algorithm::join")
 {
     REQUIRE(join(std::vector<std::string>{ "xxx", "xxx" }, "|") == "xxx|xxx");
 }
+
+TEST_CASE("algorithm::startsWith")
+{
+    REQUIRE( startsWith(std::string("test"), "test"));
+    REQUIRE( startsWith(std::string("test"), std::string("te")));
+    REQUIRE( startsWith(std::string("test"), "t"));
+    REQUIRE(!startsWith(std::string("test"), "tt"));
+    REQUIRE(!startsWith(std::string("test"), "ttest"));
+    REQUIRE( startsWith(std::string(""), ""));
+    REQUIRE( startsWith(std::string("test"), ""));
+}
+
+TEST_CASE("algorithm::endsWith")
+{
+    REQUIRE( endsWith(std::string("test"), std::string("test")));
+    REQUIRE( endsWith(std::string("test"), "st"));
+    REQUIRE( endsWith(std::string("test"), "t"));
+    REQUIRE(!endsWith(std::string("test"), "tt"));
+    REQUIRE(!endsWith(std::string("test"), "testt"));
+    REQUIRE( endsWith(std::string(""), ""));
+    REQUIRE( endsWith(std::string("test"), ""));
+}

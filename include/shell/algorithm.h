@@ -292,4 +292,22 @@ range_value_t<Range> join(const Range& range, const Delimiter& del)
     return res;
 }
 
+template<typename String, typename Substring>
+bool startsWith(const String& str, const Substring& substr)
+{
+    return str.compare(0, detail::len(substr), substr) == 0;
+}
+
+template<typename String, typename Substring>
+bool endsWith(const String& str, const Substring& substr)
+{
+    std::size_t len_str = detail::len(str);
+    std::size_t len_sub = detail::len(substr);
+
+    if (len_sub > len_str)
+        return false;
+
+    return str.compare(len_str - len_sub, len_sub, substr) == 0;
+}
+
 }  // namespace shell
