@@ -10,94 +10,102 @@
 namespace shell
 {
 
-template<typename T>
-std::optional<T> parseInt(const std::string& data, int base = 10, std::size_t* index = nullptr);
-
-template<>
-inline std::optional<int> parseInt(const std::string& data, int base, std::size_t* index)
+namespace detail
 {
-    try
-    {
-        return std::stoi(data, index, base);
-    }
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
-}
 
-template<>
-inline std::optional<long> parseInt(const std::string& data, int base, std::size_t* index)
+class Validator
 {
-    try
-    {
-        return std::stol(data, index, base);
-    }
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
-}
+public:
+    Validator(const std::string& data)
+        : data(data) {}
 
-template<>
-inline std::optional<unsigned long> parseInt(const std::string& data, int base, std::size_t* index)
-{
-    try
+    operator bool() const
     {
-        return std::stoul(data, index, base);
+        return index == data.size();
     }
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
-}
 
-template<>
-inline std::optional<long long> parseInt(const std::string& data, int base, std::size_t* index)
-{
-    try
+    template<typename Predicate>
+    void one(Predicate pred)
     {
-        return std::stoll(data, index, base);
+        if (index < data.size() && pred(data[index]))
+            ++index;
     }
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
-}
 
-template<>
-inline std::optional<unsigned long long> parseInt(const std::string& data, int base, std::size_t* index)
-{
-    try
+    template<typename Predicate>
+    void all(Predicate pred)
     {
-        return std::stoull(data, index, base);
+        while (index < data.size() && pred(data[index]))
+            ++index;
     }
-    catch (const std::logic_error&)
-    {
-        return std::nullopt;
-    }
-}
 
-template<>
-inline std::optional<unsigned int> parseInt(const std::string& data, int base, std::size_t* index)
-{
-    if (const auto value = parseInt<long long>(data, base, index))
-    {
-        if (*value >= 0 && *value <= std::numeric_limits<unsigned int>::max())
-            return static_cast<unsigned int>(*value);
-    }
-    return std::nullopt;
-}
+private:
+    std::size_t index = 0;
+    const std::string& data;
+};
 
 template<typename T>
-std::optional<T> parseRat(const std::string& data, std::size_t* index = nullptr);
-
-template<>
-inline std::optional<float> parseRat(const std::string& data, std::size_t* index)
+class IsSignChar
 {
+public:
+    bool operator()(char ch) const
+    {
+        return ch == '+' || (std::is_signed_v<T> && ch == '-');
+    }
+};
+
+class IsNumericChar
+{
+public:
+    IsNumericChar(int base)
+        : base(base) {}
+
+    bool operator()(char ch) const
+    {
+        if (base <= 10)
+        {
+            return (ch >= '0') && (ch < ('0' + base));
+        }
+        else if (base <= 36)
+        {
+            return ((ch >= '0') && (ch <= '9'))
+                || ((ch >= 'a') && (ch < ('a' + (base - 10))));
+        }
+        return false;
+    }
+
+private:
+    int base;
+};
+
+class IsDecimalPointChar
+{
+public:
+    bool operator()(char ch) const
+    {
+        return ch == '.';
+    }
+};
+
+template<typename T>
+std::optional<T> parseInt(T(*parse)(const std::string&, std::size_t*, int), std::string data)
+{
+    trim(data);
+    toLower(data);
+
+    int base = 10;
+    if (startsWith(data, "0b") || startsWith(data, "+0b") || startsWith(data, "-0b")) { base =  2; replaceFirst(data, "0b", ""); }
+    if (startsWith(data, "0x") || startsWith(data, "+0x") || startsWith(data, "-0x")) { base = 16; replaceFirst(data, "0x", ""); }
+
+    Validator validator(data);
+    validator.one(IsSignChar<T>());
+    validator.all(IsNumericChar(base));
+
+    if (!validator)
+        return std::nullopt;
+
     try
     {
-        return std::stof(data, index);
+        return parse(data, nullptr, base);
     }
     catch (const std::logic_error&)
     {
@@ -105,25 +113,37 @@ inline std::optional<float> parseRat(const std::string& data, std::size_t* index
     }
 }
 
-template<>
-inline std::optional<double> parseRat(const std::string& data, std::size_t* index)
+template<typename T>
+std::optional<T> parseRat(T(*parse)(const std::string&, std::size_t*), std::string data)
 {
+    trim(data);
+
+    Validator validator(data);
+    validator.one(IsSignChar<T>());
+    validator.all(IsNumericChar(10));
+    validator.one(IsDecimalPointChar());
+    validator.all(IsNumericChar(10));
+
+    if (!validator)
+        return std::nullopt;
+
     try
     {
-        return std::stod(data, index);
+        return parse(data, nullptr);
     }
     catch (const std::logic_error&)
     {
         return std::nullopt;
     }
 }
+
+}  // namespace detail
 
 template<typename T>
 std::optional<T> parse(const std::string& data)
 {
     T value{};
     std::stringstream stream(data);
-    stream << std::boolalpha;
     stream >> value;
 
     return stream
@@ -140,7 +160,7 @@ inline std::optional<std::string> parse(const std::string& data)
 template<>
 inline std::optional<bool> parse(const std::string& data)
 {
-    const std::string value = toLowerCopy(data);
+    std::string value = toLowerCopy(data);
 
     if (value == "1" || value == "true")  return true;
     if (value == "0" || value == "false") return false;
@@ -151,49 +171,54 @@ inline std::optional<bool> parse(const std::string& data)
 template<>
 inline std::optional<int> parse(const std::string& data)
 {
-    return parseInt<int>(data);
+    return detail::parseInt<int>(std::stoi, data);
 }
 
 template<>
 inline std::optional<long> parse(const std::string& data)
 {
-    return parseInt<long>(data);
+    return detail::parseInt<long>(std::stol, data);
 }
 
 template<>
 inline std::optional<unsigned long> parse(const std::string& data)
 {
-    return parseInt<unsigned long>(data);
+    return detail::parseInt<unsigned long>(std::stoul, data);
 }
 
 template<>
 inline std::optional<long long> parse(const std::string& data)
 {
-    return parseInt<long long>(data);
+    return detail::parseInt<long long>(std::stoll, data);
 }
 
 template<>
 inline std::optional<unsigned long long> parse(const std::string& data)
 {
-    return parseInt<unsigned long long>(data);
+    return detail::parseInt<unsigned long long>(std::stoull, data);
 }
 
 template<>
 inline std::optional<unsigned int> parse(const std::string& data)
 {
-    return parseInt<unsigned int>(data);
+    if (const auto value = parse<unsigned long>(data))
+    {
+        if (*value <= std::numeric_limits<unsigned int>::max())
+            return static_cast<unsigned int>(*value);
+    }
+    return std::nullopt;
 }
 
 template<>
 inline std::optional<float> parse(const std::string& data)
 {
-    return parseRat<float>(data);
+    return detail::parseRat<float>(std::stof, data);
 }
 
 template<>
 inline std::optional<double> parse(const std::string& data)
 {
-    return parseRat<double>(data);
+    return detail::parseRat<double>(std::stod, data);
 }
 
 }  // namespace shell

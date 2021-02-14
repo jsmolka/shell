@@ -17,7 +17,8 @@ namespace detail
 template<typename String>
 std::size_t len(const String& str)
 {
-    if constexpr (is_specialization_v<String, std::basic_string> || is_specialization_v<String, std::basic_string_view>)
+    if constexpr (is_specialization_v<String, std::basic_string> ||
+                  is_specialization_v<String, std::basic_string_view>)
     {
         return str.size();
     }

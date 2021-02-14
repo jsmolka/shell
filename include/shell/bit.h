@@ -2,6 +2,7 @@
 
 #include <climits>
 
+#include <shell/macros.h>
 #include <shell/predef.h>
 #include <shell/ranges.h>
 

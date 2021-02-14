@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include <shell/macros.h>
 #include <shell/mp.h>
 #include <shell/traits.h>
 
