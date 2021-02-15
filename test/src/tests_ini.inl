@@ -93,23 +93,21 @@ TEST_CASE("ValueToken")
     REQUIRE_THROWS_AS(token.parse("=test"), ParseError);
 }
 
-TEST_CASE("Ini")
+TEST_CASE("Ini::parse")
 {
-    std::vector<std::string> lines = {
-        "[test]",
-        "# Comment",
-        "value1 = 10",
-        "value2 = 10.1",
-        "value3 = true",
-        "value4 = false",
-        "value5 = test",
-        "value6 = "
-    };
-
-    filesystem::write("ini.ini", join(lines, "\n"));
+    const char* data = R"(
+        [test]
+        # Comment
+        value1 = 10
+        value2 = 10.1
+        value3 = true
+        value4 = false
+        value5 = test
+        value6 =
+    )";
 
     Ini ini;
-    ini.load("ini.ini");
+    ini.parse(data);
 
     REQUIRE(*ini.find<int>("test", "value1") == 10);
     REQUIRE(*ini.find<double>("test", "value2") == 10.1);
@@ -118,5 +116,21 @@ TEST_CASE("Ini")
     REQUIRE(*ini.find<std::string>("test", "value5") == "test");
     REQUIRE(*ini.find<std::string>("test", "value6") == "");
     REQUIRE(!ini.find<bool>("test", "value1").has_value());
-    //REQUIRE(!ini.find<int>("test", "value3").has_value());
+    REQUIRE(!ini.find<int>("test", "value3").has_value());
+}
+
+TEST_CASE("Ini::set")
+{
+    Ini ini;
+    ini.set("test1", "v1", "1");
+    ini.set("test2", "v1", "true");
+    ini.set("test2", "v2", "2");
+    ini.set("test1", "v1", "0");
+    REQUIRE(ini.save("test.ini") == filesystem::Status::Ok);
+
+    Ini ini2;
+    REQUIRE(ini2.load("test.ini") == filesystem::Status::Ok);
+    REQUIRE(*ini2.find<int>("test1", "v1") == 0);
+    REQUIRE(*ini2.find<bool>("test2", "v1"));
+    REQUIRE(*ini2.find<int>("test2", "v2") == 2);
 }

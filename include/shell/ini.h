@@ -8,6 +8,7 @@
 #include <shell/filesystem.h>
 #include <shell/functional.h>
 #include <shell/parse.h>
+#include <shell/ranges.h>
 
 namespace shell
 {
@@ -150,6 +151,9 @@ public:
     SectionToken()
         : Token(Kind::Section) {}
 
+    SectionToken(const std::string& section)
+        : Token(Kind::Section), section(section) {}
+
     void parse(const std::string& line) final
     {
         Parser parser(line);
@@ -163,7 +167,8 @@ public:
             return IsAlnum<char>()(ch)
                 || IsSpace<char>()(ch)
                 || ch == '-'
-                || ch == '_';
+                || ch == '_'
+                || ch == ':';
             }))
             parser.error("section char");
 
@@ -191,6 +196,9 @@ class ValueToken final : public Token
 public:
     ValueToken()
         : Token(Kind::Value) {}
+
+    ValueToken(const std::string& key, const std::string& value)
+        : Token(Kind::Value), key(key), value(value) {}
 
     void parse(const std::string& line) final
     {
@@ -231,40 +239,46 @@ public:
 class Ini
 {
 public:
-    filesystem::Status load(const filesystem::path& file)
+    void parse(const std::string& data)
     {
-        using namespace filesystem;
+        tokens.clear();
 
-        std::ifstream stream(file);
-
-        if (!stream.is_open())
-            return Status::BadFile;
-
-        if (!stream)
-            return Status::BadStream;
-
-        std::string line;
-        while (std::getline(stream, line))
+        for (std::string& line : split(data, "\n"))
         {
             trim(line);
 
-            Token token = tokenize(line);
-            token->parse(line);
+            if (Token token = tokenize(line))
+            {
+                token->parse(line);
 
-            tokens.push_back(token);
+                tokens.push_back(token);
+            }
         }
-        return Status::Ok;
+    }
+
+    filesystem::Status load(const filesystem::path& file)
+    {
+        auto [status, data] = filesystem::read<std::string>(file);
+
+        if (status == filesystem::Status::Ok)
+            parse(data);
+
+        return status;
     }
 
     filesystem::Status save(const filesystem::path& file) const
     {
         std::vector<std::string> lines;
-        lines.reserve(tokens.size());
 
-        for (const auto& token : tokens)
+        for (auto [index, token] : enumerate(tokens))
         {
+            if (index && token->kind == detail::Token::Kind::Section)
+                lines.push_back(std::string());
+
             lines.push_back(token->string());
         }
+        lines.push_back(std::string());
+
         return filesystem::write(file, join(lines, "\n"));
     }
 
@@ -272,7 +286,7 @@ public:
     std::optional<T> find(const std::string& section, const std::string& key) const
     {
         if (const auto token = findToken(section, key))
-            return parse<T>(token->value);
+            return shell::parse<T>(token->value);
 
         return std::nullopt;
     }
@@ -285,8 +299,7 @@ public:
 
     void set(const std::string& section, const std::string& key, const std::string& value)
     {
-        if (const auto token = findToken(section, key))
-            token->value = value;
+        findOrCreateToken(section, key)->value = value;
     }
 
 private:
@@ -296,7 +309,7 @@ private:
     static Token tokenize(const std::string& line)
     {
         if (line.empty())
-            return std::make_shared<detail::BlankToken>();
+            return nullptr;
 
         switch (line.front())
         {
@@ -310,22 +323,62 @@ private:
     ValueToken findToken(const std::string& section, const std::string& key) const
     {
         std::string active;
+
         for (const auto& token : tokens)
         {
-            switch (token->kind)
+            if (token->kind == detail::Token::Kind::Section)
             {
-            case detail::Token::Kind::Section:
                 active = std::static_pointer_cast<detail::SectionToken>(token)->section;
-                break;
+            }
 
-            case detail::Token::Kind::Value:
-                if (section == active
-                        && std::static_pointer_cast<detail::ValueToken>(token)->key == key)
-                    return std::static_pointer_cast<detail::ValueToken>(token);
-                break;
+            if (token->kind == detail::Token::Kind::Value)
+            {
+                ValueToken value = std::static_pointer_cast<detail::ValueToken>(token);
+
+                if (active == section && value->key == key)
+                    return value;
             }
         }
         return nullptr;
+    }
+
+    ValueToken findOrCreateToken(const std::string& section, const std::string& key)
+    {
+        auto insert = [&](std::vector<Token>::const_iterator iter) -> ValueToken
+        {
+            ValueToken value = std::make_shared<detail::ValueToken>(key, std::string());
+            tokens.insert(iter, value);
+
+            return value;
+        };
+
+        std::string active;
+
+        for (auto iter = tokens.begin(); iter != tokens.end(); ++iter)
+        {
+            const auto& token = *iter;
+
+            if (token->kind == detail::Token::Kind::Section)
+            {
+                if (active == section)
+                    return insert(iter);
+
+                active = std::static_pointer_cast<detail::SectionToken>(token)->section;
+            }
+
+            if (token->kind == detail::Token::Kind::Value)
+            {
+                ValueToken value = std::static_pointer_cast<detail::ValueToken>(token);
+
+                if (active == section && value->key == key)
+                    return value;
+            }
+        }
+
+        if (active != section)
+            tokens.push_back(std::make_shared<detail::SectionToken>(section));
+        
+        return insert(tokens.end());
     }
 
     std::vector<Token> tokens;
