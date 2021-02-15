@@ -62,6 +62,13 @@ Status read(const path& file, Container& dst)
 }
 
 template<typename Container>
+std::tuple<Status, Container> read(const path& file)
+{
+    Container data{};
+    return std::forward_as_tuple(read(file, data), data);
+}
+
+template<typename Container>
 Status write(const path& file, const Container& src)
 {
     static_assert(sizeof(typename Container::value_type) == 1);
