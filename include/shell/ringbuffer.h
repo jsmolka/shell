@@ -12,60 +12,91 @@ template<typename T, std::size_t N>
 class RingBufferIterator
 {
 public:
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = T;
-    using reference         = T&;
-    using pointer           = T*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
-    RingBufferIterator(T* begin, std::size_t index)
-        : begin(begin), index(index) {}
+    RingBufferIterator(T* data, std::size_t index, std::size_t size)
+        : data(data), index(index), size(size) {}
 
     reference operator*()
     {
-        return begin[index];
+        return data[index];
     }
 
     RingBufferIterator& operator++()
     {
+        size--;
         index = (index + 1) % N;
-        return *this;
-    }
-
-    RingBufferIterator& operator--()
-    {
-        index = (index - 1) % N;
+        
         return *this;
     }
 
     bool operator==(const RingBufferIterator& other) const
     {
-        return begin == other.begin && index == other.index;
+        return data == other.data && index == other.index && size == other.size;
     }
 
     bool operator!=(const RingBufferIterator& other) const
     {
-        return begin != other.begin || index != other.index;
+        return !(*this == other);
+    }
+
+    bool operator==(Sentinel) const
+    {
+        return size == 0;
+    }
+
+    bool operator!=(Sentinel) const
+    {
+        return !(*this == Sentinel{});
     }
 
 private:
-    T* begin;
+    T* data;
     std::size_t index;
+    std::size_t size;
 };
 
 template<typename T, std::size_t N>
 class RingBuffer
 {
 public:
-    using value_type             = T;
-    using reference              = value_type&;
-    using const_reference        = const reference;
-    using pointer                = value_type*;
-    using const_pointer          = const pointer;
-    using iterator               = RingBufferIterator<T, N>;
-    using const_iterator         = const iterator;
-    using reverse_iterator       = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using value_type      = T;
+    using reference       = value_type&;
+    using const_reference = const reference;
+    using pointer         = value_type*;
+    using const_pointer   = const pointer;
+    using iterator        = RingBufferIterator<T, N>;
+    using const_iterator  = const iterator;
+    using sentinel        = Sentinel;
+    using const_sentinel  = const sentinel;
+
+    RingBuffer() = default;
+    RingBuffer(const RingBuffer<T, N>&) = default;
+    RingBuffer(RingBuffer<T, N>&&) = default;
+
+    RingBuffer(std::initializer_list<T> values)
+    {
+        for (const auto& value : values)
+        {
+            write(value);
+        }
+    }
+
+    reference operator[](std::size_t index)
+    {
+        SHELL_ASSERT(index < length);
+        return buffer[(rindex + index) % N];
+    }
+
+    const_reference operator[](std::size_t index) const
+    {
+        SHELL_ASSERT(index < length);
+        return buffer[(rindex + index) % N];
+    }
 
     constexpr std::size_t capacity() const
     {
@@ -77,13 +108,31 @@ public:
         return length;
     }
 
-    reference read()
+    pointer data()
+    {
+        return buffer.data();
+    }
+
+    const_pointer data() const
+    {
+        return buffer.data();
+    }
+
+    void clear()
+    {
+        length = 0;
+        rindex = 0;
+        windex = 0;
+    }
+
+    value_type read()
     {
         SHELL_ASSERT(length > 0);
 
-        T& value = data[rindex];
+        const T& value = buffer[rindex];
         length--;
         rindex = (rindex + 1) % N;
+
         return value;
     }
 
@@ -94,7 +143,7 @@ public:
         else
             length++;
 
-        data[windex] = value;
+        buffer[windex] = value;
         windex = (windex + 1) % N;
     }
 
@@ -105,55 +154,37 @@ public:
         else
             length++;
 
-        data[windex] = std::move(value);
+        buffer[windex] = std::move(value);
         windex = (windex + 1) % N;
     }
 
     reference front()
     {
-        SHELL_ASSERT(length > 0);
-
-        return data[rindex];
+        return (*this)[0];
     }
 
     const_reference front() const
     {
-        SHELL_ASSERT(length > 0);
-
-        return data[rindex];
+        return (*this)[0];
     }
 
     reference back()
     {
-        SHELL_ASSERT(length > 0);
-
-        return data[(rindex + length - 1) % N];
+        return (*this)[length - 1];
     }
 
     const_reference back() const
     {
-        SHELL_ASSERT(length > 0);
-
-        return data[(rindex + length - 1) % N];
+        return (*this)[length - 1];
     }
 
-    void clear()
-    {
-        length = 0;
-        rindex = 0;
-        windex = 0;
-    }
-
-    SHELL_FORWARD_ITERATORS(
-        SHELL_ARG(data.data(), rindex),
-        SHELL_ARG(data.data(), (windex + length) % N));
-    SHELL_REVERSE_ITERATORS(end(), begin());
+    SHELL_SENTINEL_ITERATORS(SHELL_ARG(data(), rindex, length))
 
 private:
     std::size_t length = 0;
     std::size_t rindex = 0;
     std::size_t windex = 0;
-    std::array<T, N> data{};
+    std::array<T, N> buffer{};
 };
 
 }  // namespace shell

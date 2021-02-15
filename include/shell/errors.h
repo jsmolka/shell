@@ -14,6 +14,10 @@ public:
     Error(const std::string& message)
         : message(message) {}
 
+    template<typename... Args>
+    Error(const std::string& format, Args&&... args)
+        : message(fmt::format(format, std::forward<Args>(args)...)) {}
+
     const char* what() const noexcept override
     {
         return message.c_str();
@@ -23,18 +27,10 @@ private:
     std::string message;
 };
 
-class FormattedError : public Error
+class ParseError : public Error
 {
 public:
-    template<typename... Args>
-    FormattedError(const std::string& format, Args&&... args)
-        : Error(fmt::format(format, std::forward<Args>(args)...)) {}
-};
-
-class ParseError : public FormattedError
-{
-public:
-    using FormattedError::FormattedError;
+    using Error::Error;
 };
 
 }  // namespace shell

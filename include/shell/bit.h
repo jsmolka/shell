@@ -344,8 +344,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = std::size_t;
-    using reference         = std::size_t&;
-    using pointer           = std::size_t*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
     BitIterator(Integral value)
         : value(value) {}
@@ -389,8 +389,6 @@ template<typename Integral>
 SentinelRange<BitIterator<Integral>>
     iterate(Integral value)
 {
-    static_assert(std::is_integral_v<Integral>);
-
     using Iterator = BitIterator<Integral>;
 
     return { Iterator(value) };

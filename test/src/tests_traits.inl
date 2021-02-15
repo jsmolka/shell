@@ -39,16 +39,16 @@ TEST_CASE("unqualified")
     REQUIRE(std::is_same_v<unqualified_t<int[2]>, int>);
 }
 
-struct DereferencedTest
-{
-    int operator*() const
-    {
-        return 0;
-    }
-};
-
 TEST_CASE("dereferenced")
 {
+    struct DereferencedTest
+    {
+        int operator*() const
+        {
+            return 0;
+        }
+    };
+
     REQUIRE(std::is_same_v<dereferenced_t<int*>, int&>);
     REQUIRE(std::is_same_v<dereferenced_t<DereferencedTest>, int>);
 }

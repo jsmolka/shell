@@ -24,6 +24,8 @@ TEST_CASE("buffer::FixedBuffer")
     REQUIRE(a[1] == 2);
     REQUIRE(b[1] == 2);
     REQUIRE(c[1] == 2);
+    REQUIRE(a.front() == 1);
+    REQUIRE(a.back() == 2);
 }
 
 TEST_CASE("buffer::SmallBuffer")
@@ -60,6 +62,8 @@ TEST_CASE("buffer::SmallBuffer")
     REQUIRE(a[1] == 2);
     REQUIRE(b[1] == 2);
     REQUIRE(c[1] == 2);
+    REQUIRE(a.front() == 1);
+    REQUIRE(a.back() == 2);
 
     SmallBuffer<int, 3> d(std::move(a));
     SmallBuffer<int, 3> e = std::move(b);
@@ -76,10 +80,11 @@ TEST_CASE("buffer::SmallBuffer")
     SmallBuffer<int, 3> g = std::move(f);
     REQUIRE(g.data() == fp);
 
-    int hc = 9;
+    int hc = 10;
     SmallBuffer<int, 10> h = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     for (const auto& v : reversed(h))
     {
-        REQUIRE(v == hc--);
+        REQUIRE(v == --hc);
     }
+    REQUIRE(hc == 0);
 }

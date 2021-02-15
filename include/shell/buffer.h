@@ -66,6 +66,16 @@ public:
         return stack_[index];
     }
 
+    constexpr std::size_t capacity() const
+    {
+        return N;
+    }
+
+    std::size_t size() const
+    {
+        return size_;
+    }
+
     pointer data()
     {
         return stack_;
@@ -74,16 +84,6 @@ public:
     const_pointer data() const
     {
         return stack_;
-    }
-
-    std::size_t size() const
-    {
-        return size_;
-    }
-
-    constexpr std::size_t capacity() const
-    {
-        return N;
     }
 
     void clear()
@@ -107,6 +107,32 @@ public:
     {
         SHELL_ASSERT(size_ < N);
         stack_[size_++] = std::move(value);
+    }
+
+    void pop_back()
+    {
+        SHELL_ASSERT(size_ > 0);
+        size_--;
+    }
+
+    reference front()
+    {
+        return (*this)[0];
+    }
+
+    const_reference front() const
+    {
+        return (*this)[0];
+    }
+
+    reference back()
+    {
+        return (*this)[size_ - 1];
+    }
+
+    const_reference back() const
+    {
+        return (*this)[size_ - 1];
     }
 
     SHELL_FORWARD_ITERATORS(stack_, stack_ + size_)
@@ -188,6 +214,16 @@ public:
         return data_[index];
     }
 
+    std::size_t capacity() const
+    {
+        return capacity_;
+    }
+
+    std::size_t size() const
+    {
+        return size_;
+    }
+
     pointer data()
     {
         return data_;
@@ -196,16 +232,6 @@ public:
     const_pointer data() const
     {
         return data_;
-    }
-
-    std::size_t size() const
-    {
-        return size_;
-    }
-
-    std::size_t capacity() const
-    {
-        return capacity_;
     }
 
     void clear()
@@ -235,6 +261,32 @@ public:
     {
         reserve(size_ + 1);
         data_[size_++] = std::move(value);
+    }
+
+    void pop_back()
+    {
+        SHELL_ASSERT(size_ > 0);
+        size_--;
+    }
+
+    reference front()
+    {
+        return (*this)[0];
+    }
+
+    const_reference front() const
+    {
+        return (*this)[0];
+    }
+
+    reference back()
+    {
+        return (*this)[size_ - 1];
+    }
+
+    const_reference back() const
+    {
+        return (*this)[size_ - 1];
     }
 
     SHELL_FORWARD_ITERATORS(data_, data_ + size_)

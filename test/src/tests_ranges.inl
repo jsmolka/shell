@@ -1,31 +1,39 @@
 TEST_CASE("ranges::ForwardRange")
 {
-    int expected = 1;
+    int expected = 0;
     
     std::vector<int> values = { 1, 2, 3 };
     for (auto& value : ForwardRange(values.begin(), values.end()))
-        REQUIRE(value == expected++);
+        REQUIRE(value == ++expected);
 
-    expected = 1;
+    REQUIRE(expected == 3);
+
+    expected = 0;
 
     const std::vector<int> const_values = { 1, 2, 3 };
     for (const auto& value : ForwardRange(const_values.begin(), const_values.end()))
-        REQUIRE(value == expected++);
+        REQUIRE(value == ++expected);
+
+    REQUIRE(expected == 3);
 }
 
 TEST_CASE("ranges::PointerRange")
 {
-    int expected = 1;
+    int expected = 0;
 
     u8 data[3] = { 1, 2, 3 };
     for (auto& value : PointerRange(data, 3))
-        REQUIRE(value == expected++);
+        REQUIRE(value == ++expected);
 
-    expected = 1;
+    REQUIRE(expected == 3);
+
+    expected = 0;
 
     const u8 const_data[3] = { 1, 2, 3 };
     for (const auto& value : PointerRange(const_data, 3))
-        REQUIRE(value == expected++);
+        REQUIRE(value == ++expected);
+
+    REQUIRE(expected == 3);
 }
 
 TEST_CASE("ranges::range")

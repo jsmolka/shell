@@ -16,14 +16,6 @@ namespace shell
     const_iterator cbegin() const { return const_iterator(Begin); }  \
     const_iterator cend()   const { return const_iterator(End);   }
 
-#define SHELL_REVERSE_ITERATORS(Begin, End)                                           \
-          reverse_iterator rbegin()        { return       reverse_iterator(Begin); }  \
-          reverse_iterator rend()          { return       reverse_iterator(End);   }  \
-    const_reverse_iterator rbegin()  const { return const_reverse_iterator(Begin); }  \
-    const_reverse_iterator rend()    const { return const_reverse_iterator(End);   }  \
-    const_reverse_iterator crbegin() const { return const_reverse_iterator(Begin); }  \
-    const_reverse_iterator crend()   const { return const_reverse_iterator(End);   }
-
 template<typename Iterator>
 class ForwardRange
 {
@@ -32,17 +24,22 @@ public:
     using const_iterator = const iterator;
 
     ForwardRange(Iterator begin, Iterator end)
-        : range{ begin, end } {}
+        : begin_(begin), end_(end) {}
 
-    SHELL_FORWARD_ITERATORS(range.begin, range.end)
+    SHELL_FORWARD_ITERATORS(begin_, end_)
 
 private:
-    struct Range
-    {
-        Iterator begin;
-        Iterator end;
-    } range;
+    Iterator begin_;
+    Iterator end_;
 };
+
+#define SHELL_REVERSE_ITERATORS(Begin, End)                                           \
+          reverse_iterator rbegin()        { return       reverse_iterator(Begin); }  \
+          reverse_iterator rend()          { return       reverse_iterator(End);   }  \
+    const_reverse_iterator rbegin()  const { return const_reverse_iterator(Begin); }  \
+    const_reverse_iterator rend()    const { return const_reverse_iterator(End);   }  \
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(Begin); }  \
+    const_reverse_iterator crend()   const { return const_reverse_iterator(End);   }
 
 template<typename Iterator>
 class BidirectionalRange
@@ -54,18 +51,23 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     BidirectionalRange(Iterator begin, Iterator end)
-        : range{ begin, end } {}
+        : begin_(begin), end_(end) {}
 
-    SHELL_FORWARD_ITERATORS(range.begin, range.end)
-    SHELL_REVERSE_ITERATORS(range.end, range.begin)
+    SHELL_FORWARD_ITERATORS(begin_, end_)
+    SHELL_REVERSE_ITERATORS(end_, begin_)
 
 private:
-    struct Range
-    {
-        Iterator begin;
-        Iterator end;
-    } range;
+    Iterator begin_;
+    Iterator end_;
 };
+
+#define SHELL_SENTINEL_ITERATORS(Begin)                              \
+          iterator begin()        { return       iterator(Begin); }  \
+          sentinel end()          { return       sentinel();      }  \
+    const_iterator begin()  const { return const_iterator(Begin); }  \
+    const_sentinel end()    const { return const_sentinel();      }  \
+    const_iterator cbegin() const { return const_iterator(Begin); }  \
+    const_sentinel cend()   const { return const_sentinel();      }
 
 class Sentinel {};
 
@@ -79,20 +81,12 @@ public:
     using const_sentinel = const sentinel;
 
     SentinelRange(Iterator begin)
-        : range{ begin } {}
+        : begin_(begin) {}
 
-          iterator begin()        { return       iterator(range.begin); }
-          sentinel end()          { return       sentinel();            }
-    const_iterator begin()  const { return const_iterator(range.begin); }
-    const_sentinel end()    const { return const_sentinel();            }
-    const_iterator cbegin() const { return const_iterator(range.begin); }
-    const_sentinel cend()   const { return const_sentinel();            }
+    SHELL_SENTINEL_ITERATORS(begin_)
 
 private:
-    struct Range
-    {
-        Iterator begin;
-    } range;
+    Iterator begin_;
 };
 
 template<typename T>
@@ -115,8 +109,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = Integral;
-    using reference         = Integral&;
-    using pointer           = Integral*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
     RangeIterator(Integral begin, Integral end, Integral step)
         : index(begin), end(end), step(step) {}
@@ -194,8 +188,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = std::tuple<Integral, dereferenced_t<Iterator>>;
-    using reference         = std::tuple<Integral, dereferenced_t<Iterator>>&;
-    using pointer           = std::tuple<Integral, dereferenced_t<Iterator>>*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
     EnumerateIterator(Integral index, Iterator begin, Iterator end)
         : index(index), iter(begin), end(end) {}
@@ -256,8 +250,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = std::tuple<dereferenced_t<Iterators>...>;
-    using reference         = std::tuple<dereferenced_t<Iterators>...>&;
-    using pointer           = std::tuple<dereferenced_t<Iterators>...>*;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
     ZipIterator(Iterators... begins, mp::first_t<Iterators...> end)
         : iters(begins...), end(end) {}
