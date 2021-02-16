@@ -25,17 +25,8 @@ public:
         value.reserve(data.size());
     }
 
-    void error(const std::string& expected) const
-    {
-        std::string got = index < data.size()
-            ? std::string(1, data[index])
-            : std::string();
-
-        throw ParseError("Expected {} at index {} in line '{}' but got '{}'", expected, index, data, got);
-    }
-
     template<typename Predicate>
-    void eat(Predicate pred)
+    std::size_t one(Predicate pred)
     {
         value.clear();
         if (index < data.size() && pred(data[index]))
@@ -43,17 +34,11 @@ public:
             value.push_back(data[index]);
             ++index;
         }
+        return value.size();
     }
 
     template<typename Predicate>
-    bool eatOne(Predicate pred)
-    {
-        eat(pred);
-        return value.size() == 1;
-    }
-
-    template<typename Predicate>
-    void consume(Predicate pred)
+    std::size_t all(Predicate pred)
     {
         value.clear();
         while (index < data.size() && pred(data[index]))
@@ -61,24 +46,22 @@ public:
             value.push_back(data[index]);
             ++index;
         }
+        return value.size();
     }
 
-    template<typename Predicate>
-    bool consumeOne(Predicate pred)
+    void error(const std::string& expected) const
     {
-        consume(pred);
-        return value.size() == 1;
+        std::string got = index < data.size()
+            ? std::string(1, data[index])
+            : std::string();
+
+        throw ParseError(
+            "Expected {} at index {} in '{}' but got '{}'",
+            expected, index, data, got);
     }
 
-    template<typename Predicate>
-    bool consumeSome(Predicate pred)
-    {
-        consume(pred);
-        return value.size() != 0;
-    }
-
-    std::size_t index = 0;
     std::string value;
+    std::size_t index = 0;
 
 private:
     const std::string& data;
@@ -87,7 +70,7 @@ private:
 class Token
 {
 public:
-    enum class Kind { Blank, Comment, Section, Value };
+    enum class Kind { Comment, Section, Value };
 
     Token(Kind kind)
         : kind(kind) {}
@@ -95,20 +78,18 @@ public:
     virtual void parse(const std::string& line) = 0;
     virtual std::string string() const = 0;
 
-    Kind kind;
-};
+    const Kind kind;
 
-class BlankToken final : public Token
-{
-public:
-    BlankToken()
-        : Token(Kind::Blank) {}
-
-    void parse(const std::string& line) final {}
-
-    std::string string() const final
+protected:
+    template<char Char>
+    static bool isChar(char ch)
     {
-        return std::string();
+        return ch == Char;
+    }
+
+    static bool isIdentifier(char ch)
+    {
+        return IsAlnum<char>()(ch) || ch == '_';
     }
 };
 
@@ -122,26 +103,20 @@ public:
     {
         Parser parser(line);
 
-        if (!parser.eatOne([](char ch) {
-            return ch == '#'
-                || ch == ';';
-            }))
-            parser.error("'#' or ';'");
+        if (!parser.one(isChar<'#'>))
+            parser.error("'#'");
 
-        token = parser.value;
-
-        parser.consume(IsSpace<char>());
-        parser.consume(Tautology());
+        parser.all(IsSpace<char>());
+        parser.all(Tautology());
 
         comment = parser.value;
     }
 
     std::string string() const final
     {
-        return fmt::format("{} {}", token, comment);
+        return fmt::format("# {}", comment);
     }
 
-    std::string token;
     std::string comment;
 };
 
@@ -158,28 +133,18 @@ public:
     {
         Parser parser(line);
 
-        if (!parser.eatOne([](char ch) {
-                return ch == '['; 
-            }))
+        if (!parser.one(isChar<'['>))
             parser.error("'['");
 
-        if (!parser.consumeSome([](char ch) {
-            return IsAlnum<char>()(ch)
-                || IsSpace<char>()(ch)
-                || ch == '-'
-                || ch == '_'
-                || ch == ':';
-            }))
-            parser.error("section char");
+        if (!parser.all(isIdentifier))
+            parser.error("identifier char");
 
         section = parser.value;
 
-        if (!parser.eatOne([](char ch) {
-                return ch == ']';
-            }))
+        if (!parser.one(isChar<']'>))
             parser.error("']'");
 
-        if (parser.consumeSome(Tautology()))
+        if (parser.all(Tautology()))
             parser.error("no char");
     }
 
@@ -204,23 +169,18 @@ public:
     {
         Parser parser(line);
 
-        if (!parser.consumeSome([](char ch) {
-                return std::isalnum(ch)
-                    || ch == '_';
-            }))
-            parser.error("key char");
+        if (!parser.all(isIdentifier))
+            parser.error("identifier char");
 
         key = parser.value;
 
-        parser.consume(IsSpace<char>());
+        parser.all(IsSpace<char>());
 
-        if (!parser.eatOne([](char ch) {
-                return ch == '=';
-            }))
+        if (!parser.one(isChar<'='>))
             parser.error("'='");
 
-        parser.consume(IsSpace<char>());
-        parser.consume(Tautology());
+        parser.all(IsSpace<char>());
+        parser.all(Tautology());
 
         value = parser.value;
     }
@@ -311,12 +271,12 @@ private:
         if (line.empty())
             return nullptr;
 
-        switch (line.front())
-        {
-        case '#': return std::make_shared<detail::CommentToken>();
-        case ';': return std::make_shared<detail::CommentToken>();
-        case '[': return std::make_shared<detail::SectionToken>();
-        }
+        if (line.front() == '#')
+            return std::make_shared<detail::CommentToken>();
+
+        if (line.front() == '[')
+            return std::make_shared<detail::SectionToken>();
+
         return std::make_shared<detail::ValueToken>();
     }
 

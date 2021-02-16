@@ -8,9 +8,6 @@ TEST_CASE("SectionToken")
     token.parse("[test_test]");
     REQUIRE(token.section == "test_test");
 
-    token.parse("[test test]");
-    REQUIRE(token.section == "test test");
-
     REQUIRE_THROWS_AS(token.parse(""), ParseError);
     REQUIRE_THROWS_AS(token.parse("["), ParseError);
     REQUIRE_THROWS_AS(token.parse("]"), ParseError);
@@ -27,36 +24,16 @@ TEST_CASE("CommentToken")
     detail::CommentToken token;
     
     token.parse("# test");
-    REQUIRE(token.token == "#");
     REQUIRE(token.comment == "test");
 
     token.parse("#test");
-    REQUIRE(token.token == "#");
     REQUIRE(token.comment == "test");
 
     token.parse("#");
-    REQUIRE(token.token == "#");
     REQUIRE(token.comment == "");
 
     token.parse("##");
-    REQUIRE(token.token == "#");
     REQUIRE(token.comment == "#");
-
-    token.parse("; test");
-    REQUIRE(token.token == ";");
-    REQUIRE(token.comment == "test");
-
-    token.parse(";test");
-    REQUIRE(token.token == ";");
-    REQUIRE(token.comment == "test");
-
-    token.parse(";");
-    REQUIRE(token.token == ";");
-    REQUIRE(token.comment == "");
-
-    token.parse(";;");
-    REQUIRE(token.token == ";");
-    REQUIRE(token.comment == ";");
 
     REQUIRE_THROWS_AS(token.parse(""), ParseError);
 }
