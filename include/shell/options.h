@@ -5,16 +5,11 @@
 
 #include <shell/algorithm.h>
 #include <shell/errors.h>
+#include <shell/macros.h>
 #include <shell/parse.h>
 
 namespace shell
 {
-
-class OptionSpecError : public Error
-{
-public:
-    using Error::Error;
-};
 
 class OptionSpec
 {
@@ -27,7 +22,7 @@ public:
             const std::string& name = std::string())
         : opts(split(opts, ",")), desc(desc), name(name)
     {
-        if (opts.empty()) throw OptionSpecError("Expected non-empty specification");
+        SHELL_ASSERT(opts.size());
     }
 
     std::string options() const
@@ -37,14 +32,10 @@ public:
 
     std::string argument() const
     {
-        const std::string& option = opts.front();
+        std::string_view pattern = _positional
+            ? "<{}>" : name.size() ? "{} <{}>" : "{}";
 
-        if (positional)
-            return fmt::format("<{}>", option);
-
-        return name.empty()
-            ? fmt::format("{}", option)
-            : fmt::format("{} <{}>", option, name);
+        return fmt::format(pattern, opts.front(), name);
     }
 
     std::vector<std::string> opts;
@@ -52,7 +43,7 @@ public:
     std::string name;
 
 private:
-    bool positional = false;
+    bool _positional = false;
 };
 
 namespace detail
@@ -67,66 +58,61 @@ public:
 
     bool isOptional() const
     {
-        return is_optional;
+        return _optional;
     }
 
     virtual Pointer optional()
     {
-        is_optional = true;
+        _optional = true;
         return shared_from_this();
     }
 
     bool isPositional() const
     {
-        return is_positional;
+        return _positional;
     }
 
     virtual Pointer positional()
     {
-        is_positional = true;
+        _positional = true;
         return shared_from_this();
     }
        
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
-    virtual bool hasValue() const = 0;
+    virtual bool isEmpty() const = 0;
     virtual bool isBoolean() const = 0;
     virtual std::string help() const = 0;
 
 protected:
-    bool is_optional = false;
-    bool is_positional = false;
+    bool _optional = false;
+    bool _positional = false;
 };
 
 template<typename T>
 class BasicValue : public Value
 {
 public:
-    void parse(const std::string& data) final
+    void parse(const std::string& data)
     {
-        if (const auto value = shell::parse<T>(data))
-            this->value = value;
-        else
-            throw ParseError("Expected valid data but got '{}'", data);
+        if (!(value = shell::parse<T>(data)))
+            throw ParseError("Expected data but got '{}'", data);
     }
 
-    bool hasValue() const final
+    bool isEmpty() const
     {
-        return value.has_value();
+        return !value;
     }
 
-    bool isBoolean() const final
+    bool isBoolean() const
     {
         return std::is_same_v<T, bool>;
     }
 
-    std::string help() const final
+    std::string help() const
     {
-        if (default_value)
-            return fmt::format(" (default: {})", *default_value);
-
-        if (is_optional)
-            return " (optional)";
+        if (_fallback) return fmt::format(" (default: {})", *_fallback);
+        if (_optional) return fmt::format(" (optional)");
 
         return std::string();
     }
@@ -134,20 +120,20 @@ public:
     std::optional<T> value;
 
 protected:
-    std::optional<T> default_value;
+    std::optional<T> _fallback;
 };
 
 template<typename T>
-class OptionValue final : public BasicValue<T>
+class OptionValue : public BasicValue<T>
 {
 public:
     OptionValue() = default;
 
-    explicit OptionValue(const T& value)
+    OptionValue(const T& value)
     {
-        this->value = value;
-        this->default_value = value;
-        this->is_optional = true;
+        this->value     = value;
+        this->_fallback = value;
+        this->_optional = true;
     }
 
     void parse() final
@@ -162,14 +148,15 @@ class OptionValue<bool> final : public BasicValue<bool>
 public:
     OptionValue()
     {
-        this->value = false;
-        this->default_value = false;
-        this->is_optional = true;
+        this->value     = false;
+        this->_fallback = false;
+        this->_optional = true;
     }
 
     Pointer positional() final
     {
-        throw OptionSpecError("Bool options cannot be positional");
+        SHELL_ASSERT(false);
+        return shared_from_this();
     }
 
     void parse() final
@@ -206,16 +193,18 @@ public:
 class OptionGroup
 {
 public:
-    explicit OptionGroup(const std::string& name)
-        : name(name) {}
+    OptionGroup(std::string_view name)
+        : _name(name) {}
 
     std::string arguments() const
     {
-        std::string result;
+        std::string arguments;
         for (const auto& [spec, value] : options)
-            result.append(fmt::format(value->isOptional() ? " [{}]" : " {}", spec.argument()));
-
-        return result;
+        {
+            std::string_view pattern = value->isOptional() ? " [{}]" : " {}";
+            arguments.append(fmt::format(pattern, spec.argument()));
+        }
+        return arguments;
     }
 
     std::string help() const
@@ -223,15 +212,15 @@ public:
         if (options.empty())
             return std::string();
 
-        std::size_t padding = this->padding();
-        std::string result = fmt::format("\n{} arguments:\n", name);
+        std::size_t offset = padding();
+        std::string result = fmt::format("\n{} arguments:\n", _name);
 
         for (const auto& [spec, value] : options)
         {
             result.append(fmt::format(
                 "{:<{}}{}{}\n",
                 spec.options(),
-                padding,
+                offset,
                 spec.desc,
                 value->help()));
         }
@@ -250,7 +239,7 @@ private:
         return padding;
     }
 
-    std::string name;
+    std::string_view _name;
 };
 
 }  // namespace detail
@@ -285,7 +274,7 @@ private:
     {
         for (const auto& [spec, value] : vector)
         {
-            if (value->hasValue())
+            if (!value->isEmpty())
                 options.push_back({ spec, value });
             else if (!value->isOptional())
                 throw ParseError("Expected value for option '{}' but got none", spec.opts.front());
@@ -319,7 +308,7 @@ public:
 
     void add(OptionSpec spec, detail::Value::Pointer value)
     {
-        spec.positional = value->isPositional();
+        spec._positional = value->isPositional();
 
         auto& options = value->isPositional()
             ? group_pos.options
