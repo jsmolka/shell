@@ -111,7 +111,7 @@ public:
 
     std::string help() const
     {
-        if (_fallback) return fmt::format(" (default: {})", *_fallback);
+        if (_default)  return fmt::format(" (default: {})", *_default);
         if (_optional) return fmt::format(" (optional)");
 
         return std::string();
@@ -120,7 +120,7 @@ public:
     std::optional<T> value;
 
 protected:
-    std::optional<T> _fallback;
+    std::optional<T> _default;
 };
 
 template<typename T>
@@ -131,8 +131,8 @@ public:
 
     OptionValue(const T& value)
     {
-        this->value     = value;
-        this->_fallback = value;
+        this->value = value;
+        this->_default = value;
         this->_optional = true;
     }
 
@@ -148,8 +148,8 @@ class OptionValue<bool> final : public BasicValue<bool>
 public:
     OptionValue()
     {
-        this->value     = false;
-        this->_fallback = false;
+        this->value = false;
+        this->_default = false;
         this->_optional = true;
     }
 
@@ -317,7 +317,7 @@ public:
         options.push_back({ spec, value });
     }
 
-    OptionsResult parse(int argc, char* argv[])
+    OptionsResult parse(int argc, const char* const* argv)
     {
         int pos = 1;
         int idx = 0;

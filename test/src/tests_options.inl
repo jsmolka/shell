@@ -1,8 +1,8 @@
-#define ARGC(argv) (sizeof(argv) / sizeof(char*))
+#define ARGC(argv) (sizeof(argv) / sizeof(const char*))
 
 TEST_CASE("options::bool")
 {
-    char* argv[] =
+    const char* argv[] =
     { 
         "program.exe",
         "-b",
@@ -25,7 +25,7 @@ TEST_CASE("options::bool")
 
 TEST_CASE("options::int")
 {
-    char* argv[] =
+    const char* argv[] =
     { 
         "program.exe",
         "-b", "1",
@@ -50,7 +50,7 @@ TEST_CASE("options::int")
 
 TEST_CASE("options::double")
 {
-    char* argv[] =
+    const char* argv[] =
     { 
         "program.exe",
         "-b", "1.1",
@@ -75,7 +75,7 @@ TEST_CASE("options::double")
 
 TEST_CASE("options::string")
 {
-    char* argv[] =
+    const char* argv[] =
     { 
         "program.exe",
         "-b", "test1",
@@ -100,8 +100,8 @@ TEST_CASE("options::string")
 
 TEST_CASE("options::ParseError1")
 {
-    char* argv1[] = { "program.exe", "-x" };
-    char* argv2[] = { "program.exe", "-x", "wrong" };
+    const char* argv1[] = { "program.exe", "-x" };
+    const char* argv2[] = { "program.exe", "-x", "wrong" };
 
     Options options1("program");
     Options options2("program");
@@ -116,8 +116,8 @@ TEST_CASE("options::ParseError1")
 
 TEST_CASE("options::ParseError2")
 {
-    char* argv1[] = { "program.exe" };
-    char* argv2[] = { "program.exe" };
+    const char* argv1[] = { "program.exe" };
+    const char* argv2[] = { "program.exe" };
 
     Options options1("program");
     Options options2("program");
