@@ -229,7 +229,7 @@ String replaceLastCopy(const String& str, const From& from, const To& to)
 }
 
 template<typename String, typename From, typename To>
-void replaceAll(String& str, const From& from, const To& to)
+void replace(String& str, const From& from, const To& to)
 {
     std::size_t pos      = 0;
     std::size_t len_to   = detail::len(to);
@@ -243,10 +243,64 @@ void replaceAll(String& str, const From& from, const To& to)
 }
 
 template<typename String, typename From, typename To>
-String replaceAllCopy(const String& str, const From& from, const To& to)
+String replaceCopy(const String& str, const From& from, const To& to)
 {
     String res(str);
-    replaceAll(res, from, to);
+    replace(res, from, to);
+
+    return res;
+}
+
+template<typename OutputIterator, typename String, typename Delimiter>
+OutputIterator splitFirst(OutputIterator out, const String& str, const Delimiter& del)
+{
+    std::size_t pos = 0;
+    std::size_t end = str.find(del);
+    std::size_t len = detail::len(del);
+
+    if (end != String::npos)
+    {
+        *out = str.substr(pos, end - pos);
+         pos = end + len;
+         end = str.find(del, pos);
+    }
+    *out = str.substr(pos, end);
+
+    return out;
+}
+
+template<typename String, typename Delimiter>
+std::vector<String> splitFirst(const String& str, const Delimiter& del)
+{
+    std::vector<String> res;
+    splitFirst(std::back_inserter(res), str, del);
+
+    return res;
+}
+
+template<typename OutputIterator, typename String, typename Delimiter>
+OutputIterator splitLast(OutputIterator out, const String& str, const Delimiter& del)
+{
+    std::size_t pos = 0;
+    std::size_t end = str.rfind(del);
+    std::size_t len = detail::len(del);
+
+    if (end != String::npos)
+    {
+        *out = str.substr(pos, end - pos);
+         pos = end + len;
+         end = str.rfind(del, pos);
+    }
+    *out = str.substr(pos, end);
+
+    return out;
+}
+
+template<typename String, typename Delimiter>
+std::vector<String> splitLast(const String& str, const Delimiter& del)
+{
+    std::vector<String> res;
+    splitLast(std::back_inserter(res), str, del);
 
     return res;
 }

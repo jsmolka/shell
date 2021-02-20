@@ -158,26 +158,54 @@ TEST_CASE("algorithm::replaceLastCopy")
     REQUIRE(replaceLastCopy("x|x"s, "x", "xxx") == "x|xxx");
 }
 
-TEST_CASE("algorithm::replaceAll")
+TEST_CASE("algorithm::replace")
 {
     std::string t0 = "x|x";
-    replaceAll(t0, "x", "xxx");
+    replace(t0, "x", "xxx");
     REQUIRE(t0 == "xxx|xxx");
 }
 
-TEST_CASE("algorithm::replaceAllCopy")
+TEST_CASE("algorithm::replaceCopy")
 {
-    REQUIRE(replaceAllCopy("x|x"s, "x", "xxx") == "xxx|xxx");
+    REQUIRE(replaceCopy("x|x"s, "x", "xxx") == "xxx|xxx");
 }
 
 TEST_CASE("algorithm::split")
 {
+    REQUIRE(split("xxx"s, "|") == std::vector<std::string>{ "xxx" });
+
     const char* del = "|";
     REQUIRE(split(std::string("xxx|xxx"), del) == std::vector<std::string>{ "xxx", "xxx" });
 
     std::vector<std::string> parts;
     split(std::back_inserter(parts), "xxx|xxx"s, "|");
     REQUIRE(parts[0] == "xxx");
+    REQUIRE(parts[1] == "xxx");
+}
+
+TEST_CASE("algorithm::splitFirst")
+{
+    REQUIRE(splitFirst("xxx"s, "|") == std::vector<std::string>{ "xxx" });
+
+    const char* del = "|";
+    REQUIRE(splitFirst(std::string("xxx|xxx|xxx"), del) == std::vector<std::string>{ "xxx", "xxx|xxx" });
+
+    std::vector<std::string> parts;
+    splitFirst(std::back_inserter(parts), "xxx|xxx|xxx"s, "|");
+    REQUIRE(parts[0] == "xxx");
+    REQUIRE(parts[1] == "xxx|xxx");
+}
+
+TEST_CASE("algorithm::splitLast")
+{
+    REQUIRE(splitLast("xxx"s, "|") == std::vector<std::string>{ "xxx" });
+
+    const char* del = "|";
+    REQUIRE(splitLast(std::string("xxx|xxx|xxx"), del) == std::vector<std::string>{ "xxx|xxx", "xxx" });
+
+    std::vector<std::string> parts;
+    splitLast(std::back_inserter(parts), "xxx|xxx|xxx"s, "|");
+    REQUIRE(parts[0] == "xxx|xxx");
     REQUIRE(parts[1] == "xxx");
 }
 
