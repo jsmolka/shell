@@ -61,7 +61,7 @@ public:
         return _optional;
     }
 
-    virtual Pointer optional()
+    Pointer optional()
     {
         _optional = true;
         return shared_from_this();
@@ -72,7 +72,7 @@ public:
         return _positional;
     }
 
-    virtual Pointer positional()
+    Pointer positional()
     {
         _positional = true;
         return shared_from_this();
@@ -151,12 +151,6 @@ public:
         this->value = false;
         this->_default = false;
         this->_optional = true;
-    }
-
-    Pointer positional() final
-    {
-        SHELL_ASSERT(false);
-        return shared_from_this();
     }
 
     void parse() final
@@ -298,11 +292,9 @@ public:
         return std::make_shared<detail::OptionValue<T>>();
     }
 
-    template<typename T>
+    template<typename T, typename = std::enable_if_t<!std::is_same_v<T, bool>>>
     static detail::Value::Pointer value(const T& value)
     {
-        static_assert(!std::is_same_v<T, bool>);
-
         return std::make_shared<detail::OptionValue<T>>(value);
     }
 
@@ -324,19 +316,25 @@ public:
 
         while (pos < argc)
         {
-            std::string key(argv[pos++]);
+            auto data = splitFirst<std::string>(argv[pos++], "=");
 
-            if (auto value = group_key.options.find(key))
+            if (auto value = group_key.options.find(data.front()))
             {
-                if (pos < argc && !group_key.options.has(argv[pos]) && !value->isBoolean())
+                if (data.size() == 2)
+                    value->parse(data.back());
+                else if (pos < argc && !value->isBoolean() && !group_key.options.has(argv[pos]))
                     value->parse(argv[pos++]);
                 else
                     value->parse();
             }
             else
             {
-                if (idx < group_pos.options.size())
-                    group_pos.options[idx++].value->parse(key);
+                auto& opts = group_pos.options;
+
+                if (idx < opts.size())
+                {
+                    opts[idx++].value->parse(data.front());
+                }
             }
         }
 
