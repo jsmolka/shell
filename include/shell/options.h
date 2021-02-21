@@ -93,10 +93,19 @@ template<typename T>
 class BasicValue : public Value
 {
 public:
+    BasicValue() = default;
+
+    BasicValue(const T& value)
+    {
+        this->value     = value;
+        this->_default  = value;
+        this->_optional = true;
+    }
+
     void parse(const std::string& data)
     {
         if (!(value = shell::parse<T>(data)))
-            throw ParseError("Expected data but got '{}'", data);
+            throw ParseError("Data '{}' cannot be parsed", data);
     }
 
     bool isEmpty() const
@@ -127,33 +136,21 @@ template<typename T>
 class OptionValue : public BasicValue<T>
 {
 public:
-    OptionValue() = default;
+    using BasicValue<T>::BasicValue;
 
-    OptionValue(const T& value)
+    void parse()
     {
-        this->value = value;
-        this->_default = value;
-        this->_optional = true;
-    }
-
-    void parse() final
-    {
-        throw ParseError("Expected value for non-bool option but got none");
+        throw ParseError("Expected data but got none");
     }
 };
 
 template<>
-class OptionValue<bool> final : public BasicValue<bool>
+class OptionValue<bool> : public BasicValue<bool>
 {
 public:
-    OptionValue()
-    {
-        this->value = false;
-        this->_default = false;
-        this->_optional = true;
-    }
+    using BasicValue<bool>::BasicValue;
 
-    void parse() final
+    void parse()
     {
         this->value = true;
     }
@@ -184,7 +181,7 @@ public:
     }
 };
 
-class OptionGroup
+class OptionGroup : public OptionVector
 {
 public:
     OptionGroup(std::string_view name)
@@ -193,7 +190,7 @@ public:
     std::string arguments() const
     {
         std::string arguments;
-        for (const auto& [spec, value] : options)
+        for (const auto& [spec, value] : *this)
         {
             std::string_view pattern = value->isOptional() ? " [{}]" : " {}";
             arguments.append(fmt::format(pattern, spec.argument()));
@@ -203,13 +200,13 @@ public:
 
     std::string help() const
     {
-        if (options.empty())
+        if (empty())
             return std::string();
 
         std::size_t offset = padding();
         std::string result = fmt::format("\n{} arguments:\n", _name);
 
-        for (const auto& [spec, value] : options)
+        for (const auto& [spec, value] : *this)
         {
             result.append(fmt::format(
                 "{:<{}}{}{}\n",
@@ -221,14 +218,12 @@ public:
         return result;
     }
 
-    OptionVector options;
-
 private:
     std::size_t padding() const
     {
         std::size_t padding = 0;
-        for (const auto& [spec, value] : options)
-            padding = std::max(spec.options().size() + 2, padding);
+        for (const auto& [spec, value] : *this)
+            padding = std::max(padding, spec.options().size() + 2);
 
         return padding;
     }
@@ -266,10 +261,12 @@ public:
 private:
     void copy(const detail::OptionVector& vector)
     {
-        for (const auto& [spec, value] : vector)
+        for (const auto& option : vector)
         {
+            const auto& [spec, value] = option;
+
             if (!value->isEmpty())
-                options.push_back({ spec, value });
+                options.push_back(option);
             else if (!value->isOptional())
                 throw ParseError("Expected value for option '{}' but got none", spec.opts.front());
         }
@@ -281,10 +278,10 @@ private:
 class Options
 {
 public:
-    explicit Options(const std::string& program)
-        : program(program)
-        , group_key("Keyword")
-        , group_pos("Positional") {}
+    Options(const std::string& program)
+        : _program(program)
+        , _keyword("Keyword")
+        , _positional("Positional") {}
 
     template<typename T>
     static detail::Value::Pointer value()
@@ -292,7 +289,7 @@ public:
         return std::make_shared<detail::OptionValue<T>>();
     }
 
-    template<typename T, typename = std::enable_if_t<!std::is_same_v<T, bool>>>
+    template<typename T>
     static detail::Value::Pointer value(const T& value)
     {
         return std::make_shared<detail::OptionValue<T>>(value);
@@ -302,45 +299,42 @@ public:
     {
         spec._positional = value->isPositional();
 
-        auto& options = value->isPositional()
-            ? group_pos.options
-            : group_key.options;
+        auto& options = spec._positional
+            ? _positional
+            : _keyword;
 
         options.push_back({ spec, value });
     }
 
     OptionsResult parse(int argc, const char* const* argv)
     {
-        int pos = 1;
-        int idx = 0;
+        int idx = 1;
+        int pos = 0;
 
-        while (pos < argc)
+        while (idx < argc)
         {
-            auto data = splitFirst<std::string>(argv[pos++], "=");
+            auto arg = std::string(argv[idx++]);
+            auto kvp = splitFirst(arg, "=");
 
-            if (auto value = group_key.options.find(data.front()))
+            if (auto value = _keyword.find(kvp.front()))
             {
-                if (data.size() == 2)
-                    value->parse(data.back());
-                else if (pos < argc && !value->isBoolean() && !group_key.options.has(argv[pos]))
-                    value->parse(argv[pos++]);
+                if (kvp.size() == 2)
+                    value->parse(kvp.back());
+                else if (idx < argc && !value->isBoolean() && !_keyword.has(argv[idx]))
+                    value->parse(argv[idx++]);
                 else
                     value->parse();
             }
             else
             {
-                auto& opts = group_pos.options;
-
-                if (idx < opts.size())
-                {
-                    opts[idx++].value->parse(data.front());
-                }
+                if (pos < _positional.size())
+                    _positional[pos++].value->parse(arg);
             }
         }
 
         OptionsResult result;
-        result.copy(group_key.options);
-        result.copy(group_pos.options);
+        result.copy(_keyword);
+        result.copy(_positional);
 
         return result;
     }
@@ -349,17 +343,17 @@ public:
     {
         return fmt::format(
             "Usage: {}{}{}\n{}{}",
-            program,
-            group_key.arguments(),
-            group_pos.arguments(),
-            group_key.help(),
-            group_pos.help());
+            _program,
+            _keyword.arguments(),
+            _positional.arguments(),
+            _keyword.help(),
+            _positional.help());
     }
 
 private:
-    std::string program;
-    detail::OptionGroup group_key;
-    detail::OptionGroup group_pos;
+    std::string _program;
+    detail::OptionGroup _keyword;
+    detail::OptionGroup _positional;
 };
 
 }  // namespace shell

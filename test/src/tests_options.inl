@@ -10,28 +10,33 @@ TEST_CASE("options::bool")
         "-c",
         "true",
         "false",
-        "-h=false"
+        "-h=false",
+        "-j=false"
     };
 
     Options options("program");
-    options.add({ "-a", "" }, Options::value<bool>());
+    options.add({ "-a", "" }, Options::value<bool>(false));
     options.add({ "-b", "" }, Options::value<bool>());
     options.add({ "-c", "" }, Options::value<bool>());
-    options.add({ "-d", "" }, Options::value<bool>());
+    options.add({ "-d", "" }, Options::value<bool>()->optional());
     options.add({  "e", "" }, Options::value<bool>()->positional());
     options.add({  "f", "" }, Options::value<bool>()->positional());
     options.add({ "-g", "" }, Options::value<bool>());
     options.add({ "-h", "" }, Options::value<bool>());
-    
+    options.add({ "-i", "" }, Options::value<bool>(true));
+    options.add({ "-j", "" }, Options::value<bool>(true));
+
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!*result.find<bool>("-a"));
     REQUIRE( *result.find<bool>("-b"));
     REQUIRE( *result.find<bool>("-c"));
-    REQUIRE(!*result.find<bool>("-d"));
+    REQUIRE( !result.find<bool>("-d"));
     REQUIRE( *result.find<bool>( "e"));
     REQUIRE(!*result.find<bool>( "f"));
     REQUIRE( *result.find<bool>("-g"));
     REQUIRE(!*result.find<bool>("-h"));
+    REQUIRE( *result.find<bool>("-i"));
+    REQUIRE(!*result.find<bool>("-j"));
 }
 
 TEST_CASE("options::int")
