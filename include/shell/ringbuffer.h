@@ -19,24 +19,24 @@ public:
     using pointer           = value_type*;
 
     RingBufferIterator(T* data, std::size_t index, std::size_t size)
-        : data(data), index(index), size(size) {}
+        : _data(data), _index(index), _size(size) {}
 
     reference operator*()
     {
-        return data[index];
+        return _data[_index];
     }
 
     RingBufferIterator& operator++()
     {
-        size--;
-        index = (index + 1) % N;
+        _size--;
+        _index = (_index + 1) % N;
         
         return *this;
     }
 
     bool operator==(const RingBufferIterator& other) const
     {
-        return data == other.data && index == other.index && size == other.size;
+        return _data == other._data && _index == other._index && _size == other._size;
     }
 
     bool operator!=(const RingBufferIterator& other) const
@@ -46,7 +46,7 @@ public:
 
     bool operator==(Sentinel) const
     {
-        return size == 0;
+        return _size == 0;
     }
 
     bool operator!=(Sentinel) const
@@ -55,9 +55,9 @@ public:
     }
 
 private:
-    T* data;
-    std::size_t index;
-    std::size_t size;
+    T* _data;
+    std::size_t _index;
+    std::size_t _size;
 };
 
 template<typename T, std::size_t N>
@@ -88,14 +88,14 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < length);
-        return buffer[(rindex + index) % N];
+        SHELL_ASSERT(index < _length);
+        return _data[(_rindex + index) % N];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < length);
-        return buffer[(rindex + index) % N];
+        SHELL_ASSERT(index < _length);
+        return _data[(_rindex + index) % N];
     }
 
     constexpr std::size_t capacity() const
@@ -105,57 +105,57 @@ public:
 
     std::size_t size() const
     {
-        return length;
+        return _length;
     }
 
     pointer data()
     {
-        return buffer.data();
+        return _data.data();
     }
 
     const_pointer data() const
     {
-        return buffer.data();
+        return _data.data();
     }
 
     void clear()
     {
-        length = 0;
-        rindex = 0;
-        windex = 0;
+        _length = 0;
+        _rindex = 0;
+        _windex = 0;
     }
 
     value_type read()
     {
-        SHELL_ASSERT(length > 0);
+        SHELL_ASSERT(_length > 0);
 
-        const T& value = buffer[rindex];
-        length--;
-        rindex = (rindex + 1) % N;
+        const T& value = _data[_rindex];
+        _length--;
+        _rindex = (_rindex + 1) % N;
 
         return value;
     }
 
     void write(const T& value)
     {
-        if (length == N)
-            rindex = (rindex + 1) % N;
+        if (_length == N)
+            _rindex = (_rindex + 1) % N;
         else
-            length++;
+            _length++;
 
-        buffer[windex] = value;
-        windex = (windex + 1) % N;
+        _data[_windex] = value;
+        _windex = (_windex + 1) % N;
     }
 
     void write(T&& value)
     {
-        if (length == N)
-            rindex = (rindex + 1) % N;
+        if (_length == N)
+            _rindex = (_rindex + 1) % N;
         else
-            length++;
+            _length++;
 
-        buffer[windex] = std::move(value);
-        windex = (windex + 1) % N;
+        _data[_windex] = std::move(value);
+        _windex = (_windex + 1) % N;
     }
 
     reference front()
@@ -170,21 +170,21 @@ public:
 
     reference back()
     {
-        return (*this)[length - 1];
+        return (*this)[_length - 1];
     }
 
     const_reference back() const
     {
-        return (*this)[length - 1];
+        return (*this)[_length - 1];
     }
 
-    SHELL_SENTINEL_ITERATORS(SHELL_ARG(data(), rindex, length))
+    SHELL_SENTINEL_ITERATORS(SHELL_ARG(data(), _rindex, _length))
 
 private:
-    std::size_t length = 0;
-    std::size_t rindex = 0;
-    std::size_t windex = 0;
-    std::array<T, N> buffer{};
+    std::size_t _length = 0;
+    std::size_t _rindex = 0;
+    std::size_t _windex = 0;
+    std::array<T, N> _data{};
 };
 
 }  // namespace shell

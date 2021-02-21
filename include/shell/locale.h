@@ -13,15 +13,15 @@ class IsClassifiedAs
 {
 public:
     IsClassifiedAs(const std::locale& locale = std::locale())
-        : locale(locale) {}
+        : _locale(locale) {}
 
     bool operator()(Char ch) const
     {
-        return std::use_facet<std::ctype<Char>>(locale).is(Mask, ch);
+        return std::use_facet<std::ctype<Char>>(_locale).is(Mask, ch);
     }
 
 private:
-    const std::locale& locale;
+    const std::locale& _locale;
 };
 
 }  // namespace detail
@@ -45,15 +45,15 @@ class ToLower
 {
 public:
     ToLower(const std::locale& locale = std::locale())
-        : locale(locale) {}
+        : _locale(locale) {}
 
     Char operator()(Char ch) const
     {
-        return std::tolower(ch, locale);
+        return std::tolower(ch, _locale);
     }
 
 private:
-    const std::locale& locale;
+    const std::locale& _locale;
 };
 
 template<typename Char>
@@ -61,15 +61,15 @@ class ToUpper
 {
 public:
     ToUpper(const std::locale& locale = std::locale())
-        : locale(locale) {}
+        : _locale(locale) {}
 
     Char operator()(Char ch) const
     {
-        return std::toupper(ch, locale);
+        return std::toupper(ch, _locale);
     }
 
 private:
-    const std::locale& locale;
+    const std::locale& _locale;
 };
 
 }  // namespace shell

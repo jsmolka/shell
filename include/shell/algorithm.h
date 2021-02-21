@@ -231,8 +231,8 @@ String replaceLastCopy(const String& str, const From& from, const To& to)
 template<typename String, typename From, typename To>
 void replace(String& str, const From& from, const To& to)
 {
-    std::size_t pos      = 0;
-    std::size_t len_to   = detail::len(to);
+    std::size_t pos = 0;
+    std::size_t len_to = detail::len(to);
     std::size_t len_from = detail::len(from);
 
     while ((pos = str.find(from, pos)) != String::npos)
@@ -359,10 +359,7 @@ bool endsWith(const String& str, const Substring& substr)
     std::size_t len_str = detail::len(str);
     std::size_t len_sub = detail::len(substr);
 
-    if (len_sub > len_str)
-        return false;
-
-    return str.compare(len_str - len_sub, len_sub, substr) == 0;
+    return len_sub <= len_str && str.compare(len_str - len_sub, len_sub, substr) == 0;
 }
 
 }  // namespace shell

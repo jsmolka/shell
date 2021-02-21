@@ -22,7 +22,7 @@ public:
     virtual ~BasicSink() = default;
 
     virtual void sink(const std::string& message, Level level) = 0;
-    virtual void sink(const std::string& location, const std::string& message, Level level) = 0;
+    virtual void sink(const std::string& message, Level level, const std::string& location) = 0;
 
 protected:
     static std::string format(const std::string& message, Level level)
@@ -30,7 +30,7 @@ protected:
         return fmt::format("{} {}\n", prefix(level), message);
     }
 
-    static std::string format(const std::string& location, const std::string& message, Level level)
+    static std::string format(const std::string& message, Level level, const std::string& location)
     {
         return fmt::format("{} {}: {}\n", prefix(level), location, message);
     }
@@ -61,9 +61,9 @@ public:
         fmt::print(format(message, level));
     }
 
-    void sink(const std::string& location, const std::string& message, Level level)
+    void sink(const std::string& message, Level level, const std::string& location)
     {
-        fmt::print(format(location, message, level));
+        fmt::print(format(message, level, location));
     }
 };
 
@@ -88,9 +88,9 @@ public:
         fmt::print(style(level), format(message, level));
     }
 
-    void sink(const std::string& location, const std::string& message, Level level)
+    void sink(const std::string& message, Level level, const std::string& location)
     {
-        fmt::print(style(level), format(location, message, level));
+        fmt::print(style(level), format(message, level, location));
     }
 
 private:
@@ -119,10 +119,10 @@ public:
             _stream << format(message, level);
     }
 
-    void sink(const std::string& location, const std::string& message, Level level)
+    void sink(const std::string& message, Level level, const std::string& location)
     {
         if (_stream && _stream.is_open())
-            _stream << format(location, message, level);
+            _stream << format(message, level, location);
     }
 
 private:
@@ -144,10 +144,10 @@ public:
             sink->sink(message, level);
     }
 
-    void sink(const std::string& location, const std::string& message, Level level)
+    void sink( const std::string& message, Level level, const std::string& location)
     {
         for (auto& sink : _sinks)
-            sink->sink(location, message, level);
+            sink->sink( message, level, location);
     }
 
 private:
@@ -157,7 +157,7 @@ private:
 namespace detail
 {
 
-inline BasicSink::Pointer default_sink = std::make_shared<ColoredConsoleSink>();
+inline BasicSink::Pointer sink = std::make_shared<ColoredConsoleSink>();
 
 }  // namespace detail
 
@@ -168,47 +168,41 @@ void setSink(Sink&& sink, Sinks&&... sinks)
     static_assert(std::conjunction_v<std::is_base_of<BasicSink, Sinks>...>);
 
     if constexpr (sizeof...(Sinks) == 0)
-        detail::default_sink = std::make_shared<Sink>(
-            std::move(sink));
+        detail::sink = std::make_shared<Sink>(std::move(sink));
     else 
-        detail::default_sink = std::make_shared<MultiSink<Sink, Sinks...>>(
-            std::move(sink), std::move(sinks)...);
+        detail::sink = std::make_shared<MultiSink<Sink, Sinks...>>(std::move(sink), std::move(sinks)...);
 }
 
-template<typename String, typename... Args>
-void debug(const String& format, Args&&... args)
+template<typename... Args>
+void debug(const std::string& format, Args&&... args)
 {
-    detail::default_sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Debug);
+    detail::sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Debug);
 }
 
-template<typename String, typename... Args>
-void info(const String& format, Args&&... args)
+template<typename... Args>
+void info(const std::string& format, Args&&... args)
 {
-    detail::default_sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Info);
+    detail::sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Info);
 }
 
-template<typename String, typename... Args>
-void warn(const String& format, Args&&... args)
+template<typename... Args>
+void warn(const std::string& format, Args&&... args)
 {
-    detail::default_sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Warn);
+    detail::sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Warn);
 }
 
-template<typename String, typename... Args>
-void error(const String& format, Args&&... args)
+template<typename... Args>
+void error(const std::string& format, Args&&... args)
 {
-    detail::default_sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Error);
+    detail::sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Error);
 }
 
-template<typename String, typename... Args>
-void fatal(const String& format, Args&&... args)
+template<typename... Args>
+void fatal(const std::string& format, Args&&... args)
 {
-    detail::default_sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Fatal);
+    detail::sink->sink(fmt::format(format, std::forward<Args>(args)...), Level::Fatal);
 }
-
-#define SHELL_LOG(level, ...)           \
-    shell::detail::default_sink->sink(  \
-        SHELL_FUNCTION,                 \
-        fmt::format(__VA_ARGS__),       \
-        level)
 
 }  // namespace shell
+
+#define SHELL_LOG(level, ...) shell::detail::sink->sink(fmt::format(__VA_ARGS__), level, SHELL_FUNCTION)

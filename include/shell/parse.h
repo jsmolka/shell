@@ -17,30 +17,30 @@ class Validator
 {
 public:
     Validator(const std::string& data)
-        : data(data) {}
+        : _data(data) {}
 
     operator bool() const
     {
-        return index == data.size();
+        return _index == _data.size();
     }
 
     template<typename Predicate>
     void one(Predicate pred)
     {
-        if (index < data.size() && pred(data[index]))
-            ++index;
+        if (_index < _data.size() && pred(_data[_index]))
+            ++_index;
     }
 
     template<typename Predicate>
     void all(Predicate pred)
     {
-        while (index < data.size() && pred(data[index]))
-            ++index;
+        while (_index < _data.size() && pred(_data[_index]))
+            ++_index;
     }
 
 private:
-    std::size_t index = 0;
-    const std::string& data;
+    std::size_t _index = 0;
+    const std::string& _data;
 };
 
 template<typename T>
@@ -57,24 +57,24 @@ class IsNumericChar
 {
 public:
     IsNumericChar(int base)
-        : base(base) {}
+        : _base(base) {}
 
     bool operator()(char ch) const
     {
-        if (base <= 10)
+        if (_base <= 10)
         {
-            return (ch >= '0') && (ch < ('0' + base));
+            return (ch >= '0') && (ch < ('0' + _base));
         }
-        else if (base <= 36)
+        else if (_base <= 36)
         {
             return ((ch >= '0') && (ch <= '9'))
-                || ((ch >= 'a') && (ch < ('a' + (base - 10))));
+                || ((ch >= 'a') && (ch < ('a' + (_base - 10))));
         }
         return false;
     }
 
 private:
-    int base;
+    int _base;
 };
 
 class IsDecimalPointChar

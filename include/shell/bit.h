@@ -296,7 +296,7 @@ template<typename Integral>
 std::size_t clz(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    SHELL_ASSERT(value != 0, "Undefined");
+    SHELL_ASSERT(value != 0);
 
     #if SHELL_CC_MSVC
     unsigned long index;
@@ -313,7 +313,7 @@ template<typename Integral>
 std::size_t ctz(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    SHELL_ASSERT(value != 0, "Undefined");
+    SHELL_ASSERT(value != 0);
 
     #if SHELL_CC_MSVC
     unsigned long index;
@@ -330,7 +330,7 @@ template<typename Integral>
 Integral ceilPowTwo(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    SHELL_ASSERT(value != 0, "Undefined");
+    SHELL_ASSERT(value != 0);
 
     return 1ULL << (bits_v<Integral> - clz(value - 1));
 }
@@ -348,22 +348,22 @@ public:
     using pointer           = value_type*;
 
     BitIterator(Integral value)
-        : value(value) {}
+        : _value(value) {}
 
     std::size_t operator*() const
     {
-        return ctz(value);
+        return ctz(_value);
     }
 
     BitIterator& operator++()
     {
-        value &= value - 1;
+        _value &= _value - 1;
         return *this;
     }
 
     bool operator==(BitIterator other) const
     {
-        return value == other.value;
+        return _value == other._value;
     }
     
     bool operator!=(BitIterator other) const
@@ -373,7 +373,7 @@ public:
 
     bool operator==(Sentinel) const
     {
-        return value == 0;
+        return _value == 0;
     }
 
     bool operator!=(Sentinel) const
@@ -382,12 +382,11 @@ public:
     }
 
 private:
-    Integral value;
+    Integral _value;
 };
 
 template<typename Integral>
-SentinelRange<BitIterator<Integral>>
-    iterate(Integral value)
+SentinelRange<BitIterator<Integral>> iterate(Integral value)
 {
     using Iterator = BitIterator<Integral>;
 

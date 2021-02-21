@@ -20,7 +20,7 @@ class Parser
 {
 public:
     Parser(const std::string& data)
-        : data(data)
+        : _data(data)
     {
         value.reserve(data.size());
     }
@@ -29,9 +29,9 @@ public:
     std::size_t one(Predicate pred)
     {
         value.clear();
-        if (index < data.size() && pred(data[index]))
+        if (index < _data.size() && pred(_data[index]))
         {
-            value.push_back(data[index]);
+            value.push_back(_data[index]);
             ++index;
         }
         return value.size();
@@ -41,9 +41,9 @@ public:
     std::size_t all(Predicate pred)
     {
         value.clear();
-        while (index < data.size() && pred(data[index]))
+        while (index < _data.size() && pred(_data[index]))
         {
-            value.push_back(data[index]);
+            value.push_back(_data[index]);
             ++index;
         }
         return value.size();
@@ -51,20 +51,20 @@ public:
 
     void error(const std::string& expected) const
     {
-        std::string got = index < data.size()
-            ? std::string(1, data[index])
+        std::string got = index < _data.size()
+            ? std::string(1, _data[index])
             : std::string();
 
         throw ParseError(
             "Expected {} at index {} in '{}' but got '{}'",
-            expected, index, data, got);
+            expected, index, _data, got);
     }
 
     std::string value;
     std::size_t index = 0;
 
 private:
-    const std::string& data;
+    const std::string& _data;
 };
 
 class Token
@@ -201,7 +201,7 @@ class Ini
 public:
     void parse(const std::string& data)
     {
-        tokens.clear();
+        _tokens.clear();
 
         for (std::string& line : split(data, "\n"))
         {
@@ -211,7 +211,7 @@ public:
             {
                 token->parse(line);
 
-                tokens.push_back(token);
+                _tokens.push_back(token);
             }
         }
     }
@@ -230,7 +230,7 @@ public:
     {
         std::vector<std::string> lines;
 
-        for (auto [index, token] : enumerate(tokens))
+        for (auto [index, token] : enumerate(_tokens))
         {
             if (index && token->kind == detail::Token::Kind::Section)
                 lines.push_back(std::string());
@@ -284,7 +284,7 @@ private:
     {
         std::string active;
 
-        for (const auto& token : tokens)
+        for (const auto& token : _tokens)
         {
             if (token->kind == detail::Token::Kind::Section)
             {
@@ -307,14 +307,14 @@ private:
         auto insert = [&](std::vector<Token>::const_iterator iter) -> ValueToken
         {
             ValueToken value = std::make_shared<detail::ValueToken>(key, std::string());
-            tokens.insert(iter, value);
+            _tokens.insert(iter, value);
 
             return value;
         };
 
         std::string active;
 
-        for (auto iter = tokens.begin(); iter != tokens.end(); ++iter)
+        for (auto iter = _tokens.begin(); iter != _tokens.end(); ++iter)
         {
             const auto& token = *iter;
 
@@ -336,12 +336,12 @@ private:
         }
 
         if (active != section)
-            tokens.push_back(std::make_shared<detail::SectionToken>(section));
+            _tokens.push_back(std::make_shared<detail::SectionToken>(section));
         
-        return insert(tokens.end());
+        return insert(_tokens.end());
     }
 
-    std::vector<Token> tokens;
+    std::vector<Token> _tokens;
 };
 
 }  // namespace shell

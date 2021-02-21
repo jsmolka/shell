@@ -65,7 +65,7 @@ template<typename Container>
 std::tuple<Status, Container> read(const path& file)
 {
     Container data{};
-    return std::forward_as_tuple(read(file, data), data);
+    return std::make_tuple(read(file, data), data);
 }
 
 template<typename Container>

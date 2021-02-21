@@ -24,13 +24,13 @@ public:
     using const_iterator = const iterator;
 
     ForwardRange(Iterator begin, Iterator end)
-        : begin_(begin), end_(end) {}
+        : _begin(begin), _end(end) {}
 
-    SHELL_FORWARD_ITERATORS(begin_, end_)
+    SHELL_FORWARD_ITERATORS(_begin, _end)
 
 private:
-    Iterator begin_;
-    Iterator end_;
+    const Iterator _begin;
+    const Iterator _end;
 };
 
 #define SHELL_REVERSE_ITERATORS(Begin, End)                                           \
@@ -51,14 +51,14 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     BidirectionalRange(Iterator begin, Iterator end)
-        : begin_(begin), end_(end) {}
+        : _begin(begin), _end(end) {}
 
-    SHELL_FORWARD_ITERATORS(begin_, end_)
-    SHELL_REVERSE_ITERATORS(end_, begin_)
+    SHELL_FORWARD_ITERATORS(_begin, _end)
+    SHELL_REVERSE_ITERATORS(_end, _begin)
 
 private:
-    Iterator begin_;
-    Iterator end_;
+    const Iterator _begin;
+    const Iterator _end;
 };
 
 #define SHELL_SENTINEL_ITERATORS(Begin)                              \
@@ -81,12 +81,12 @@ public:
     using const_sentinel = const sentinel;
 
     SentinelRange(Iterator begin)
-        : begin_(begin) {}
+        : _begin(begin) {}
 
-    SHELL_SENTINEL_ITERATORS(begin_)
+    SHELL_SENTINEL_ITERATORS(_begin)
 
 private:
-    Iterator begin_;
+    const Iterator _begin;
 };
 
 template<typename T>
@@ -113,22 +113,22 @@ public:
     using pointer           = value_type*;
 
     RangeIterator(Integral begin, Integral end, Integral step)
-        : index(begin), end(end), step(step) {}
+        : _index(begin), _end(end), _step(step) {}
 
     value_type operator*() const
     {
-        return index;
+        return _index;
     }
 
     RangeIterator& operator++()
     {
-        index += step;
+        _index += _step;
         return *this;
     }
 
     bool operator==(const RangeIterator& other) const
     {
-        return index == other.index && end == other.end && step == other.step;
+        return _index == other._index && _end == other._end && _step == other._step;
     }
 
     bool operator!=(const RangeIterator& other) const
@@ -138,7 +138,7 @@ public:
 
     bool operator==(Sentinel) const
     {
-        return step > 0 ? index >= end : index < end;
+        return _step > 0 ? _index >= _end : _index < _end;
     }
 
     bool operator!=(Sentinel) const
@@ -147,14 +147,13 @@ public:
     }
 
 private:
-    Integral index;
-    Integral end;
-    Integral step;
+    Integral _index;
+    const Integral _end;
+    const Integral _step;
 };
 
 template<typename Integral>
-SentinelRange<RangeIterator<Integral>>
-    range(Integral end)
+SentinelRange<RangeIterator<Integral>> range(Integral end)
 {
     using Iterator = RangeIterator<Integral>;
 
@@ -162,8 +161,7 @@ SentinelRange<RangeIterator<Integral>>
 }
 
 template<typename Integral>
-SentinelRange<RangeIterator<Integral>>
-    range(Integral begin, Integral end)
+SentinelRange<RangeIterator<Integral>> range(Integral begin, Integral end)
 {
     using Iterator = RangeIterator<Integral>;
 
@@ -171,8 +169,7 @@ SentinelRange<RangeIterator<Integral>>
 }
 
 template<typename Integral>
-SentinelRange<RangeIterator<Integral>>
-    range(Integral begin, Integral end, Integral step)
+SentinelRange<RangeIterator<Integral>> range(Integral begin, Integral end, Integral step)
 {
     using Iterator = RangeIterator<Integral>;
 
@@ -192,23 +189,23 @@ public:
     using pointer           = value_type*;
 
     EnumerateIterator(Integral index, Iterator begin, Iterator end)
-        : index(index), iter(begin), end(end) {}
+        : _index(index), _iter(begin), _end(end) {}
 
     value_type operator*() const
     {
-        return { index, *iter };
+        return { _index, *_iter };
     }
 
     EnumerateIterator& operator++()
     {
-        ++iter;
-        ++index;
+        ++_iter;
+        ++_index;
         return *this;
     }
 
     bool operator==(const EnumerateIterator& other) const
     {
-        return index == other.index && iter == other.iter && end == other.end;
+        return _index == other._index && _iter == other._iter && _end == other._end;
     }
 
     bool operator!=(const EnumerateIterator& other) const
@@ -218,7 +215,7 @@ public:
 
     bool operator==(Sentinel) const
     {
-        return iter == end;
+        return _iter == _end;
     }
 
     bool operator!=(Sentinel) const
@@ -227,9 +224,9 @@ public:
     }
 
 private:
-    Integral index;
-    Iterator iter;
-    Iterator end;
+    Integral _index;
+    Iterator _iter;
+    const Iterator _end;
 };
 
 template<typename Range, typename Integral = std::size_t>
@@ -254,27 +251,27 @@ public:
     using pointer           = value_type*;
 
     ZipIterator(Iterators... begins, mp::first_t<Iterators...> end)
-        : iters(begins...), end(end) {}
+        : _iters(begins...), _end(end) {}
 
     value_type operator*() const
     {
         auto dereference = [](const Iterators&... iters) -> value_type { return { *iters... }; } ;
 
-        return std::apply(dereference, iters);
+        return std::apply(dereference, _iters);
     }
 
     ZipIterator& operator++()
     {
         auto advance = [](Iterators&... iters) { (++iters, ...); };
 
-        std::apply(advance, iters);
+        std::apply(advance, _iters);
 
         return *this;
     }
 
     bool operator==(const ZipIterator& other) const
     {
-        return iters == other.iters && end == other.end;
+        return _iters == other._iters && _end == other._end;
     }
 
     bool operator!=(const ZipIterator& other) const
@@ -284,7 +281,7 @@ public:
 
     bool operator==(Sentinel) const
     {
-        return std::get<0>(iters) == end;
+        return std::get<0>(_iters) == _end;
     }
 
     bool operator!=(Sentinel) const
@@ -293,22 +290,20 @@ public:
     }
 
 private:
-    std::tuple<Iterators...> iters;
-    mp::first_t<Iterators...> end;
+    std::tuple<Iterators...> _iters;
+    const mp::first_t<Iterators...> _end;
 };
 
 template<typename... Ranges>
-SentinelRange<ZipIterator<range_iterator_t<Ranges>...>>
-    zip(Ranges&... ranges)
+SentinelRange<ZipIterator<range_iterator_t<Ranges>...>> zip(Ranges&... ranges)
 {
     using Iterator = ZipIterator<range_iterator_t<Ranges>...>;
 
     return { Iterator(std::begin(ranges)..., std::end(mp::first_element(ranges...))) };
 }
 
-template<typename Range>
-ForwardRange<range_reverse_iterator_t<Range>>
-    reversed(Range& range)
+template<typename Range> 
+ForwardRange<range_reverse_iterator_t<Range>> reversed(Range& range)
 {
     return { std::rbegin(range), std::rend(range) };
 }
