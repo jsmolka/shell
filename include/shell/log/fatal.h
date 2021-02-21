@@ -7,4 +7,4 @@
 #  undef SHELL_LOG_FATAL
 #endif
 
-#define SHELL_LOG_FATAL(...) SHELL_LOG("[F]", shell::Level::Fatal, __VA_ARGS__)
+#define SHELL_LOG_FATAL(...) SHELL_LOG(shell::Level::Fatal, __VA_ARGS__)

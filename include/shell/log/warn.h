@@ -7,4 +7,4 @@
 #  undef SHELL_LOG_WARN
 #endif
 
-#define SHELL_LOG_WARN(...) SHELL_LOG("[W]", shell::Level::Warn, __VA_ARGS__)
+#define SHELL_LOG_WARN(...) SHELL_LOG(shell::Level::Warn, __VA_ARGS__)

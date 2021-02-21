@@ -7,4 +7,4 @@
 #  undef SHELL_LOG_ERROR
 #endif
 
-#define SHELL_LOG_ERROR(...) SHELL_LOG("[E]", shell::Level::Error, __VA_ARGS__)
+#define SHELL_LOG_ERROR(...) SHELL_LOG(shell::Level::Error, __VA_ARGS__)
