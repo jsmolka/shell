@@ -16,26 +16,20 @@ class OptionSpec
 public:
     friend class Options;
 
-    OptionSpec(
-            const std::string& opts,
-            const std::string& desc = std::string(),
-            const std::string& name = std::string())
-        : opts(split(opts, ",")), desc(desc), name(name)
-    {
-        SHELL_ASSERT(opts.size());
-    }
+    OptionSpec() = default;
 
-    std::string options() const
-    {
-        return join(opts, ", ");
-    }
+    OptionSpec(
+        const std::string& opts,
+        const std::string& desc = std::string(),
+        const std::string& name = std::string())
+        : opts(split(opts, ",")), desc(desc), name(name) {}
 
     std::string argument() const
     {
-        std::string_view pattern = _positional
+        std::string_view format = _positional
             ? "<{}>" : name.size() ? "{} <{}>" : "{}";
 
-        return fmt::format(pattern, opts.front(), name);
+        return fmt::format(format, opts.front(), name);
     }
 
     std::vector<std::string> opts;
@@ -90,22 +84,30 @@ protected:
 };
 
 template<typename T>
-class BasicValue : public Value
+class OptionValue : public Value
 {
 public:
-    BasicValue() = default;
+    OptionValue() = default;
 
-    BasicValue(const T& value)
+    OptionValue(const T& value)
     {
-        this->value     = value;
-        this->_default  = value;
+        this->value = value;
+        this->_default = value;
         this->_optional = true;
+    }
+
+    void parse()
+    {
+        if constexpr (std::is_same_v<T, bool>)
+            value = true;
+        else
+            throw ParseError("Expected data but got none");
     }
 
     void parse(const std::string& data)
     {
         if (!(value = shell::parse<T>(data)))
-            throw ParseError("Data '{}' cannot be parsed", data);
+            throw ParseError("Cannot parse '{}'", data);
     }
 
     bool isEmpty() const
@@ -128,32 +130,8 @@ public:
 
     std::optional<T> value;
 
-protected:
+private:
     std::optional<T> _default;
-};
-
-template<typename T>
-class OptionValue : public BasicValue<T>
-{
-public:
-    using BasicValue<T>::BasicValue;
-
-    void parse()
-    {
-        throw ParseError("Expected data but got none");
-    }
-};
-
-template<>
-class OptionValue<bool> : public BasicValue<bool>
-{
-public:
-    using BasicValue<bool>::BasicValue;
-
-    void parse()
-    {
-        this->value = true;
-    }
 };
 
 struct Option
@@ -189,13 +167,14 @@ public:
 
     std::string arguments() const
     {
-        std::string arguments;
+        std::string args;
+        
         for (const auto& [spec, value] : *this)
         {
-            std::string_view pattern = value->isOptional() ? " [{}]" : " {}";
-            arguments.append(fmt::format(pattern, spec.argument()));
+            std::string_view format = value->isOptional() ? " [{}]" : " {}";
+            args.append(fmt::format(format, spec.argument()));
         }
-        return arguments;
+        return args;
     }
 
     std::string help() const
@@ -203,31 +182,31 @@ public:
         if (empty())
             return std::string();
 
-        std::size_t offset = padding();
-        std::string result = fmt::format("\n{} arguments:\n", _name);
-
+        std::size_t padding = 0;
+        std::vector<std::string> keys;
+        keys.reserve(size());
+        
         for (const auto& [spec, value] : *this)
         {
-            result.append(fmt::format(
-                "{:<{}}{}{}\n",
-                spec.options(),
-                offset,
-                spec.desc,
-                value->help()));
+            keys.push_back(join(spec.opts, ","));
+            padding = std::max(padding, keys.back().size());
         }
-        return result;
+
+        std::string help = fmt::format("\n{} arguments:\n", _name);
+
+        for (const auto [option, key] : zip(*this, keys))
+        {
+            help.append(fmt::format(
+                "{:<{}}{}{}\n",
+                key,
+                padding + 2,
+                option.spec.desc,
+                option.value->help()));
+        }
+        return help;
     }
 
 private:
-    std::size_t padding() const
-    {
-        std::size_t padding = 0;
-        for (const auto& [spec, value] : *this)
-            padding = std::max(padding, spec.options().size() + 2);
-
-        return padding;
-    }
-
     std::string_view _name;
 };
 
@@ -240,13 +219,13 @@ public:
 
     bool has(const std::string& key) const
     {
-        return options.has(key);
+        return _options.has(key);
     }
 
     template<typename T>
     std::optional<T> find(const std::string& key) const
     {
-        if (const auto value = options.find(key))
+        if (const auto value = _options.find(key))
             return std::static_pointer_cast<detail::OptionValue<T>>(value)->value;
 
         return std::nullopt;
@@ -261,18 +240,16 @@ public:
 private:
     void copy(const detail::OptionVector& vector)
     {
-        for (const auto& option : vector)
+        for (const auto& [spec, value] : vector)
         {
-            const auto& [spec, value] = option;
-
             if (!value->isEmpty())
-                options.push_back(option);
+                _options.push_back({ spec, value });
             else if (!value->isOptional())
                 throw ParseError("Expected value for option '{}' but got none", spec.opts.front());
         }
     }
 
-    detail::OptionVector options;
+    detail::OptionVector _options;
 };
 
 class Options
@@ -297,6 +274,8 @@ public:
 
     void add(OptionSpec spec, detail::Value::Pointer value)
     {
+        SHELL_ASSERT(spec.opts.size());
+
         spec._positional = value->isPositional();
 
         auto& options = spec._positional
