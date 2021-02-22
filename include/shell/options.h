@@ -29,7 +29,7 @@ public:
         std::string_view format = _positional
             ? "<{}>" : name.size() ? "{} <{}>" : "{}";
 
-        return fmt::format(format, opts.front(), name);
+        return fmt::format(format, opts.back(), name);
     }
 
     std::vector<std::string> opts;
@@ -188,7 +188,7 @@ public:
         
         for (const auto& [spec, value] : *this)
         {
-            keys.push_back(join(spec.opts, ","));
+            keys.push_back(join(spec.opts, ", "));
             padding = std::max(padding, keys.back().size());
         }
 
@@ -197,9 +197,9 @@ public:
         for (const auto [option, key] : zip(*this, keys))
         {
             help.append(fmt::format(
-                "{:<{}}{}{}\n",
+                "  {:<{}}{}{}\n",
                 key,
-                padding + 2,
+                padding + 4,
                 option.spec.desc,
                 option.value->help()));
         }
@@ -238,9 +238,9 @@ public:
     }
 
 private:
-    void copy(const detail::OptionVector& vector)
+    void copy(const detail::OptionVector& options)
     {
-        for (const auto& [spec, value] : vector)
+        for (const auto& [spec, value] : options)
         {
             if (!value->isEmpty())
                 _options.push_back({ spec, value });
@@ -257,8 +257,8 @@ class Options
 public:
     Options(const std::string& program)
         : _program(program)
-        , _keyword("Keyword")
-        , _positional("Positional") {}
+        , _keyword("keyword")
+        , _positional("positional") {}
 
     template<typename T>
     static detail::Value::Pointer value()
@@ -295,6 +295,12 @@ public:
             auto arg = std::string(argv[idx++]);
             auto kvp = splitFirst(arg, "=");
 
+            if (arg == "-?" || arg == "-h" || arg == "--help")
+            {
+                fmt::print(help());
+                std::exit(0);
+            }
+
             if (auto value = _keyword.find(kvp.front()))
             {
                 if (kvp.size() == 2)
@@ -321,7 +327,7 @@ public:
     std::string help() const
     {
         return fmt::format(
-            "Usage: {}{}{}\n{}{}",
+            "usage:\n  {}{}{}\n{}{}",
             _program,
             _keyword.arguments(),
             _positional.arguments(),

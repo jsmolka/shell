@@ -10,7 +10,7 @@ TEST_CASE("options::bool")
         "-c",
         "true",
         "false",
-        "-h=false",
+        "-k=false",
         "-j=false"
     };
 
@@ -22,7 +22,7 @@ TEST_CASE("options::bool")
     options.add({  "e", "" }, Options::value<bool>()->positional());
     options.add({  "f", "" }, Options::value<bool>()->positional());
     options.add({ "-g", "" }, Options::value<bool>());
-    options.add({ "-h", "" }, Options::value<bool>());
+    options.add({ "-k", "" }, Options::value<bool>());
     options.add({ "-i", "" }, Options::value<bool>(true));
     options.add({ "-j", "" }, Options::value<bool>(true));
 
@@ -34,7 +34,7 @@ TEST_CASE("options::bool")
     REQUIRE( *result.find<bool>( "e"));
     REQUIRE(!*result.find<bool>( "f"));
     REQUIRE( *result.find<bool>("-g"));
-    REQUIRE(!*result.find<bool>("-h"));
+    REQUIRE(!*result.find<bool>("-k"));
     REQUIRE( *result.find<bool>("-i"));
     REQUIRE(!*result.find<bool>("-j"));
 }
@@ -165,12 +165,11 @@ TEST_CASE("options::ParseError2")
 TEST_CASE("options::help")
 {
     Options options("program");
-    options.add({ "--aa,-a", "This is a" }, Options::value<bool>());
-    options.add({ "--bb,-b", "This is b" }, Options::value<int>()->optional());
-    options.add({ "--cc,-c", "This is c", "data"}, Options::value<double>(1.1));
-    options.add({   "dd,d" , "This is d" }, Options::value<std::string>()->positional());
-    options.add({   "ee,e" , "This is e" }, Options::value<bool>()->optional());
-    options.add({   "ff,f" , "This is f" }, Options::value<std::string>("test")->positional());
+    options.add({ "-a,--aa", "this is a" }, Options::value<bool>());
+    options.add({ "-b,--bb", "this is b" }, Options::value<int>()->optional());
+    options.add({ "-c,--cc", "this is c", "data"}, Options::value<double>(1.1));
+    options.add({   "d"    , "this is d" }, Options::value<std::string>()->positional());
+    options.add({   "f"    , "this is f" }, Options::value<std::string>("test")->positional());
 
     fmt::print(options.help());
 }
