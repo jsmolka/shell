@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <shell/algorithm.h>
+#include <shell/constants.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/functional.h>
@@ -203,7 +204,7 @@ public:
     {
         _tokens.clear();
 
-        for (std::string& line : split(data, "\n"))
+        for (std::string& line : split(data, kLineBreak))
         {
             trim(line);
 
@@ -228,18 +229,24 @@ public:
 
     filesystem::Status save(const filesystem::path& file) const
     {
-        std::vector<std::string> lines;
+        std::ofstream stream(file, std::ios::binary);
+
+        if (!stream.is_open())
+            return filesystem::Status::BadFile;
+
+        if (!stream)
+            return filesystem::Status::BadStream;
 
         for (auto [index, token] : enumerate(_tokens))
         {
             if (index && token->kind == detail::Token::Kind::Section)
-                lines.push_back(std::string());
+                stream << kLineBreak;
 
-            lines.push_back(token->string());
+            stream << token->string() << kLineBreak;
         }
-        lines.push_back(std::string());
+        stream << kLineBreak;
 
-        return filesystem::write(file, join(lines, "\n"));
+        return filesystem::Status::Ok;
     }
 
     template<typename T>

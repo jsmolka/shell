@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClInclude Include="shell\algorithm.h" />
     <ClInclude Include="shell\buffer.h" />
+    <ClInclude Include="shell\constants.h" />
     <ClInclude Include="shell\detail\fmt\chrono.h" />
     <ClInclude Include="shell\detail\fmt\color.h" />
     <ClInclude Include="shell\detail\fmt\compile.h" />
