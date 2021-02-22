@@ -19,9 +19,9 @@ public:
     OptionSpec() = default;
 
     OptionSpec(
-        const std::string& opts,
-        const std::string& desc = std::string(),
-        const std::string& name = std::string())
+            const std::string& opts,
+            const std::string& desc = std::string(),
+            const std::string& name = std::string())
         : opts(split(opts, ",")), desc(desc), name(name) {}
 
     std::string argument() const
@@ -107,7 +107,7 @@ public:
     void parse(const std::string& data)
     {
         if (!(value = shell::parse<T>(data)))
-            throw ParseError("Cannot parse '{}'", data);
+            throw ParseError("Bad data '{}'", data);
     }
 
     bool isEmpty() const
@@ -245,7 +245,7 @@ private:
             if (!value->isEmpty())
                 _options.push_back({ spec, value });
             else if (!value->isOptional())
-                throw ParseError("Expected value for option '{}' but got none", spec.opts.front());
+                throw ParseError("Expected data for option '{}' but got none", spec.opts.front());
         }
     }
 
