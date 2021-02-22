@@ -147,7 +147,7 @@ public:
     void sink( const std::string& message, Level level, const std::string& location)
     {
         for (auto& sink : _sinks)
-            sink->sink( message, level, location);
+            sink->sink(message, level, location);
     }
 
 private:

@@ -56,14 +56,14 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < size_);
-        return stack_[index];
+        SHELL_ASSERT(index < _size);
+        return _stack[index];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < size_);
-        return stack_[index];
+        SHELL_ASSERT(index < _size);
+        return _stack[index];
     }
 
     constexpr std::size_t capacity() const
@@ -73,46 +73,46 @@ public:
 
     std::size_t size() const
     {
-        return size_;
+        return _size;
     }
 
     pointer data()
     {
-        return stack_;
+        return _stack;
     }
 
     const_pointer data() const
     {
-        return stack_;
+        return _stack;
     }
 
     void clear()
     {
-        size_ = 0;
+        _size = 0;
     }
 
     void resize(std::size_t size)
     {
         SHELL_ASSERT(size <= N);
-        size_ = size;
+        _size = size;
     }
 
     void push_back(const T& value)
     {
-        SHELL_ASSERT(size_ < N);
-        stack_[size_++] = value;
+        SHELL_ASSERT(_size < N);
+        _stack[_size++] = value;
     }
 
     void push_back(T&& value)
     {
-        SHELL_ASSERT(size_ < N);
-        stack_[size_++] = std::move(value);
+        SHELL_ASSERT(_size < N);
+        _stack[_size++] = std::move(value);
     }
 
     void pop_back()
     {
-        SHELL_ASSERT(size_ > 0);
-        size_--;
+        SHELL_ASSERT(_size > 0);
+        _size--;
     }
 
     reference front()
@@ -127,12 +127,12 @@ public:
 
     reference back()
     {
-        return (*this)[size_ - 1];
+        return (*this)[_size - 1];
     }
 
     const_reference back() const
     {
-        return (*this)[size_ - 1];
+        return (*this)[_size - 1];
     }
 
     SHELL_FORWARD_ITERATORS(stack_, stack_ + size_)
@@ -144,11 +144,11 @@ private:
     {
         std::copy(begin, end, this->begin());
 
-        size_ = std::distance(begin, end);
+        _size = std::distance(begin, end);
     }
 
-    T stack_[N];
-    std::size_t size_ = 0;
+    T _stack[N];
+    std::size_t _size = 0;
 };
 
 template<typename T, std::size_t N>
@@ -186,8 +186,8 @@ public:
 
     ~SmallBuffer()
     {
-        if (data_ != stack_)
-            delete[] data_;
+        if (_data != _stack)
+            delete[] _data;
     }
 
     SmallBuffer& operator=(const SmallBuffer<T, N>& other)
@@ -204,69 +204,69 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < size_);
-        return data_[index];
+        SHELL_ASSERT(index < _size);
+        return _data[index];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < size_);
-        return data_[index];
+        SHELL_ASSERT(index < _size);
+        return _data[index];
     }
 
     std::size_t capacity() const
     {
-        return capacity_;
+        return _capacity;
     }
 
     std::size_t size() const
     {
-        return size_;
+        return _size;
     }
 
     pointer data()
     {
-        return data_;
+        return _data;
     }
 
     const_pointer data() const
     {
-        return data_;
+        return _data;
     }
 
     void clear()
     {
-        size_ = 0;
+        _size = 0;
     }
 
     void reserve(std::size_t size)
     {
-        if (size > capacity_)
+        if (size > _capacity)
             grow(size);
     }
 
     void resize(std::size_t size)
     {
         reserve(size);
-        size_ = size;
+        _size = size;
     }
 
     void push_back(const T& value)
     {
-        reserve(size_ + 1);
-        data_[size_++] = value;
+        reserve(_size + 1);
+        _data[_size++] = value;
     }
 
     void push_back(T&& value)
     {
-        reserve(size_ + 1);
-        data_[size_++] = std::move(value);
+        reserve(_size + 1);
+        _data[_size++] = std::move(value);
     }
 
     void pop_back()
     {
-        SHELL_ASSERT(size_ > 0);
-        size_--;
+        SHELL_ASSERT(_size > 0);
+        _size--;
     }
 
     reference front()
@@ -281,12 +281,12 @@ public:
 
     reference back()
     {
-        return (*this)[size_ - 1];
+        return (*this)[_size - 1];
     }
 
     const_reference back() const
     {
-        return (*this)[size_ - 1];
+        return (*this)[_size - 1];
     }
 
     SHELL_FORWARD_ITERATORS(data_, data_ + size_)
@@ -295,18 +295,18 @@ public:
 private:
     void grow(std::size_t size)
     {
-        std::size_t capacity_old = capacity_;
-        std::size_t capacity_new = std::max(2 * capacity_, size);
+        std::size_t capacity_old = _capacity;
+        std::size_t capacity_new = std::max(2 * _capacity, size);
 
-        T* data_old = data_;
+        T* data_old = _data;
         T* data_new = new T[capacity_new];
 
         std::uninitialized_copy(begin(), end(), data_new);
 
-        data_ = data_new;
-        capacity_ = capacity_new;
+        _data = data_new;
+        _capacity = capacity_new;
 
-        if (data_old != stack_)
+        if (data_old != _stack)
             delete[] data_old;
     }
 
@@ -320,26 +320,26 @@ private:
 
     void move(SmallBuffer<T, N>&& other)
     {
-        if (other.data_ == other.stack_)
+        if (other._data == other._stack)
         {
             copy(other.begin(), other.end());
         }
         else
         {
-            if (data_ != stack_)
-                delete[] data_;
+            if (_data != _stack)
+                delete[] _data;
 
-            data_ = other.data_;
-            size_ = other.size_;
+            _data = other._data;
+            _size = other._size;
 
-            other.data_ = other.stack_;
+            other._data = other._stack;
         }
     }
 
-    T stack_[N];
-    T* data_ = stack_;
-    std::size_t size_ = 0;
-    std::size_t capacity_ = N;
+    T _stack[N];
+    T* _data = _stack;
+    std::size_t _size = 0;
+    std::size_t _capacity = N;
 };
 
 }  // namespace shell
