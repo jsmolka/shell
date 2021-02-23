@@ -238,14 +238,14 @@ public:
     }
 
 private:
-    void copy(const detail::OptionVector& options)
+    void fill(const detail::OptionVector& options)
     {
         for (const auto& [spec, value] : options)
         {
             if (!value->isEmpty())
                 _options.push_back({ spec, value });
             else if (!value->isOptional())
-                throw ParseError("Expected data for option '{}' but got none", spec.opts.front());
+                throw ParseError("Expected data for option '{}' but got none", spec.opts.back());
         }
     }
 
@@ -318,8 +318,8 @@ public:
         }
 
         OptionsResult result;
-        result.copy(_keyword);
-        result.copy(_positional);
+        result.fill(_keyword);
+        result.fill(_positional);
 
         return result;
     }
