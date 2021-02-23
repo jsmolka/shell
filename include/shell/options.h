@@ -297,7 +297,7 @@ public:
 
             if (arg == "-?" || arg == "-h" || arg == "--help")
             {
-                fmt::print(help());
+                fmt::print("{}", help());
                 std::exit(0);
             }
 

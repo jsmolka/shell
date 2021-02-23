@@ -25,17 +25,6 @@ public:
     virtual void sink(const std::string& message, Level level, const std::string& location) = 0;
 
 protected:
-    static std::string format(const std::string& message, Level level)
-    {
-        return fmt::format("{} {}\n", prefix(level), message);
-    }
-
-    static std::string format(const std::string& message, Level level, const std::string& location)
-    {
-        return fmt::format("{} {}: {}\n", prefix(level), location, message);
-    }
-
-private:
     static std::string_view prefix(Level level)
     {
         switch (level)
@@ -58,12 +47,12 @@ class ConsoleSink : public BasicSink
 public:
     void sink(const std::string& message, Level level)
     {
-        fmt::print(format(message, level));
+        fmt::print("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        fmt::print(format(message, level, location));
+        fmt::print("{} {}: {}\n", prefix(level), location, message);
     }
 };
 
@@ -85,12 +74,12 @@ public:
 
     void sink(const std::string& message, Level level)
     {
-        fmt::print(style(level), format(message, level));
+        fmt::print(style(level), "{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        fmt::print(style(level), format(message, level, location));
+        fmt::print(style(level), "{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
@@ -116,13 +105,13 @@ public:
     void sink(const std::string& message, Level level)
     {
         if (_stream && _stream.is_open())
-            _stream << format(message, level);
+            _stream << fmt::format("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
         if (_stream && _stream.is_open())
-            _stream << format(message, level, location);
+            _stream << fmt::format("{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
