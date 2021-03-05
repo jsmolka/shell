@@ -183,6 +183,9 @@
     <ClInclude Include="shell\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\delegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shell\detail\fmt\LICENSE" />

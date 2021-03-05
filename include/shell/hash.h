@@ -1,7 +1,6 @@
 #pragma once
 
 #include <shell/int.h>
-#include <shell/traits.h>
 
 namespace shell
 {
@@ -66,7 +65,7 @@ u64 hashRange(const Range& range)
 {
     u64 seed = 0;
     for (const auto& value : range)
-        seed = murmur(&value, sizeof(range_value_t<Range>), seed);
+        seed = murmur(&value, sizeof(value), seed);
 
     return seed;
 }
