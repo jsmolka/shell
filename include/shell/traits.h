@@ -31,6 +31,16 @@ inline constexpr bool is_specialization_v<Template<Ts...>, Template> = true;
 template<typename T, template<typename...> typename Template>
 struct is_specialization : std::bool_constant<is_specialization_v<T, Template>> {};
 
+template<typename T, bool B = std::is_enum<T>::value>
+struct is_scoped_enum : std::false_type {};
+
+template<typename T>
+struct is_scoped_enum<T, true> : std::integral_constant<bool,
+    !std::is_convertible_v<T, std::underlying_type_t<T>>> {};
+
+template<typename T>
+inline constexpr bool is_scoped_enum_v = is_scoped_enum<T>::value;
+
 template<typename T>
 struct unqualified
 {

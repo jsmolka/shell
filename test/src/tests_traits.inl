@@ -52,3 +52,13 @@ TEST_CASE("dereferenced")
     REQUIRE(std::is_same_v<dereferenced_t<int*>, int&>);
     REQUIRE(std::is_same_v<dereferenced_t<DereferencedTest>, int>);
 }
+
+enum UnscopedEnum {};
+enum class ScopedEnum {};
+
+TEST_CASE("is_scoped_enum")
+{
+    REQUIRE( is_scoped_enum_v<ScopedEnum>);
+    REQUIRE(!is_scoped_enum_v<UnscopedEnum>);
+    REQUIRE(!is_scoped_enum_v<int>);
+}
