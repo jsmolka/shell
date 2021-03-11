@@ -2,6 +2,7 @@
 #include <shell/bit.h>
 #include <shell/buffer.h>
 #include <shell/delegate.h>
+#include <shell/enum.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/hash.h>
@@ -27,6 +28,7 @@ using namespace std::string_literals;
 #include "tests_bit.inl"
 #include "tests_buffer.inl"
 #include "tests_delegate.inl"
+#include "tests_enum.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_hash.inl"

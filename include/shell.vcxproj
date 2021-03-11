@@ -96,6 +96,7 @@
     <ClInclude Include="shell\detail\fmt\ostream.h" />
     <ClInclude Include="shell\detail\fmt\printf.h" />
     <ClInclude Include="shell\detail\fmt\ranges.h" />
+    <ClInclude Include="shell\enum.h" />
     <ClInclude Include="shell\errors.h" />
     <ClInclude Include="shell\mp.h" />
     <ClInclude Include="shell\predef.h" />
