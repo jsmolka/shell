@@ -186,7 +186,7 @@
     <ClInclude Include="shell\delegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shell\enum.h">
+    <ClInclude Include="shell\operators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -74,7 +74,7 @@
     <None Include="src\tests_delegate.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_enum.inl">
+    <None Include="src\tests_operators.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -2,7 +2,6 @@
 #include <shell/bit.h>
 #include <shell/buffer.h>
 #include <shell/delegate.h>
-#include <shell/enum.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/hash.h>
@@ -12,6 +11,7 @@
 #include <shell/log/all.h>
 #include <shell/main.h>
 #include <shell/mp.h>
+#include <shell/operators.h>
 #include <shell/options.h>
 #include <shell/ranges.h>
 #include <shell/ringbuffer.h>
@@ -28,13 +28,13 @@ using namespace std::string_literals;
 #include "tests_bit.inl"
 #include "tests_buffer.inl"
 #include "tests_delegate.inl"
-#include "tests_enum.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_hash.inl"
 #include "tests_ini.inl"
 #include "tests_locale.inl"
 #include "tests_log.inl"
+#include "tests_operators.inl"
 #include "tests_options.inl"
 #include "tests_mp.inl"
 #include "tests_parse.inl"
