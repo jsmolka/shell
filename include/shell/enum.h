@@ -60,40 +60,44 @@ struct is_bitwise_equals_enabled : std::bool_constant<is_bitwise_equals_enabled_
 template<
     typename T,
     typename U,
-    typename R = shell::detail::bitwise_t<T, U>,
     typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
-constexpr R operator&(const T& t, const U& u)
+constexpr shell::detail::bitwise_t<T, U> operator&(const T& t, const U& u)
 {
-    return static_cast<R>(t) & static_cast<R>(u);
+    using Integral = shell::detail::bitwise_t<T, U>;
+
+    return static_cast<Integral>(t) & static_cast<Integral>(u);
 }
 
 template<
     typename T,
     typename U,
-    typename R = shell::detail::bitwise_t<T, U>,
     typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
-constexpr R operator|(const T& t, const U& u)
+constexpr shell::detail::bitwise_t<T, U> operator|(const T& t, const U& u)
 {
-    return static_cast<R>(t) | static_cast<R>(u);
+    using Integral = shell::detail::bitwise_t<T, U>;
+
+    return static_cast<Integral>(t) | static_cast<Integral>(u);
 }
 
 template<
     typename T,
     typename U,
-    typename R = shell::detail::bitwise_t<T, U>,
     typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
-constexpr R operator^(const T& t, const U& u)
+constexpr shell::detail::bitwise_t<T, U> operator^(const T& t, const U& u)
 {
-    return static_cast<R>(t) ^ static_cast<R>(u);
+    using Integral = shell::detail::bitwise_t<T, U>;
+
+    return static_cast<Integral>(t) ^ static_cast<Integral>(u);
 }
 
 template<
     typename T, 
-    typename R = shell::detail::bitwise_t<T, T>,
     typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, T>>>
-constexpr R operator~(const T& t)
+constexpr shell::detail::bitwise_t<T, T> operator~(const T& t)
 {
-    return ~static_cast<R>(t);
+    using Integral = shell::detail::bitwise_t<T, T>;
+
+    return ~static_cast<Integral>(t);
 }
 
 template<
