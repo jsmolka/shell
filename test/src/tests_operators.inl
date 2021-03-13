@@ -33,6 +33,10 @@ TEST_CASE("operators")
     REQUIRE((3 & Scoped::Flag1) == 1);
     REQUIRE((1 ^ Scoped::Flag1) == 0);
     REQUIRE((Scoped::Flag1 << 1) == Scoped::Flag2);
+    REQUIRE(Scoped::Flag1 == kFlag1);
+    REQUIRE(Scoped::Flag2 == kFlag2);
+    REQUIRE(Scoped::Flag1 == 1);
+    REQUIRE(Scoped::Flag2 == 2);
 
     int x = 0;
     x |=  Scoped::Flag1;
