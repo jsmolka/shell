@@ -101,6 +101,24 @@ constexpr Integral byte(Integral value, std::size_t index)
     return static_cast<unsigned char>(value >> (CHAR_BIT * index));
 }
 
+template<std::size_t Index, typename Integral, typename Byte = unsigned char>
+Byte& byteRef(Integral& value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(Index < sizeof(Integral));
+
+    return reinterpret_cast<Byte*>(&value)[Index];
+}
+
+template<typename Integral, typename Byte = unsigned char>
+Byte& byteRef(Integral& value, std::size_t index)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(index < sizeof(Integral));
+
+    return reinterpret_cast<Byte*>(&value)[index];
+}
+
 template<std::size_t Index, typename Integral>
 constexpr Integral nibble(Integral value)
 {

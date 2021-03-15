@@ -89,32 +89,6 @@ template<
     typename T,
     typename U,
     typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
-    constexpr bool operator==(const T& t, const U& u)
-{
-    using Integral = std::common_type_t<
-        shell::detail::bitwise_type_t<T>,
-        shell::detail::bitwise_type_t<U>>;
-
-    return static_cast<Integral>(t) == static_cast<Integral>(u);
-}
-
-template<
-    typename T,
-    typename U,
-    typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
-    constexpr bool operator!=(const T& t, const U& u)
-{
-    using Integral = std::common_type_t<
-        shell::detail::bitwise_type_t<T>,
-        shell::detail::bitwise_type_t<U>>;
-
-    return static_cast<Integral>(t) != static_cast<Integral>(u);
-}
-
-template<
-    typename T,
-    typename U,
-    typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
 constexpr T operator>>(const T& t, const U& u)
 {
     using Integral = std::common_type_t<
@@ -135,6 +109,32 @@ constexpr T operator<<(const T& t, const U& u)
         shell::detail::bitwise_type_t<U>>;
 
     return static_cast<T>(static_cast<Integral>(t) << static_cast<Integral>(u));
+}
+
+template<
+    typename T,
+    typename U,
+    typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
+constexpr bool operator==(const T& t, const U& u)
+{
+    using Integral = std::common_type_t<
+        shell::detail::bitwise_type_t<T>,
+        shell::detail::bitwise_type_t<U>>;
+
+    return static_cast<Integral>(t) == static_cast<Integral>(u);
+}
+
+template<
+    typename T,
+    typename U,
+    typename = std::enable_if_t<shell::detail::is_bitwise_enabled_v<T, U>>>
+constexpr bool operator!=(const T& t, const U& u)
+{
+    using Integral = std::common_type_t<
+        shell::detail::bitwise_type_t<T>,
+        shell::detail::bitwise_type_t<U>>;
+
+    return static_cast<Integral>(t) != static_cast<Integral>(u);
 }
 
 template<

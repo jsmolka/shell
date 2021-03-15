@@ -72,6 +72,17 @@ TEST_CASE("bit::byte")
     REQUIRE(bit::byte<2>(0xAABBCC) == 0xAA);
 }
 
+TEST_CASE("bit::byteRef")
+{
+    uint value = 0;
+    bit::byteRef(value, 0) = 0xAA;
+    bit::byteRef(value, 1) = 0xBB;
+    bit::byteRef<2>(value) = 0xCC;
+    bit::byteRef<3>(value) = 0xDD;
+
+    REQUIRE(value == 0xDDCCBBAA);
+}
+
 TEST_CASE("bit::byte2")
 {
     REQUIRE(bit::byte(0xAABBCC, 0) == 0xCC);
