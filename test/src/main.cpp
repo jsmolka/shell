@@ -10,6 +10,7 @@
 #include <shell/locale.h>
 #include <shell/log/all.h>
 #include <shell/main.h>
+#include <shell/macros.h>
 #include <shell/mp.h>
 #include <shell/operators.h>
 #include <shell/options.h>
@@ -36,6 +37,7 @@ using namespace std::string_literals;
 #include "tests_log.inl"
 #include "tests_operators.inl"
 #include "tests_options.inl"
+#include "tests_macros.inl"
 #include "tests_mp.inl"
 #include "tests_parse.inl"
 #include "tests_ranges.inl"

@@ -104,6 +104,7 @@ constexpr Integral byte(Integral value, std::size_t index)
 template<std::size_t Index, typename Integral, typename Byte = unsigned char>
 Byte& byteRef(Integral& value)
 {
+    static_assert(sizeof(Byte) == 1);
     static_assert(std::is_integral_v<Integral>);
     static_assert(Index < sizeof(Integral));
 
@@ -113,6 +114,7 @@ Byte& byteRef(Integral& value)
 template<typename Integral, typename Byte = unsigned char>
 Byte& byteRef(Integral& value, std::size_t index)
 {
+    static_assert(sizeof(Byte) == 1);
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(index < sizeof(Integral));
 

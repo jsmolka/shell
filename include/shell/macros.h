@@ -27,3 +27,27 @@
 #else
 #  define SHELL_UNREACHABLE SHELL_ASSERT(false, "Unreachable")
 #endif
+
+#define SHELL_INDEX_CASE01(label, index, ...)   \
+    case label + index:                         \
+    {                                           \
+        constexpr auto kIndex = index;          \
+        constexpr auto kLabel = label + index;  \
+        __VA_ARGS__;                            \
+        break;                                  \
+    }
+
+#define SHELL_INDEX_CASE02(label, index, ...) SHELL_INDEX_CASE01(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE01(label, index +  1, __VA_ARGS__)
+#define SHELL_INDEX_CASE04(label, index, ...) SHELL_INDEX_CASE02(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE02(label, index +  2, __VA_ARGS__)
+#define SHELL_INDEX_CASE08(label, index, ...) SHELL_INDEX_CASE04(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE04(label, index +  4, __VA_ARGS__)
+#define SHELL_INDEX_CASE16(label, index, ...) SHELL_INDEX_CASE08(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE08(label, index +  8, __VA_ARGS__)
+#define SHELL_INDEX_CASE32(label, index, ...) SHELL_INDEX_CASE16(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE16(label, index + 16, __VA_ARGS__)
+#define SHELL_INDEX_CASE64(label, index, ...) SHELL_INDEX_CASE32(label, index + 0, __VA_ARGS__) SHELL_INDEX_CASE32(label, index + 32, __VA_ARGS__)
+
+#define SHELL_CASE01(label, ...) SHELL_INDEX_CASE01(label, 0, __VA_ARGS__)
+#define SHELL_CASE02(label, ...) SHELL_INDEX_CASE02(label, 0, __VA_ARGS__)
+#define SHELL_CASE04(label, ...) SHELL_INDEX_CASE04(label, 0, __VA_ARGS__)
+#define SHELL_CASE08(label, ...) SHELL_INDEX_CASE08(label, 0, __VA_ARGS__)
+#define SHELL_CASE16(label, ...) SHELL_INDEX_CASE16(label, 0, __VA_ARGS__)
+#define SHELL_CASE32(label, ...) SHELL_INDEX_CASE32(label, 0, __VA_ARGS__)
+#define SHELL_CASE64(label, ...) SHELL_INDEX_CASE64(label, 0, __VA_ARGS__)
