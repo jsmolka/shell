@@ -47,12 +47,12 @@ class ConsoleSink : public BasicSink
 public:
     void sink(const std::string& message, Level level)
     {
-        print("{} {}\n", prefix(level), message);
+        shell::print("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        print("{} {}: {}\n", prefix(level), location, message);
+        shell::print("{} {}: {}\n", prefix(level), location, message);
     }
 };
 
@@ -74,12 +74,12 @@ public:
 
     void sink(const std::string& message, Level level)
     {
-        print(style(level), "{} {}\n", prefix(level), message);
+        shell::print(style(level), "{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        print(style(level), "{} {}: {}\n", prefix(level), location, message);
+        shell::print(style(level), "{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
@@ -105,13 +105,13 @@ public:
     void sink(const std::string& message, Level level)
     {
         if (_stream && _stream.is_open())
-            _stream << format("{} {}\n", prefix(level), message);
+            _stream << shell::format("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
         if (_stream && _stream.is_open())
-            _stream << format("{} {}: {}\n", prefix(level), location, message);
+            _stream << shell::format("{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
