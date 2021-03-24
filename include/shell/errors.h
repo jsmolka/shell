@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <shell/fmt.h>
+#include <shell/format.h>
 
 namespace shell
 {
@@ -16,7 +16,7 @@ public:
 
     template<typename... Args>
     Error(const std::string& format, Args&&... args)
-        : _message(fmt::format(format, std::forward<Args>(args)...)) {}
+        : _message(shell::format(format, std::forward<Args>(args)...)) {}
 
     const char* what() const noexcept override
     {

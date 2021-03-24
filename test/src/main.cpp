@@ -4,6 +4,7 @@
 #include <shell/delegate.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
+#include <shell/format.h>
 #include <shell/hash.h>
 #include <shell/ini.h>
 #include <shell/int.h>
@@ -31,6 +32,7 @@ using namespace std::string_literals;
 #include "tests_delegate.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
+#include "tests_format.inl"
 #include "tests_hash.inl"
 #include "tests_ini.inl"
 #include "tests_locale.inl"

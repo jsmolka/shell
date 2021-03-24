@@ -115,7 +115,7 @@ public:
 
     std::string string() const final
     {
-        return fmt::format("# {}", comment);
+        return shell::format("# {}", comment);
     }
 
     std::string comment;
@@ -151,7 +151,7 @@ public:
 
     std::string string() const final
     {
-        return fmt::format("[{}]", section);
+        return shell::format("[{}]", section);
     }
 
     std::string section;
@@ -188,7 +188,7 @@ public:
 
     std::string string() const final
     {
-        return fmt::format("{} = {}", key, value);
+        return shell::format("{} = {}", key, value);
     }
 
     std::string key;

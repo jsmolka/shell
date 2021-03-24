@@ -29,7 +29,7 @@ public:
         std::string_view format = _positional
             ? "<{}>" : name.size() ? "{} <{}>" : "{}";
 
-        return fmt::format(format, opts.back(), name);
+        return shell::format(format, opts.back(), name);
     }
 
     std::vector<std::string> opts;
@@ -122,8 +122,8 @@ public:
 
     std::string help() const
     {
-        if (_default)  return fmt::format(" (default: {})", *_default);
-        if (_optional) return fmt::format(" (optional)");
+        if (_default)  return shell::format(" (default: {})", *_default);
+        if (_optional) return shell::format(" (optional)");
 
         return std::string();
     }
@@ -172,7 +172,7 @@ public:
         for (const auto& [spec, value] : *this)
         {
             std::string_view format = value->isOptional() ? " [{}]" : " {}";
-            args.append(fmt::format(format, spec.argument()));
+            args.append(shell::format(format, spec.argument()));
         }
         return args;
     }
@@ -192,11 +192,11 @@ public:
             padding = std::max(padding, keys.back().size());
         }
 
-        std::string help = fmt::format("\n{} arguments:\n", _name);
+        std::string help = shell::format("\n{} arguments:\n", _name);
 
         for (const auto [option, key] : zip(*this, keys))
         {
-            help.append(fmt::format(
+            help.append(shell::format(
                 "  {:<{}}{}{}\n",
                 key,
                 padding + 4,
@@ -297,7 +297,7 @@ public:
 
             if (arg == "-?" || arg == "-h" || arg == "--help")
             {
-                fmt::print("{}", help());
+                shell::print(help());
                 std::exit(0);
             }
 
@@ -326,7 +326,7 @@ public:
 
     std::string help() const
     {
-        return fmt::format(
+        return shell::format(
             "usage:\n  {}{}{}\n{}{}",
             _program,
             _keyword.arguments(),
