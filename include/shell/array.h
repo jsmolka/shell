@@ -5,6 +5,9 @@
 namespace shell
 {
 
+namespace detail
+{
+
 template<typename T, std::size_t I, std::size_t... Is>
 struct array
 {
@@ -17,7 +20,9 @@ struct array<T, I>
     using type = std::array<T, I>;
 };
 
+}  // namespace detail
+
 template<typename T, std::size_t I, std::size_t... Is>
-using array_t = typename array<T, I, Is...>::type;
+using array = typename detail::array<T, I, Is...>::type;
 
 }  // namespace shell

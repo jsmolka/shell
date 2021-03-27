@@ -1,10 +1,10 @@
 TEST_CASE("array")
 {
-    array_t<u32, 2> x1 = { 1, 2 };
+    array<u32, 2> x1 = { 1, 2 };
     REQUIRE(x1[0] == 1);
     REQUIRE(x1[1] == 2);
 
-    array_t<u32, 2, 4> x2 = { { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } } };
+    array<u32, 2, 4> x2 = { { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } } };
     REQUIRE(x2[0][0] == 1);
     REQUIRE(x2[0][1] == 2);
     REQUIRE(x2[0][2] == 3);
