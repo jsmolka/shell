@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="shell\array.h" />
     <ClInclude Include="shell\algorithm.h" />
     <ClInclude Include="shell\buffer.h" />
     <ClInclude Include="shell\constants.h" />

@@ -83,5 +83,8 @@
     <None Include="src\tests_format.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_array.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\tests_algorithm.inl" />
+    <None Include="src\tests_array.inl" />
     <None Include="src\tests_bit.inl" />
     <None Include="src\tests_buffer.inl" />
     <None Include="src\tests_delegate.inl" />

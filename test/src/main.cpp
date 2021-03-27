@@ -1,4 +1,5 @@
 #include <shell/algorithm.h>
+#include <shell/array.h>
 #include <shell/bit.h>
 #include <shell/buffer.h>
 #include <shell/delegate.h>
@@ -27,6 +28,7 @@ using namespace shell;
 using namespace std::string_literals;
 
 #include "tests_algorithm.inl"
+#include "tests_array.inl"
 #include "tests_bit.inl"
 #include "tests_buffer.inl"
 #include "tests_delegate.inl"
