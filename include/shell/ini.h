@@ -244,7 +244,6 @@ public:
 
             stream << token->string() << kLineBreak;
         }
-        stream << kLineBreak;
 
         return filesystem::Status::Ok;
     }
