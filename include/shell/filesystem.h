@@ -86,6 +86,28 @@ Status write(const path& file, const Container& src)
     return Status::Ok;
 }
 
+inline bool isValidPath(const path& path)
+{
+    for (const auto& c : path.native())
+    {
+        #if SHELL_OS_WINDOWS
+        if (c <= 31
+                || c == L'<' 
+                || c == L'>'
+                || c == L':'
+                || c == L'"'
+                || c == L'|'
+                || c == L'?'
+                || c == L'*')
+            return false;
+        #else
+        if (c == '\0')
+            return false;
+        #endif
+    }
+    return true;
+}
+
 }  // namespace shell::filesystem
 
 #if SHELL_CC_EMSCRIPTEN
@@ -241,5 +263,10 @@ struct fmt::formatter<shell::filesystem::path>
 template<>
 inline std::optional<shell::filesystem::path> shell::parse(const std::string& data)
 {
-    return shell::filesystem::u8path(data);
+    const auto path = shell::filesystem::u8path(data);
+
+    if (!shell::filesystem::isValidPath(path))
+        return std::nullopt;
+
+    return path;
 }

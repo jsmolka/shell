@@ -41,3 +41,13 @@ TEST_CASE("filesystem::read/write<string>")
     REQUIRE(filesystem::read ("out3.bin", dst) == filesystem::Status::Ok);
     REQUIRE(src == dst);
 }
+
+TEST_CASE("filesystem::isValidPath")
+{
+    #if SHELL_OS_WINDOWS
+    REQUIRE( filesystem::isValidPath("dir\\test.exe"));
+    REQUIRE( filesystem::isValidPath("dir/test.exe"));
+    REQUIRE(!filesystem::isValidPath("dir/test.exe?"));
+    REQUIRE(!filesystem::isValidPath("dir/*test.exe"));
+    #endif
+}
