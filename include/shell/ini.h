@@ -188,7 +188,10 @@ public:
 
     std::string string() const final
     {
-        return shell::format("{} = {}", key, value);
+        if (value.empty())
+            return shell::format("{} =", key);
+        else
+            return shell::format("{} = {}", key, value);
     }
 
     std::string key;
