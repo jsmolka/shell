@@ -88,24 +88,32 @@ Status write(const path& file, const Container& src)
 
 inline bool isValidPath(const path& path)
 {
-    for (const auto& c : path.native())
+    #if SHELL_OS_WINDOWS
+    filesystem::path preferred(path);
+    preferred.make_preferred();
+
+    std::wstring rootless = preferred.native();
+    replaceFirst(rootless, preferred.root_name().native(), L"");
+
+    for (const auto& c : rootless)
     {
-        #if SHELL_OS_WINDOWS
         if (c <= 31
-                || c == L'<' 
+                || c == L'<'
                 || c == L'>'
                 || c == L':'
                 || c == L'"'
+                || c == L'/'
                 || c == L'|'
                 || c == L'?'
                 || c == L'*')
             return false;
-        #else
-        if (c == '\0')
-            return false;
-        #endif
     }
     return true;
+    #elif SHELL_OS_MACOS
+    return !contains(path.native(), ':');
+    #else
+    return !contains(path.native(), '\0');
+    #endif
 }
 
 }  // namespace shell::filesystem
@@ -263,7 +271,8 @@ struct fmt::formatter<shell::filesystem::path>
 template<>
 inline std::optional<shell::filesystem::path> shell::parse(const std::string& data)
 {
-    const auto path = shell::filesystem::u8path(data);
+    auto path = shell::filesystem::u8path(data);
+    path.make_preferred();
 
     if (!shell::filesystem::isValidPath(path))
         return std::nullopt;
