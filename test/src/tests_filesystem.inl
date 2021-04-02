@@ -37,8 +37,8 @@ TEST_CASE("filesystem::read/write<string>")
     std::string src = "test";
     std::string dst;
 
-    REQUIRE(filesystem::write("out3.bin", src) == filesystem::Status::Ok);
-    REQUIRE(filesystem::read ("out3.bin", dst) == filesystem::Status::Ok);
+    REQUIRE(filesystem::write("sub/out3.bin", src) == filesystem::Status::Ok);
+    REQUIRE(filesystem::read ("sub/out3.bin", dst) == filesystem::Status::Ok);
     REQUIRE(src == dst);
 }
 

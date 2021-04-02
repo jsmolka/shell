@@ -58,6 +58,9 @@ Status read(const path& file, Container& dst)
 
     stream.read(reinterpret_cast<char*>(dst.data()), size);
 
+    if (!stream)
+        return Status::BadStream;
+
     return Status::Ok;
 }
 
@@ -73,6 +76,9 @@ Status write(const path& file, const Container& src)
 {
     static_assert(sizeof(typename Container::value_type) == 1);
 
+    std::error_code ec;
+    create_directories(file.parent_path(), ec);
+
     std::ofstream stream(file, std::ios::binary);
 
     if (!stream.is_open())
@@ -82,6 +88,9 @@ Status write(const path& file, const Container& src)
         return Status::BadStream;
 
     stream.write(reinterpret_cast<const char*>(src.data()), src.size());
+
+    if (!stream)
+        return Status::BadStream;
 
     return Status::Ok;
 }
