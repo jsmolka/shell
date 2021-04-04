@@ -9,11 +9,11 @@
 namespace shell
 {
 
-template<typename T, std::size_t N>
+template<typename T, std::size_t kSize>
 class FixedBuffer
 {
 public:
-    static_assert(N > 0);
+    static_assert(kSize > 0);
 
     using value_type             = T;
     using reference              = value_type&;
@@ -27,12 +27,12 @@ public:
 
     FixedBuffer() = default;
 
-    FixedBuffer(const FixedBuffer<T, N>& other)
+    FixedBuffer(const FixedBuffer<T, kSize>& other)
     {
         copy(other.begin(), other.end());
     }
 
-    FixedBuffer(FixedBuffer<T, N>&& other)
+    FixedBuffer(FixedBuffer<T, kSize>&& other)
     {
         copy(other.begin(), other.end());
     }
@@ -42,13 +42,13 @@ public:
         copy(values.begin(), values.end());
     }
 
-    FixedBuffer& operator=(const FixedBuffer<T, N>& other)
+    FixedBuffer& operator=(const FixedBuffer<T, kSize>& other)
     {
         copy(other.begin(), other.end());
         return *this;
     }
 
-    FixedBuffer& operator=(FixedBuffer<T, N>&& other)
+    FixedBuffer& operator=(FixedBuffer<T, kSize>&& other)
     {
         copy(other.begin(), other.end());
         return *this;
@@ -68,7 +68,7 @@ public:
 
     constexpr std::size_t capacity() const
     {
-        return N;
+        return kSize;
     }
 
     std::size_t size() const
@@ -93,19 +93,19 @@ public:
 
     void resize(std::size_t size)
     {
-        SHELL_ASSERT(size <= N);
+        SHELL_ASSERT(size <= kSize);
         _size = size;
     }
 
     void push_back(const T& value)
     {
-        SHELL_ASSERT(_size < N);
+        SHELL_ASSERT(_size < kSize);
         _stack[_size++] = value;
     }
 
     void push_back(T&& value)
     {
-        SHELL_ASSERT(_size < N);
+        SHELL_ASSERT(_size < kSize);
         _stack[_size++] = std::move(value);
     }
 
@@ -147,15 +147,15 @@ private:
         _size = std::distance(begin, end);
     }
 
-    T _stack[N];
+    T _stack[kSize];
     std::size_t _size = 0;
 };
 
-template<typename T, std::size_t N>
+template<typename T, std::size_t kSize>
 class SmallBuffer
 {
 public:
-    static_assert(N > 0);
+    static_assert(kSize > 0);
 
     using value_type             = T;
     using reference              = value_type&;
@@ -169,12 +169,12 @@ public:
 
     SmallBuffer() = default;
 
-    SmallBuffer(const SmallBuffer<T, N>& other)
+    SmallBuffer(const SmallBuffer<T, kSize>& other)
     {
         copy(other.begin(), other.end());
     }
 
-    SmallBuffer(SmallBuffer<T, N>&& other)
+    SmallBuffer(SmallBuffer<T, kSize>&& other)
     {
         move(std::move(other));
     }
@@ -190,13 +190,13 @@ public:
             delete[] _data;
     }
 
-    SmallBuffer& operator=(const SmallBuffer<T, N>& other)
+    SmallBuffer& operator=(const SmallBuffer<T, kSize>& other)
     {
         copy(other.begin(), other.end());
         return *this;
     }
 
-    SmallBuffer& operator=(SmallBuffer<T, N>&& other)
+    SmallBuffer& operator=(SmallBuffer<T, kSize>&& other)
     {
         move(std::move(other));
         return *this;
@@ -318,7 +318,7 @@ private:
         std::copy(begin, end, this->begin());
     }
 
-    void move(SmallBuffer<T, N>&& other)
+    void move(SmallBuffer<T, kSize>&& other)
     {
         if (other._data == other._stack)
         {
@@ -336,10 +336,10 @@ private:
         }
     }
 
-    T _stack[N];
+    T _stack[kSize];
     T* _data = _stack;
     std::size_t _size = 0;
-    std::size_t _capacity = N;
+    std::size_t _capacity = kSize;
 };
 
 }  // namespace shell

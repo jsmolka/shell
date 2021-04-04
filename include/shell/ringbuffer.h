@@ -8,7 +8,7 @@
 namespace shell
 {
 
-template<typename T, std::size_t N>
+template<typename T, std::size_t kSize>
 class RingBufferIterator
 {
 public:
@@ -29,7 +29,7 @@ public:
     RingBufferIterator& operator++()
     {
         _size--;
-        _index = (_index + 1) % N;
+        _index = (_index + 1) % kSize;
         
         return *this;
     }
@@ -60,7 +60,7 @@ private:
     std::size_t _size;
 };
 
-template<typename T, std::size_t N>
+template<typename T, std::size_t kSize>
 class RingBuffer
 {
 public:
@@ -69,14 +69,14 @@ public:
     using const_reference = const reference;
     using pointer         = value_type*;
     using const_pointer   = const pointer;
-    using iterator        = RingBufferIterator<T, N>;
+    using iterator        = RingBufferIterator<T, kSize>;
     using const_iterator  = const iterator;
     using sentinel        = Sentinel;
     using const_sentinel  = const sentinel;
 
     RingBuffer() = default;
-    RingBuffer(const RingBuffer<T, N>&) = default;
-    RingBuffer(RingBuffer<T, N>&&) = default;
+    RingBuffer(const RingBuffer<T, kSize>&) = default;
+    RingBuffer(RingBuffer<T, kSize>&&) = default;
 
     RingBuffer(std::initializer_list<T> values)
     {
@@ -89,18 +89,18 @@ public:
     reference operator[](std::size_t index)
     {
         SHELL_ASSERT(index < _length);
-        return _data[(_rindex + index) % N];
+        return _data[(_rindex + index) % kSize];
     }
 
     const_reference operator[](std::size_t index) const
     {
         SHELL_ASSERT(index < _length);
-        return _data[(_rindex + index) % N];
+        return _data[(_rindex + index) % kSize];
     }
 
     constexpr std::size_t capacity() const
     {
-        return N;
+        return kSize;
     }
 
     std::size_t size() const
@@ -131,31 +131,31 @@ public:
 
         const T& value = _data[_rindex];
         _length--;
-        _rindex = (_rindex + 1) % N;
+        _rindex = (_rindex + 1) % kSize;
 
         return value;
     }
 
     void write(const T& value)
     {
-        if (_length == N)
-            _rindex = (_rindex + 1) % N;
+        if (_length == kSize)
+            _rindex = (_rindex + 1) % kSize;
         else
             _length++;
 
         _data[_windex] = value;
-        _windex = (_windex + 1) % N;
+        _windex = (_windex + 1) % kSize;
     }
 
     void write(T&& value)
     {
-        if (_length == N)
-            _rindex = (_rindex + 1) % N;
+        if (_length == kSize)
+            _rindex = (_rindex + 1) % kSize;
         else
             _length++;
 
         _data[_windex] = std::move(value);
-        _windex = (_windex + 1) % N;
+        _windex = (_windex + 1) % kSize;
     }
 
     reference front()
@@ -184,7 +184,7 @@ private:
     std::size_t _length = 0;
     std::size_t _rindex = 0;
     std::size_t _windex = 0;
-    std::array<T, N> _data{};
+    std::array<T, kSize> _data = {};
 };
 
 }  // namespace shell

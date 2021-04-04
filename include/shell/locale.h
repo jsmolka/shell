@@ -8,7 +8,7 @@ namespace shell
 namespace detail
 {
 
-template<typename Char, typename std::ctype_base::mask Mask>
+template<typename Char, typename std::ctype_base::mask kMask>
 class IsClassifiedAs
 {
 public:
@@ -17,7 +17,7 @@ public:
 
     bool operator()(Char ch) const
     {
-        return std::use_facet<std::ctype<Char>>(_locale).is(Mask, ch);
+        return std::use_facet<std::ctype<Char>>(_locale).is(kMask, ch);
     }
 
 private:

@@ -8,21 +8,21 @@ namespace shell
 namespace detail
 {
 
-template<typename T, std::size_t I, std::size_t... Is>
+template<typename T, std::size_t kSize, std::size_t... kSizes>
 struct array
 {
-    using type = std::array<typename array<T, Is...>::type, I>;
+    using type = std::array<typename array<T, kSizes...>::type, kSize>;
 };
 
-template<typename T, std::size_t I>
-struct array<T, I>
+template<typename T, std::size_t kSize>
+struct array<T, kSize>
 {
-    using type = std::array<T, I>;
+    using type = std::array<T, kSize>;
 };
 
 }  // namespace detail
 
-template<typename T, std::size_t I, std::size_t... Is>
-using array = typename detail::array<T, I, Is...>::type;
+template<typename T, std::size_t kSize, std::size_t... kSizes>
+using array = typename detail::array<T, kSize, kSizes...>::type;
 
 }  // namespace shell

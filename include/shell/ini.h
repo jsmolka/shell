@@ -82,10 +82,10 @@ public:
     const Kind kind;
 
 protected:
-    template<char Char>
+    template<char kChar>
     static bool isChar(char ch)
     {
-        return ch == Char;
+        return ch == kChar;
     }
 
     static bool isIdentifier(char ch)
