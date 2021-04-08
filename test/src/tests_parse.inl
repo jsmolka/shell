@@ -49,6 +49,9 @@ TEST_CASE("parse::parse<double>")
     REQUIRE(*parse<double>("1.01") == 1.01);
     REQUIRE(*parse<double>("-1.01") == -1.01);
     REQUIRE(*parse<double>("+1.01") == 1.01);
+    REQUIRE(*parse<double>("1.01e-1") == 0.101);
+    REQUIRE(*parse<double>("1.01e+1") == 10.1);
+    REQUIRE(*parse<double>("1.01e1") == 10.1);
     REQUIRE(!parse<double>("v+1.01"));
     REQUIRE(!parse<double>("+1.01v"));
     REQUIRE(!parse<double>("+1,01"));

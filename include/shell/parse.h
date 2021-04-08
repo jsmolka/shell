@@ -87,6 +87,16 @@ public:
 };
 
 template<typename T>
+class IsExponentChar
+{
+public:
+    bool operator()(char ch) const
+    {
+        return ch == 'e';
+    }
+};
+
+template<typename T>
 std::optional<T> parseInt(T(*parse)(const std::string&, std::size_t*, int), std::string data)
 {
     trim(data);
@@ -117,11 +127,15 @@ template<typename T>
 std::optional<T> parseRat(T(*parse)(const std::string&, std::size_t*), std::string data)
 {
     trim(data);
+    toLower(data);
 
     Validator validator(data);
     validator.one(IsSignChar<T>());
     validator.all(IsNumericChar(10));
     validator.one(IsDecimalPointChar());
+    validator.all(IsNumericChar(10));
+    validator.one(IsExponentChar<T>());
+    validator.one(IsSignChar<T>());
     validator.all(IsNumericChar(10));
 
     if (!validator)
