@@ -140,35 +140,6 @@ constexpr Integral nibble(Integral value, std::size_t index)
     return (value >> ((CHAR_BIT / 2) * index)) & 0xF;
 }
 
-template<std::size_t kSize, typename Integral>
-constexpr Integral signEx(Integral value)
-{
-    static_assert(std::is_integral_v<Integral>);
-    static_assert(kSize > 0 && kSize <= bits_v<Integral>);
-
-    if constexpr (kSize % 8 == 0)
-    {
-        return static_cast<std::make_signed_t<Integral>>(static_cast<stdint_t<kSize / 8>>(value));
-    }
-    else
-    {
-        constexpr std::size_t kShift = bits_v<Integral> - kSize;
-
-        return sar(value << kShift, kShift);
-    }
-}
-
-template<typename Integral>
-constexpr Integral signEx(Integral value, std::size_t size)
-{
-    static_assert(std::is_integral_v<Integral>);
-    SHELL_ASSERT(size <= bits_v<Integral>);
-
-    std::size_t shift = bits_v<Integral> - size;
-
-    return sar(value << shift, shift);
-}
-
 template<std::size_t kAmount, typename Integral>
 constexpr Integral sar(Integral value)
 {
@@ -203,6 +174,35 @@ constexpr Integral shr(Integral value, std::size_t amount)
     SHELL_ASSERT(amount < bits_v<Integral>);
 
     return static_cast<std::make_unsigned_t<Integral>>(value) >> amount;
+}
+
+template<std::size_t kSize, typename Integral>
+constexpr Integral signEx(Integral value)
+{
+    static_assert(std::is_integral_v<Integral>);
+    static_assert(kSize > 0 && kSize <= bits_v<Integral>);
+
+    if constexpr (kSize % 8 == 0)
+    {
+        return static_cast<std::make_signed_t<Integral>>(static_cast<stdint_t<kSize / 8>>(value));
+    }
+    else
+    {
+        constexpr std::size_t kShift = bits_v<Integral> - kSize;
+
+        return sar(value << kShift, kShift);
+    }
+}
+
+template<typename Integral>
+constexpr Integral signEx(Integral value, std::size_t size)
+{
+    static_assert(std::is_integral_v<Integral>);
+    SHELL_ASSERT(size <= bits_v<Integral>);
+
+    std::size_t shift = bits_v<Integral> - size;
+
+    return sar(value << shift, shift);
 }
 
 template<typename Integral>
