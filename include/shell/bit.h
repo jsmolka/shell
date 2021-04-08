@@ -2,6 +2,7 @@
 
 #include <climits>
 
+#include <shell/int.h>
 #include <shell/macros.h>
 #include <shell/predef.h>
 #include <shell/ranges.h>
@@ -143,11 +144,18 @@ template<std::size_t kSize, typename Integral>
 constexpr Integral signEx(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    static_assert(kSize <= bits_v<Integral>);
+    static_assert(kSize > 0 && kSize <= bits_v<Integral>);
 
-    constexpr Integral kMask = 1ULL << (kSize - 1);
+    if constexpr (kSize % 8 == 0)
+    {
+        return static_cast<std::make_signed_t<Integral>>(static_cast<stdint_t<kSize / 8>>(value));
+    }
+    else
+    {
+        constexpr std::size_t kShift = bits_v<Integral> - kSize;
 
-    return (value ^ kMask) - kMask;
+        return sar(value << kShift, kShift);
+    }
 }
 
 template<typename Integral>
@@ -156,9 +164,9 @@ constexpr Integral signEx(Integral value, std::size_t size)
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(size <= bits_v<Integral>);
 
-    Integral mask = 1ULL << (size - 1);
+    std::size_t shift = bits_v<Integral> - size;
 
-    return (value ^ mask) - mask;
+    return sar(value << shift, shift);
 }
 
 template<std::size_t kAmount, typename Integral>

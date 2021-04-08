@@ -117,6 +117,7 @@ TEST_CASE("bit::signEx")
     REQUIRE(bit::signEx< 1>(0x0000'0001) == 0xFFFF'FFFF);
     REQUIRE(bit::signEx<16>(0x0000'8000) == 0xFFFF'8000);
     REQUIRE(bit::signEx<32>(0x0000'0001) == 0x0000'0001);
+    REQUIRE(bit::signEx<16>(0x1010'8000) == 0xFFFF'8000);
 }
 
 TEST_CASE("bit::signEx2")
