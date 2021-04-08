@@ -281,9 +281,9 @@ Integral bitSwap(Integral value)
 
     if constexpr (sizeof(Integral) == 1)
     {
-        value = (value & 0xF0) >> 4 | (value & 0x0F) << 4;
-        value = (value & 0xCC) >> 2 | (value & 0x33) << 2;
-        value = (value & 0xAA) >> 1 | (value & 0x55) << 1;
+        value = shr(value & 0xF0, 4) | (value & 0x0F) << 4;
+        value = shr(value & 0xCC, 2) | (value & 0x33) << 2;
+        value = shr(value & 0xAA, 1) | (value & 0x55) << 1;
     }
     else
     {
