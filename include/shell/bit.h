@@ -182,7 +182,11 @@ constexpr Integral signEx(Integral value)
     static_assert(std::is_integral_v<Integral>);
     static_assert(kSize > 0 && kSize <= bits_v<Integral>);
 
-    if constexpr (kSize == 8 || kSize == 16 || kSize == 32 || kSize == 64)
+    if constexpr (kSize == bits_v<Integral>)
+    {
+        return value;
+    }
+    else if constexpr (kSize == 8 || kSize == 16 || kSize == 32)
     {
         return static_cast<std::make_signed_t<Integral>>(static_cast<stdint_t<kSize / 8>>(value));
     }

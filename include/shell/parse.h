@@ -86,7 +86,6 @@ public:
     }
 };
 
-template<typename T>
 class IsExponentChar
 {
 public:
@@ -134,7 +133,7 @@ std::optional<T> parseRat(T(*parse)(const std::string&, std::size_t*), std::stri
     validator.all(IsNumericChar(10));
     validator.one(IsDecimalPointChar());
     validator.all(IsNumericChar(10));
-    validator.one(IsExponentChar<T>());
+    validator.one(IsExponentChar());
     validator.one(IsSignChar<T>());
     validator.all(IsNumericChar(10));
 
