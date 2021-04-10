@@ -17,12 +17,12 @@ namespace shell::bit
 {
 
 template<typename T>
-struct bits : std::integral_constant<std::size_t, CHAR_BIT * sizeof(T)> {};
+struct bits : std::integral_constant<uint, CHAR_BIT * sizeof(T)> {};
 
 template<typename T>
-inline constexpr std::size_t bits_v = bits<T>::value;
+inline constexpr uint bits_v = bits<T>::value;
 
-template<std::size_t kSize, typename Integral>
+template<uint kSize, typename Integral>
 constexpr Integral ones()
 {
     static_assert(std::is_integral_v<Integral>);
@@ -35,7 +35,7 @@ constexpr Integral ones()
 }
 
 template<typename Integral>
-constexpr Integral ones(std::size_t size)
+constexpr Integral ones(uint size)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(size <= bits_v<Integral>);
@@ -46,7 +46,7 @@ constexpr Integral ones(std::size_t size)
         return static_cast<Integral>((1ULL << size) - 1);
 }
 
-template<std::size_t kIndex, std::size_t kSize, typename Integral>
+template<uint kIndex, uint kSize, typename Integral>
 constexpr Integral mask()
 {
     static_assert(std::is_integral_v<Integral>);
@@ -57,7 +57,7 @@ constexpr Integral mask()
 }
 
 template<typename Integral>
-constexpr Integral mask(std::size_t index, std::size_t size)
+constexpr Integral mask(uint index, uint size)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(index + size <= bits_v<Integral>);
@@ -66,7 +66,7 @@ constexpr Integral mask(std::size_t index, std::size_t size)
     return ones<Integral>(size) << index;
 }
 
-template<std::size_t kIndex, std::size_t kSize, typename Integral>
+template<uint kIndex, uint kSize, typename Integral>
 constexpr Integral seq(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -76,7 +76,7 @@ constexpr Integral seq(Integral value)
 }
 
 template<typename Integral>
-constexpr Integral seq(Integral value, std::size_t index, std::size_t size)
+constexpr Integral seq(Integral value, uint index, uint size)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(index + size <= bits_v<Integral>);
@@ -84,7 +84,7 @@ constexpr Integral seq(Integral value, std::size_t index, std::size_t size)
     return (value >> index) & ones<Integral>(size);
 }
 
-template<std::size_t kIndex, typename Integral>
+template<uint kIndex, typename Integral>
 constexpr Integral byte(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -94,7 +94,7 @@ constexpr Integral byte(Integral value)
 }
 
 template<typename Integral>
-constexpr Integral byte(Integral value, std::size_t index)
+constexpr Integral byte(Integral value, uint index)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(index < sizeof(Integral));
@@ -102,7 +102,7 @@ constexpr Integral byte(Integral value, std::size_t index)
     return static_cast<unsigned char>(value >> (CHAR_BIT * index));
 }
 
-template<std::size_t kIndex, typename Integral, typename Byte = unsigned char>
+template<uint kIndex, typename Integral, typename Byte = unsigned char>
 Byte& byteRef(Integral& value)
 {
     static_assert(sizeof(Byte) == 1);
@@ -113,7 +113,7 @@ Byte& byteRef(Integral& value)
 }
 
 template<typename Integral, typename Byte = unsigned char>
-Byte& byteRef(Integral& value, std::size_t index)
+Byte& byteRef(Integral& value, uint index)
 {
     static_assert(sizeof(Byte) == 1);
     static_assert(std::is_integral_v<Integral>);
@@ -122,7 +122,7 @@ Byte& byteRef(Integral& value, std::size_t index)
     return reinterpret_cast<Byte*>(&value)[index];
 }
 
-template<std::size_t kIndex, typename Integral>
+template<uint kIndex, typename Integral>
 constexpr Integral nibble(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -132,7 +132,7 @@ constexpr Integral nibble(Integral value)
 }
 
 template<typename Integral>
-constexpr Integral nibble(Integral value, std::size_t index)
+constexpr Integral nibble(Integral value, uint index)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(index < 2 * sizeof(Integral));
@@ -140,7 +140,7 @@ constexpr Integral nibble(Integral value, std::size_t index)
     return (value >> ((CHAR_BIT / 2) * index)) & 0xF;
 }
 
-template<std::size_t kAmount, typename Integral>
+template<uint kAmount, typename Integral>
 constexpr Integral sar(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -150,7 +150,7 @@ constexpr Integral sar(Integral value)
 }
 
 template<typename Integral>
-constexpr Integral sar(Integral value, std::size_t amount)
+constexpr Integral sar(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(amount < bits_v<Integral>);
@@ -158,7 +158,7 @@ constexpr Integral sar(Integral value, std::size_t amount)
     return static_cast<std::make_signed_t<Integral>>(value) >> amount;
 }
 
-template<std::size_t kAmount, typename Integral>
+template<uint kAmount, typename Integral>
 constexpr Integral shr(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -168,7 +168,7 @@ constexpr Integral shr(Integral value)
 }
 
 template<typename Integral>
-constexpr Integral shr(Integral value, std::size_t amount)
+constexpr Integral shr(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(amount < bits_v<Integral>);
@@ -176,7 +176,7 @@ constexpr Integral shr(Integral value, std::size_t amount)
     return static_cast<std::make_unsigned_t<Integral>>(value) >> amount;
 }
 
-template<std::size_t kSize, typename Integral>
+template<uint kSize, typename Integral>
 constexpr Integral signEx(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -192,19 +192,19 @@ constexpr Integral signEx(Integral value)
     }
     else
     {
-        constexpr std::size_t kShift = bits_v<Integral> - kSize;
+        constexpr uint kShift = bits_v<Integral> - kSize;
 
         return sar(value << kShift, kShift);
     }
 }
 
 template<typename Integral>
-constexpr Integral signEx(Integral value, std::size_t size)
+constexpr Integral signEx(Integral value, uint size)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(size <= bits_v<Integral>);
 
-    std::size_t shift = bits_v<Integral> - size;
+    uint shift = bits_v<Integral> - size;
 
     return sar(value << shift, shift);
 }
@@ -224,7 +224,7 @@ constexpr Integral twos(Integral value)
 }
 
 template<typename Integral>
-Integral ror(Integral value, std::size_t amount)
+Integral ror(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
 
@@ -247,7 +247,7 @@ Integral ror(Integral value, std::size_t amount)
 }
 
 template<typename Integral>
-Integral rol(Integral value, std::size_t amount)
+Integral rol(Integral value, uint amount)
 {
     static_assert(std::is_integral_v<Integral>);
 
@@ -310,7 +310,7 @@ Integral bitSwap(Integral value)
 }
 
 template<typename Integral>
-std::size_t popcnt(Integral value)
+uint popcnt(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
 
@@ -325,7 +325,7 @@ std::size_t popcnt(Integral value)
 }
 
 template<typename Integral>
-std::size_t clz(Integral value)
+uint clz(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(value != 0);
@@ -334,7 +334,7 @@ std::size_t clz(Integral value)
     unsigned long index;
     if constexpr (sizeof(Integral) <= 4) _BitScanReverse  (&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
-    return bits_v<Integral> - static_cast<std::size_t>(index) - 1;
+    return bits_v<Integral> - static_cast<uint>(index) - 1;
     #else
     if constexpr (sizeof(Integral) <= 4) return __builtin_clz  (value);
     if constexpr (sizeof(Integral) == 8) return __builtin_clzll(value);
@@ -342,7 +342,7 @@ std::size_t clz(Integral value)
 }
 
 template<typename Integral>
-std::size_t ctz(Integral value)
+uint ctz(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
     SHELL_ASSERT(value != 0);
@@ -375,14 +375,14 @@ public:
 
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
-    using value_type        = std::size_t;
+    using value_type        = uint;
     using reference         = value_type&;
     using pointer           = value_type*;
 
     BitIterator(Integral value)
         : _value(value) {}
 
-    std::size_t operator*() const
+    uint operator*() const
     {
         return ctz(_value);
     }
