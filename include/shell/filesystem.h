@@ -273,7 +273,7 @@ struct fmt::formatter<shell::filesystem::path>
     template<typename FormatContext>
     auto format(const shell::filesystem::path& path, FormatContext& ctx)
     {
-        return fmt::format_to(ctx.out(), path.string());
+        return fmt::format_to(ctx.out(), path.u8string());
     }
 };
 
