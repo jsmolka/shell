@@ -59,8 +59,17 @@ struct dereferenced
 template<typename T>
 using dereferenced_t = typename dereferenced<T>::type;
 
-template<typename Range>
+template<typename Range, typename = void>
 struct range_traits
+{
+    using iterator               = typename Range::iterator;
+    using const_iterator         = typename Range::const_iterator;
+    using reverse_iterator       = void;
+    using const_reverse_iterator = void;
+};
+
+template<typename Range>
+struct range_traits<Range, std::void_t<typename Range::reverse_iterator, typename Range::const_reverse_iterator>>
 {
     using iterator               = typename Range::iterator;
     using const_iterator         = typename Range::const_iterator;
