@@ -179,16 +179,30 @@ TEST_CASE("bit::bitSwap")
 
 TEST_CASE("bit::ctz")
 {
-    REQUIRE(bit::ctz(0x0000'0001) ==  0);
-    REQUIRE(bit::ctz(0x0000'1000) == 12);
-    REQUIRE(bit::ctz(0x8000'0000) == 31);
+    REQUIRE(bit::ctz((u32)0x0000'0001) ==  0);
+    REQUIRE(bit::ctz((u32)0x0000'1000) == 12);
+    REQUIRE(bit::ctz((u32)0x8000'0000) == 31);
+    REQUIRE(bit::ctz((u16)     0x8000) == 15);
+}
+
+TEST_CASE("bit::ctzSafe")
+{
+    REQUIRE(bit::ctzSafe((u32)0) == 32);
+    REQUIRE(bit::ctzSafe((u16)0) == 16);
 }
 
 TEST_CASE("bit::clz")
 {
-    REQUIRE(bit::clz(0x8000'0000) ==  0);
-    REQUIRE(bit::clz(0x0008'0000) == 12);
-    REQUIRE(bit::clz(0x0000'0001) == 31);
+    REQUIRE(bit::clz((u32)0x8000'0000) ==  0);
+    REQUIRE(bit::clz((u32)0x0008'0000) == 12);
+    REQUIRE(bit::clz((u32)0x0000'0001) == 31);
+    REQUIRE(bit::clz((u16)     0x0001) == 15);
+}
+
+TEST_CASE("bit::clzSafe")
+{
+    REQUIRE(bit::clzSafe((u32)0) == 32);
+    REQUIRE(bit::clzSafe((u16)0) == 16);
 }
 
 TEST_CASE("bit::popcnt")
@@ -200,10 +214,17 @@ TEST_CASE("bit::popcnt")
 
 TEST_CASE("bit::ceilPowTwo")
 {
+    REQUIRE(bit::ceilPowTwo(2) == 2);
     REQUIRE(bit::ceilPowTwo(5) == 8);
     REQUIRE(bit::ceilPowTwo(6) == 8);
     REQUIRE(bit::ceilPowTwo(7) == 8);
     REQUIRE(bit::ceilPowTwo(8) == 8);
+}
+
+TEST_CASE("bit::ceilPowTwoSafe")
+{
+    REQUIRE(bit::ceilPowTwoSafe(0) == 1);
+    REQUIRE(bit::ceilPowTwoSafe(1) == 1);
 }
 
 template<typename T>

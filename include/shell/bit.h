@@ -342,6 +342,15 @@ uint clz(Integral value)
 }
 
 template<typename Integral>
+uint clzSafe(Integral value)
+{
+    if (value != 0)
+        return clz(value);
+    else
+        return bits_v<Integral>;
+}
+
+template<typename Integral>
 uint ctz(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
@@ -359,12 +368,30 @@ uint ctz(Integral value)
 }
 
 template<typename Integral>
+uint ctzSafe(Integral value)
+{
+    if (value != 0)
+        return ctz(value);
+    else
+        return bits_v<Integral>;
+}
+
+template<typename Integral>
 Integral ceilPowTwo(Integral value)
 {
     static_assert(std::is_integral_v<Integral>);
-    SHELL_ASSERT(value != 0);
+    SHELL_ASSERT(value > 1);
 
     return 1ULL << (bits_v<Integral> - clz(value - 1));
+}
+
+template<typename Integral>
+Integral ceilPowTwoSafe(Integral value)
+{
+    if (value > 1)
+        return ceilPowTwo(value);
+    else
+        return 1;
 }
 
 template<typename Integral>
