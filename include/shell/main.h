@@ -21,10 +21,10 @@ int wmain(int argc, wchar_t* argv[])
     std::vector<char*> args;
     args.reserve(argc);
 
-    for (const auto& arg : shell::PointerRange(argv, argc))
+    for (int i = 0; i < argc; ++i)
     {
         auto converter = std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>();
-        auto converted = converter.to_bytes(reinterpret_cast<char16_t*>(arg));
+        auto converted = converter.to_bytes(reinterpret_cast<char16_t*>(argv[i]));
 
         args.push_back(strdup(converted.c_str()));
     }

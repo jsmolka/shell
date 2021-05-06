@@ -102,7 +102,7 @@ constexpr Integral byte(Integral value, uint index)
     return static_cast<unsigned char>(value >> (CHAR_BIT * index));
 }
 
-template<uint kIndex, typename Integral, typename Byte = unsigned char>
+template<uint kIndex, typename Integral, typename Byte = u8>
 Byte& byteRef(Integral& value)
 {
     static_assert(sizeof(Byte) == 1);
@@ -112,7 +112,7 @@ Byte& byteRef(Integral& value)
     return reinterpret_cast<Byte*>(&value)[kIndex];
 }
 
-template<typename Integral, typename Byte = unsigned char>
+template<typename Integral, typename Byte = u8>
 Byte& byteRef(Integral& value, uint index)
 {
     static_assert(sizeof(Byte) == 1);
@@ -301,7 +301,7 @@ Integral bitSwap(Integral value)
     {
         value = byteSwap(value);
 
-        for (auto& byte : PointerRange(reinterpret_cast<unsigned char*>(&value), sizeof(Integral)))
+        for (auto& byte : ByteRange(value))
         {
             byte = bitSwap(byte);
         }

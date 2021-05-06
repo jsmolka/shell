@@ -17,52 +17,15 @@ TEST_CASE("ranges::ForwardRange")
     REQUIRE(expected == 3);
 }
 
-TEST_CASE("ranges::PointerRange")
+TEST_CASE("ranges::ByteRange")
 {
-    int expected = 0;
-
-    u8 data[3] = { 1, 2, 3 };
-    for (auto& value : PointerRange(data, 3))
-        REQUIRE(value == ++expected);
-
-    REQUIRE(expected == 3);
-
-    expected = 0;
-
-    const u8 const_data[3] = { 1, 2, 3 };
-    for (const auto& value : PointerRange(const_data, 3))
-        REQUIRE(value == ++expected);
-
-    REQUIRE(expected == 3);
-}
-
-TEST_CASE("ranges::range")
-{
-    int x = -1;
-    for (auto y : range(10))
-        REQUIRE(y == ++x);
-    REQUIRE(x == 9);
-
-    x = 4;
-    for (auto y : range(5, 10))
-        REQUIRE(y == ++x);
-    REQUIRE(x == 9);
-
-    x = 3;
-    for (auto y : range(5, 10, 2))
+    u64 x = 0x0807'0605'0403'0201;
+    
+    int i = 1;
+    for (const auto& byte : ByteRange(x))
     {
-        x += 2;
-        REQUIRE(y == x);
+        REQUIRE(i++ == byte);
     }
-    REQUIRE(x == 9);
-
-    x = 7;
-    for (auto y : range(5, -5, -2))
-    {
-        x -= 2;
-        REQUIRE(y == x);
-    }
-    REQUIRE(x == -5);
 }
 
 TEST_CASE("ranges::enumerate")

@@ -89,92 +89,20 @@ private:
     const Iterator _begin;
 };
 
-template<typename T>
-class PointerRange : public BidirectionalRange<T*>
+template<typename T, typename Byte = u8>
+class ByteRange : public BidirectionalRange<Byte*>
 {
 public:
-    PointerRange(T* begin, T* end)
-        : BidirectionalRange<T*>(begin, end) {}
+    static_assert(sizeof(Byte) == 1);
 
-    PointerRange(T* begin, std::size_t size)
-        : PointerRange(begin, begin + size) {}
+    ByteRange(T* value)
+        : BidirectionalRange(
+            reinterpret_cast<Byte*>(value),
+            reinterpret_cast<Byte*>(value) + sizeof(T)) {}
+
+    ByteRange(T& value)
+        : ByteRange(&value) {}
 };
-
-template<typename Integral>
-class RangeIterator
-{
-public:
-    static_assert(std::is_integral_v<Integral>);
-
-    using iterator_category = std::forward_iterator_tag;
-    using difference_type   = std::ptrdiff_t;
-    using value_type        = Integral;
-    using reference         = value_type&;
-    using pointer           = value_type*;
-
-    RangeIterator(Integral begin, Integral end, Integral step)
-        : _index(begin), _end(end), _step(step) {}
-
-    value_type operator*() const
-    {
-        return _index;
-    }
-
-    RangeIterator& operator++()
-    {
-        _index += _step;
-        return *this;
-    }
-
-    bool operator==(const RangeIterator& other) const
-    {
-        return _index == other._index && _end == other._end && _step == other._step;
-    }
-
-    bool operator!=(const RangeIterator& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool operator==(Sentinel) const
-    {
-        return _step > 0 ? _index >= _end : _index < _end;
-    }
-
-    bool operator!=(Sentinel) const
-    {
-        return !(*this == Sentinel{});
-    }
-
-private:
-    Integral _index;
-    const Integral _end;
-    const Integral _step;
-};
-
-template<typename Integral>
-SentinelRange<RangeIterator<Integral>> range(Integral end)
-{
-    using Iterator = RangeIterator<Integral>;
-
-    return { Iterator(0, end, 1) };
-}
-
-template<typename Integral>
-SentinelRange<RangeIterator<Integral>> range(Integral begin, Integral end)
-{
-    using Iterator = RangeIterator<Integral>;
-
-    return { Iterator(begin, end, 1) };
-}
-
-template<typename Integral>
-SentinelRange<RangeIterator<Integral>> range(Integral begin, Integral end, Integral step)
-{
-    using Iterator = RangeIterator<Integral>;
-
-    return { Iterator(begin, end, step) };
-}
 
 template<typename Integral, typename Iterator>
 class EnumerateIterator
