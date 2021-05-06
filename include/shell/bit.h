@@ -336,7 +336,9 @@ uint clz(Integral value)
     if constexpr (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
     return bits_v<Integral> - static_cast<uint>(index) - 1;
     #else
-    if constexpr (sizeof(Integral) <= 4) return __builtin_clz  (value);
+    if constexpr (sizeof(Integral) == 1) return __builtin_clz  (value) - 24;
+    if constexpr (sizeof(Integral) == 2) return __builtin_clz  (value) - 16;
+    if constexpr (sizeof(Integral) == 4) return __builtin_clz  (value);
     if constexpr (sizeof(Integral) == 8) return __builtin_clzll(value);
     #endif
 }

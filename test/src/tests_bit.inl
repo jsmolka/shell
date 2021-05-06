@@ -183,6 +183,7 @@ TEST_CASE("bit::ctz")
     REQUIRE(bit::ctz((u32)0x0000'1000) == 12);
     REQUIRE(bit::ctz((u32)0x8000'0000) == 31);
     REQUIRE(bit::ctz((u16)     0x8000) == 15);
+    REQUIRE(bit::ctz((u8)        0x80) ==  7);
 }
 
 TEST_CASE("bit::ctzSafe")
@@ -197,6 +198,7 @@ TEST_CASE("bit::clz")
     REQUIRE(bit::clz((u32)0x0008'0000) == 12);
     REQUIRE(bit::clz((u32)0x0000'0001) == 31);
     REQUIRE(bit::clz((u16)     0x0001) == 15);
+    REQUIRE(bit::clz((u8)        0x01) ==  7);
 }
 
 TEST_CASE("bit::clzSafe")

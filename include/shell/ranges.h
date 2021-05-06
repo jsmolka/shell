@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include <shell/int.h>
 #include <shell/mp.h>
 #include <shell/traits.h>
 
@@ -96,7 +97,7 @@ public:
     static_assert(sizeof(Byte) == 1);
 
     ByteRange(T* value)
-        : BidirectionalRange(
+        : BidirectionalRange<Byte*>(
             reinterpret_cast<Byte*>(value),
             reinterpret_cast<Byte*>(value) + sizeof(T)) {}
 
