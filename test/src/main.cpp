@@ -2,7 +2,6 @@
 #include <shell/array.h>
 #include <shell/bit.h>
 #include <shell/buffer.h>
-#include <shell/delegate.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/format.h>
@@ -31,7 +30,6 @@ using namespace std::string_literals;
 #include "tests_array.inl"
 #include "tests_bit.inl"
 #include "tests_buffer.inl"
-#include "tests_delegate.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_format.inl"
