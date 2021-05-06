@@ -5,7 +5,7 @@
 namespace shell
 {
 
-u64 murmur(const void* key, u64 size, u64 seed)
+inline u64 murmur(const void* key, u64 size, u64 seed)
 {
     constexpr u64 m = 0xC6A4'A793'5BD1'E995;
     constexpr u64 r = 47;
