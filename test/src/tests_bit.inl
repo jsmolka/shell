@@ -216,17 +216,17 @@ TEST_CASE("bit::popcnt")
 
 TEST_CASE("bit::ceilPowTwo")
 {
-    REQUIRE(bit::ceilPowTwo(2) == 2);
-    REQUIRE(bit::ceilPowTwo(5) == 8);
-    REQUIRE(bit::ceilPowTwo(6) == 8);
-    REQUIRE(bit::ceilPowTwo(7) == 8);
-    REQUIRE(bit::ceilPowTwo(8) == 8);
+    REQUIRE(bit::ceilPowTwo<uint>(2) == 2);
+    REQUIRE(bit::ceilPowTwo<uint>(5) == 8);
+    REQUIRE(bit::ceilPowTwo<uint>(6) == 8);
+    REQUIRE(bit::ceilPowTwo<uint>(7) == 8);
+    REQUIRE(bit::ceilPowTwo<uint>(8) == 8);
 }
 
 TEST_CASE("bit::ceilPowTwoSafe")
 {
-    REQUIRE(bit::ceilPowTwoSafe(0) == 1);
-    REQUIRE(bit::ceilPowTwoSafe(1) == 1);
+    REQUIRE(bit::ceilPowTwoSafe<uint>(0) == 1);
+    REQUIRE(bit::ceilPowTwoSafe<uint>(1) == 1);
 }
 
 template<typename T>
