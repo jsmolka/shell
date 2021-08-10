@@ -108,6 +108,9 @@
     <None Include="src\tests_errors.inl" />
     <None Include="src\tests_ringbuffer.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\tests_punning.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

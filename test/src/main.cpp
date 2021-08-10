@@ -15,6 +15,7 @@
 #include <shell/mp.h>
 #include <shell/operators.h>
 #include <shell/options.h>
+#include <shell/punning.h>
 #include <shell/ranges.h>
 #include <shell/ringbuffer.h>
 #include <shell/traits.h>
@@ -42,6 +43,7 @@ using namespace std::string_literals;
 #include "tests_macros.inl"
 #include "tests_mp.inl"
 #include "tests_parse.inl"
+#include "tests_punning.inl"
 #include "tests_ranges.inl"
 #include "tests_ringbuffer.inl"
 #include "tests_traits.inl"

@@ -135,6 +135,7 @@
     <ClInclude Include="shell\int.h" />
     <ClInclude Include="shell\ini.h" />
     <ClInclude Include="shell\parse.h" />
+    <ClInclude Include="shell\punning.h" />
     <ClInclude Include="shell\ranges.h" />
     <ClInclude Include="shell\ringbuffer.h" />
     <ClInclude Include="shell\traits.h" />
