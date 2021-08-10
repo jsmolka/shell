@@ -99,7 +99,7 @@ inline bool isValidPath(path path)
 {
     path.make_preferred();
     
-    #ifdef SHELL_OS_WINDOWS
+    #if SHELL_OS_WINDOWS
     auto native(path.native());
     replaceFirst(native, path.root_name().native(), L"");
     
