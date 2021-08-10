@@ -96,6 +96,8 @@
     <ClInclude Include="shell\detail\fmt\ostream.h" />
     <ClInclude Include="shell\detail\fmt\printf.h" />
     <ClInclude Include="shell\detail\fmt\ranges.h" />
+    <ClInclude Include="shell\fmt\args.h" />
+    <ClInclude Include="shell\fmt\xchar.h" />
     <ClInclude Include="shell\format.h" />
     <ClInclude Include="shell\operators.h" />
     <ClInclude Include="shell\errors.h" />
@@ -110,7 +112,6 @@
     <ClInclude Include="shell\fmt\detail\end.h" />
     <ClInclude Include="shell\fmt\format-inl.h" />
     <ClInclude Include="shell\fmt\format.h" />
-    <ClInclude Include="shell\fmt\locale.h" />
     <ClInclude Include="shell\fmt\os.h" />
     <ClInclude Include="shell\fmt\ostream.h" />
     <ClInclude Include="shell\fmt\posix.h" />

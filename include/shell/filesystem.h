@@ -95,34 +95,29 @@ Status write(const path& file, const Container& src)
     return Status::Ok;
 }
 
-inline bool isValidPath(const path& path)
+inline bool isValidPath(path path)
 {
-    #if SHELL_OS_WINDOWS
-    filesystem::path preferred(path);
-    preferred.make_preferred();
+    path.make_preferred();
+    
+    #ifdef SHELL_OS_WINDOWS
+    auto native(path.native());
+    replaceFirst(native, path.root_name().native(), L"");
+    
+    constexpr wchar_t kMin = 32;
+    constexpr wchar_t kInvalid[] = { L'<', L'>', L':', L'"', L'/', L'?', L'*' };
+    #else
+    const auto& native = path.native();
+    
+    constexpr char kMin = 1;
+    constexpr char kInvalid[] = { '\0' };
+    #endif
 
-    std::wstring rootless = preferred.native();
-    replaceFirst(rootless, preferred.root_name().native(), L"");
-
-    for (const auto& c : rootless)
+    for (const auto& c : native)
     {
-        if (c <= 31
-                || c == L'<'
-                || c == L'>'
-                || c == L':'
-                || c == L'"'
-                || c == L'/'
-                || c == L'|'
-                || c == L'?'
-                || c == L'*')
+        if (c <= kMin || contains(kInvalid, c))
             return false;
     }
     return true;
-    #elif SHELL_OS_MACOS
-    return !contains(path.native(), ':');
-    #else
-    return !contains(path.native(), '\0');
-    #endif
 }
 
 }  // namespace shell::filesystem

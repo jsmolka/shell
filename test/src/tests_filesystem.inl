@@ -51,8 +51,5 @@ TEST_CASE("filesystem::isValidPath")
     REQUIRE(!filesystem::isValidPath("dir/test.exe?"));
     REQUIRE(!filesystem::isValidPath("dir/*test.exe"));
     REQUIRE(!filesystem::isValidPath("C:/dir/tes:t.exe"));
-    #elif SHELL_OS_MACOS
-    REQUIRE( filesystem::isValidPath("/usr/test.ini"));
-    REQUIRE(!filesystem::isValidPath("/usr/test.:ini"));
     #endif
 }
