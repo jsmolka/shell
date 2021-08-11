@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstring>
 #include <shell/int.h>
 
 namespace shell

@@ -301,7 +301,7 @@ private:
         T* data_old = _data;
         T* data_new = new T[capacity_new];
 
-        std::uninitialized_copy(begin(), end(), data_new);
+        std::copy(begin(), end(), data_new);
 
         _data = data_new;
         _capacity = capacity_new;
