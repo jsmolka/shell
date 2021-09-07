@@ -1,4 +1,4 @@
-TEST_CASE("array")
+TEST_CASE("array::array")
 {
     array<u32, 2> x1 = { 1, 2 };
     REQUIRE(x1[0] == 1);
@@ -13,4 +13,14 @@ TEST_CASE("array")
     REQUIRE(x2[1][1] == 6);
     REQUIRE(x2[1][2] == 7);
     REQUIRE(x2[1][3] == 8);
+}
+
+TEST_CASE("array::makeArray")
+{
+    static constexpr auto kArray = makeArray<int, 10>([](auto x) {
+        return 2 * static_cast<int>(x);
+    });
+
+    for (int i = 0; i < kArray.size(); ++i)
+        REQUIRE(kArray[i] == 2 * i);
 }
