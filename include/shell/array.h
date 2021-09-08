@@ -25,7 +25,7 @@ struct array<T, kSize>
 template<typename T, class Func, std::size_t ...kIs>
 constexpr std::array<T, sizeof...(kIs)> makeArrayImpl(Func&& func, std::index_sequence<kIs...>)
 {
-    return { func(std::integral_constant<std::size_t, kIs>{})... };
+    return { func(kIs)... };
 }
 
 }  // namespace detail
