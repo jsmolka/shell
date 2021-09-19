@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 #include <shell/format.h>
 
@@ -11,11 +12,11 @@ namespace shell
 class Error : public std::exception
 {
 public:
-    Error(const std::string& message)
+    Error(std::string_view message)
         : _message(message) {}
 
     template<typename... Args>
-    Error(const std::string& format, Args&&... args)
+    Error(std::string_view format, Args&&... args)
         : _message(shell::format(format, std::forward<Args>(args)...)) {}
 
     const char* what() const noexcept override
