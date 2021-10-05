@@ -99,7 +99,7 @@ public:
 
     void push_back(const T& value)
     {
-        SHELL_ASSERT(_size < kSize);
+        SHELL_ASSERT(size() < kSize);
         *_head++ = value;
     }
 
@@ -202,24 +202,24 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < _size);
+        SHELL_ASSERT(index < size());
         return _data[index];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < _size);
+        SHELL_ASSERT(index < size());
         return _data[index];
     }
 
     std::size_t capacity() const
     {
-        return _capacity;
+        return _last - _data;
     }
 
     std::size_t size() const
     {
-        return _size;
+        return _head - _data;
     }
 
     pointer data()
@@ -234,75 +234,76 @@ public:
 
     void clear()
     {
-        _size = 0;
+        _head = _data;
     }
 
     void reserve(std::size_t size)
     {
-        if (size > _capacity)
+        if (size > capacity())
             grow(size);
     }
 
     void resize(std::size_t size)
     {
         reserve(size);
-        _size = size;
+        _head = _data + size;
     }
 
     void push_back(const T& value)
     {
-        reserve(_size + 1);
-        _data[_size++] = value;
+        if (_head == _last)
+            grow(capacity() + 1);
+        *_head++ = value;
     }
 
     void push_back(T&& value)
     {
-        reserve(_size + 1);
-        _data[_size++] = std::move(value);
+        if (_head == _last)
+            grow(capacity() + 1);
+        *_head++ = std::move(value);
     }
 
     void pop_back()
     {
-        SHELL_ASSERT(_size > 0);
-        _size--;
+        SHELL_ASSERT(size() > 0);
+        _head--;
     }
 
     reference front()
     {
-        return (*this)[0];
+        return *_data;
     }
 
     const_reference front() const
     {
-        return (*this)[0];
+        return *_data;
     }
 
     reference back()
     {
-        return (*this)[_size - 1];
+        return _head[-1];
     }
 
     const_reference back() const
     {
-        return (*this)[_size - 1];
+        return _head[-1];
     }
 
-    SHELL_FORWARD_ITERATORS(_data, _data + _size)
-    SHELL_REVERSE_ITERATORS(_data + _size, _data)
+    SHELL_FORWARD_ITERATORS(_data, _head)
+    SHELL_REVERSE_ITERATORS(_head, _data)
 
 private:
     void grow(std::size_t size)
     {
-        std::size_t capacity_old = _capacity;
-        std::size_t capacity_new = std::max(2 * _capacity, size);
+        std::size_t capacity_old = capacity();
+        std::size_t capacity_new = std::max(2 * capacity_old, size);
 
         T* data_old = _data;
         T* data_new = new T[capacity_new];
 
-        std::copy(begin(), end(), data_new);
-
+        _head = std::copy(begin(), end(), data_new);
         _data = data_new;
-        _capacity = capacity_new;
+        _last = data_new + capacity_new;
 
         if (data_old != _stack)
             delete[] data_old;
@@ -311,9 +312,9 @@ private:
     template<typename Iterator>
     void copy(Iterator begin, Iterator end)
     {
-        resize(std::distance(begin, end));
+        reserve(std::distance(begin, end));
 
-        std::copy(begin, end, this->begin());
+        _head = std::copy(begin, end, this->begin());
     }
 
     void move(SmallBuffer<T, kSize>&& other)
@@ -328,16 +329,17 @@ private:
                 delete[] _data;
 
             _data = other._data;
-            _size = other._size;
+            _head = other._head;
+            _last = other._last;
 
             other._data = other._stack;
         }
     }
 
-    T _stack[kSize];
     T* _data = _stack;
-    std::size_t _size = 0;
-    std::size_t _capacity = kSize;
+    T* _head = _stack;
+    T* _last = _stack + kSize;
+    T _stack[kSize];
 };
 
 }  // namespace shell

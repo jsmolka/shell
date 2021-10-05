@@ -36,6 +36,11 @@ TEST_CASE("buffer::FixedBuffer")
         REQUIRE(v == --dc);
     }
     REQUIRE(dc == 0);
+
+    FixedBuffer<int, 5> e = { 0, 1, 2, 3, 4 };
+    REQUIRE(e.back() == 4);
+    e.resize(3);
+    REQUIRE(e.back() == 2);
 }
 
 TEST_CASE("buffer::SmallBuffer")
@@ -97,4 +102,9 @@ TEST_CASE("buffer::SmallBuffer")
         REQUIRE(v == --hc);
     }
     REQUIRE(hc == 0);
+
+    SmallBuffer<int, 5> i = { 0, 1, 2, 3, 4 };
+    REQUIRE(i.back() == 4);
+    i.resize(3);
+    REQUIRE(i.back() == 2);
 }
