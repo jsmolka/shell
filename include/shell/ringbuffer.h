@@ -18,25 +18,25 @@ public:
     using reference         = value_type&;
     using pointer           = value_type*;
 
-    RingBufferIterator(T* data, std::size_t index, std::size_t size)
-        : _data(data), _index(index), _size(size) {}
+    RingBufferIterator(T* data, std::size_t rpos, std::size_t size)
+        : _data(data), _rpos(rpos), _size(size) {}
 
     reference operator*()
     {
-        return _data[_index];
+        return _data[_rpos];
     }
 
     RingBufferIterator& operator++()
     {
         _size--;
-        _index = (_index + 1) % kSize;
+        _rpos = (_rpos + 1) % kSize;
         
         return *this;
     }
 
     bool operator==(const RingBufferIterator& other) const
     {
-        return _data == other._data && _index == other._index && _size == other._size;
+        return _data == other._data && _rpos == other._rpos && _size == other._size;
     }
 
     bool operator!=(const RingBufferIterator& other) const
@@ -56,7 +56,7 @@ public:
 
 private:
     T* _data;
-    std::size_t _index;
+    std::size_t _rpos;
     std::size_t _size;
 };
 
@@ -88,14 +88,14 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < _length);
-        return _data[(_rindex + index) % kSize];
+        SHELL_ASSERT(index < _size);
+        return _data[(_rpos + index) % kSize];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < _length);
-        return _data[(_rindex + index) % kSize];
+        SHELL_ASSERT(index < _size);
+        return _data[(_rpos + index) % kSize];
     }
 
     constexpr std::size_t capacity() const
@@ -105,7 +105,7 @@ public:
 
     std::size_t size() const
     {
-        return _length;
+        return _size;
     }
 
     pointer data()
@@ -120,42 +120,42 @@ public:
 
     void clear()
     {
-        _length = 0;
-        _rindex = 0;
-        _windex = 0;
+        _size = 0;
+        _rpos = 0;
+        _wpos = 0;
     }
 
     value_type read()
     {
-        SHELL_ASSERT(_length > 0);
+        SHELL_ASSERT(_size > 0);
 
-        const T& value = _data[_rindex];
-        _length--;
-        _rindex = (_rindex + 1) % kSize;
+        const T& value = _data[_rpos];
+        _size--;
+        _rpos = (_rpos + 1) % kSize;
 
         return value;
     }
 
     void write(const T& value)
     {
-        if (_length == kSize)
-            _rindex = (_rindex + 1) % kSize;
+        if (_size == kSize)
+            _rpos = (_rpos + 1) % kSize;
         else
-            _length++;
+            _size++;
 
-        _data[_windex] = value;
-        _windex = (_windex + 1) % kSize;
+        _data[_wpos] = value;
+        _wpos = (_wpos + 1) % kSize;
     }
 
     void write(T&& value)
     {
-        if (_length == kSize)
-            _rindex = (_rindex + 1) % kSize;
+        if (_size == kSize)
+            _rpos = (_rpos + 1) % kSize;
         else
-            _length++;
+            _size++;
 
-        _data[_windex] = std::move(value);
-        _windex = (_windex + 1) % kSize;
+        _data[_wpos] = std::move(value);
+        _wpos = (_wpos + 1) % kSize;
     }
 
     reference front()
@@ -170,20 +170,20 @@ public:
 
     reference back()
     {
-        return (*this)[_length - 1];
+        return (*this)[_size - 1];
     }
 
     const_reference back() const
     {
-        return (*this)[_length - 1];
+        return (*this)[_size - 1];
     }
 
-    SHELL_SENTINEL_ITERATORS(SHELL_ARG(data(), _rindex, _length))
+    SHELL_SENTINEL_ITERATORS(SHELL_ARG(data(), _rpos, _size))
 
 private:
-    std::size_t _length = 0;
-    std::size_t _rindex = 0;
-    std::size_t _windex = 0;
+    std::size_t _size = 0;
+    std::size_t _rpos = 0;
+    std::size_t _wpos = 0;
     std::array<T, kSize> _data = {};
 };
 
