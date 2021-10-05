@@ -56,13 +56,13 @@ public:
 
     reference operator[](std::size_t index)
     {
-        SHELL_ASSERT(index < _size);
+        SHELL_ASSERT(index < size());
         return _stack[index];
     }
 
     const_reference operator[](std::size_t index) const
     {
-        SHELL_ASSERT(index < _size);
+        SHELL_ASSERT(index < size());
         return _stack[index];
     }
 
@@ -73,7 +73,7 @@ public:
 
     std::size_t size() const
     {
-        return _size;
+        return _head - _stack;
     }
 
     pointer data()
@@ -88,67 +88,65 @@ public:
 
     void clear()
     {
-        _size = 0;
+        _head = _stack;
     }
 
     void resize(std::size_t size)
     {
         SHELL_ASSERT(size <= kSize);
-        _size = size;
+        _head = _stack + size;
     }
 
     void push_back(const T& value)
     {
         SHELL_ASSERT(_size < kSize);
-        _stack[_size++] = value;
+        *_head++ = value;
     }
 
     void push_back(T&& value)
     {
-        SHELL_ASSERT(_size < kSize);
-        _stack[_size++] = std::move(value);
+        SHELL_ASSERT(size() < kSize);
+        *_head++ = std::move(value);
     }
 
     void pop_back()
     {
-        SHELL_ASSERT(_size > 0);
-        _size--;
+        SHELL_ASSERT(_head > _stack);
+        _head--;
     }
 
     reference front()
     {
-        return (*this)[0];
+        return *_stack;
     }
 
     const_reference front() const
     {
-        return (*this)[0];
+        return *_stack;
     }
 
     reference back()
     {
-        return (*this)[_size - 1];
+        return _head[-1];
     }
 
     const_reference back() const
     {
-        return (*this)[_size - 1];
+        return _head[-1];
     }
 
-    SHELL_FORWARD_ITERATORS(_stack, _stack + _size)
-    SHELL_REVERSE_ITERATORS(_stack + _size, _stack)
+    SHELL_FORWARD_ITERATORS(_stack, _head)
+    SHELL_REVERSE_ITERATORS(_head, _stack)
 
 private:
     template<typename Iterator>
     void copy(Iterator begin, Iterator end)
     {
-        std::copy(begin, end, this->begin());
-
-        _size = std::distance(begin, end);
+        _head = std::copy(begin, end, this->begin());
     }
 
+    T* _head = _stack;
     T _stack[kSize];
-    std::size_t _size = 0;
 };
 
 template<typename T, std::size_t kSize>

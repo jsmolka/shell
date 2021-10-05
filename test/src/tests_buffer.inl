@@ -26,6 +26,16 @@ TEST_CASE("buffer::FixedBuffer")
     REQUIRE(c[1] == 2);
     REQUIRE(a.front() == 1);
     REQUIRE(a.back() == 2);
+    REQUIRE(c.front() == 1);
+    REQUIRE(c.back() == 2);
+
+    int dc = 10;
+    FixedBuffer<int, 10> d = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    for (const auto& v : reversed(d))
+    {
+        REQUIRE(v == --dc);
+    }
+    REQUIRE(dc == 0);
 }
 
 TEST_CASE("buffer::SmallBuffer")
