@@ -8,6 +8,14 @@ TEST_CASE("is_any_of")
     REQUIRE(!is_any_of_v<s64, u16, u32, u64>);
 }
 
+TEST_CASE("is_same")
+{
+    REQUIRE( is_same_v<u16, u16, u16, u16>);
+    REQUIRE( is_same_v<u32, u32, u32, u32>);
+    REQUIRE(!is_same_v<u16, u16, u32, u16>);
+    REQUIRE(!is_same_v<u32, u32, u32, u16>);
+}
+
 template<typename T> using test1_t = decltype(std::declval<T>().test1());
 template<typename T> using test2_t = decltype(std::declval<T>().test2());
 template<typename T> using test3_t = decltype(std::declval<T>().test3(0));
