@@ -144,7 +144,7 @@ public:
     SHELL_FORWARD_ITERATORS(_stack, _head)
     SHELL_REVERSE_ITERATORS(_head, _stack)
 
-protected:
+private:
     template<typename Iterator>
     void copy(Iterator begin, Iterator end)
     {
@@ -155,7 +155,14 @@ protected:
     T _stack[kSize];
 };
 
-template<typename T, std::size_t kSize = kSmallSizeOptimization>
+template<typename T>
+struct vector_sso : std::integral_constant<std::size_t,
+    std::max<std::size_t>(1, (8 * kCacheLine - 3 * sizeof(T*)) / sizeof(T))> {};
+
+template<typename T>
+inline constexpr std::size_t vector_sso_v = vector_sso<T>::value;
+
+template<typename T, std::size_t kSize = vector_sso_v<T>>
 class Vector
 {
 public:
@@ -251,14 +258,14 @@ public:
     void push_back(const T& value)
     {
         if (_head == _last)
-            grow(capacity() + 1);
+            grow(0);
         *_head++ = value;
     }
 
     void push_back(T&& value)
     {
         if (_head == _last)
-            grow(capacity() + 1);
+            grow(0);
         *_head++ = std::move(value);
     }
 
@@ -303,7 +310,7 @@ public:
     SHELL_FORWARD_ITERATORS(_data, _head)
     SHELL_REVERSE_ITERATORS(_head, _data)
 
-protected:
+private:
     void grow(std::size_t size)
     {
         std::size_t capacity_old = capacity();

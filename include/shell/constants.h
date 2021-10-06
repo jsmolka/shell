@@ -4,6 +4,6 @@ namespace shell
 {
 
 inline constexpr auto kLineBreak = "\n";
-inline constexpr auto kSmallSizeOptimization = 512;
+inline constexpr auto kCacheLine = 64;
 
 }  // namespace shell
