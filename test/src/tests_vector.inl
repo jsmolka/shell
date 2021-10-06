@@ -1,4 +1,4 @@
-TEST_CASE("buffer::FixedVector")
+TEST_CASE("vector::FixedVector")
 {
     FixedVector<int, 3> buffer;
     buffer.push_back(0);
@@ -43,7 +43,7 @@ TEST_CASE("buffer::FixedVector")
     REQUIRE(e.back() == 2);
 }
 
-TEST_CASE("buffer::Vector")
+TEST_CASE("vector::Vector")
 {
     Vector<int, 3> buffer;
     int* data = buffer.data();

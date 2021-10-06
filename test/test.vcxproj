@@ -90,6 +90,7 @@
     <None Include="src\tests_algorithm.inl" />
     <None Include="src\tests_array.inl" />
     <None Include="src\tests_bit.inl" />
+    <None Include="src\tests_stack.inl" />
     <None Include="src\tests_vector.inl" />
     <None Include="src\tests_format.inl" />
     <None Include="src\tests_macros.inl" />

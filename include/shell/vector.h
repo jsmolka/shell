@@ -103,29 +103,33 @@ public:
         *_head++ = std::move(value);
     }
 
-    void pop_back()
+    void pop_back(std::size_t count = 1)
     {
-        SHELL_ASSERT(_head > _stack);
-        _head--;
+        SHELL_ASSERT(_stack + count <= _head);
+        _head -= count;
     }
 
     reference front()
     {
+        SHELL_ASSERT(size() > 0);
         return *_stack;
     }
 
     const_reference front() const
     {
+        SHELL_ASSERT(size() > 0);
         return *_stack;
     }
 
     reference back()
     {
+        SHELL_ASSERT(size() > 0);
         return _head[-1];
     }
 
     const_reference back() const
     {
+        SHELL_ASSERT(size() > 0);
         return _head[-1];
     }
 
@@ -269,29 +273,33 @@ public:
         *_head++ = std::move(value);
     }
 
-    void pop_back()
+    void pop_back(std::size_t count = 1)
     {
-        SHELL_ASSERT(size() > 0);
-        _head--;
+        SHELL_ASSERT(_data + count <= _head);
+        _head -= count;
     }
 
     reference front()
     {
+        SHELL_ASSERT(size() > 0);
         return *_data;
     }
 
     const_reference front() const
     {
+        SHELL_ASSERT(size() > 0);
         return *_data;
     }
 
     reference back()
     {
+        SHELL_ASSERT(size() > 0);
         return _head[-1];
     }
 
     const_reference back() const
     {
+        SHELL_ASSERT(size() > 0);
         return _head[-1];
     }
 
@@ -310,8 +318,8 @@ public:
     SHELL_FORWARD_ITERATORS(_data, _head)
     SHELL_REVERSE_ITERATORS(_head, _data)
 
-private:
-    void grow(std::size_t size)
+protected:
+    SHELL_NO_INLINE void grow(std::size_t size)
     {
         std::size_t capacity_old = capacity();
         std::size_t capacity_new = std::max(2 * capacity_old, size);

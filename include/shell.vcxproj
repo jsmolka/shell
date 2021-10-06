@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClInclude Include="shell\array.h" />
     <ClInclude Include="shell\algorithm.h" />
+    <ClInclude Include="shell\stack.h" />
     <ClInclude Include="shell\vector.h" />
     <ClInclude Include="shell\constants.h" />
     <ClInclude Include="shell\detail\fmt\chrono.h" />

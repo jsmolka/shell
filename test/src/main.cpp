@@ -17,6 +17,7 @@
 #include <shell/punning.h>
 #include <shell/ranges.h>
 #include <shell/ringbuffer.h>
+#include <shell/stack.h>
 #include <shell/traits.h>
 #include <shell/utility.h>
 #include <shell/vector.h>
@@ -45,6 +46,7 @@ using namespace std::string_literals;
 #include "tests_punning.inl"
 #include "tests_ranges.inl"
 #include "tests_ringbuffer.inl"
+#include "tests_stack.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"
 #include "tests_vector.inl"

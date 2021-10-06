@@ -83,6 +83,9 @@
     <None Include="src\tests_array.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\tests_stack.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tests_punning.inl">
