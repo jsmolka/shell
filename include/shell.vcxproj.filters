@@ -123,7 +123,7 @@
     <ClInclude Include="shell\fmt\printf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shell\buffer.h">
+    <ClInclude Include="shell\vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\detail\fmt\chrono.h">

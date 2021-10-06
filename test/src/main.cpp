@@ -1,7 +1,6 @@
 #include <shell/algorithm.h>
 #include <shell/array.h>
 #include <shell/bit.h>
-#include <shell/buffer.h>
 #include <shell/errors.h>
 #include <shell/filesystem.h>
 #include <shell/format.h>
@@ -20,6 +19,7 @@
 #include <shell/ringbuffer.h>
 #include <shell/traits.h>
 #include <shell/utility.h>
+#include <shell/vector.h>
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
@@ -30,7 +30,6 @@ using namespace std::string_literals;
 #include "tests_algorithm.inl"
 #include "tests_array.inl"
 #include "tests_bit.inl"
-#include "tests_buffer.inl"
 #include "tests_errors.inl"
 #include "tests_filesystem.inl"
 #include "tests_format.inl"
@@ -48,3 +47,4 @@ using namespace std::string_literals;
 #include "tests_ringbuffer.inl"
 #include "tests_traits.inl"
 #include "tests_utility.inl"
+#include "tests_vector.inl"

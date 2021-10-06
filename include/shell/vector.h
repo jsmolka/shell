@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 
+#include <shell/constants.h>
 #include <shell/macros.h>
 #include <shell/ranges.h>
 
@@ -10,7 +11,7 @@ namespace shell
 {
 
 template<typename T, std::size_t kSize>
-class FixedBuffer
+class FixedVector
 {
 public:
     static_assert(kSize > 0);
@@ -25,45 +26,33 @@ public:
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    FixedBuffer() = default;
+    FixedVector() = default;
 
-    FixedBuffer(const FixedBuffer<T, kSize>& other)
+    FixedVector(const FixedVector<T, kSize>& other)
     {
         copy(other.begin(), other.end());
     }
 
-    FixedBuffer(FixedBuffer<T, kSize>&& other)
+    FixedVector(FixedVector<T, kSize>&& other)
     {
         copy(other.begin(), other.end());
     }
 
-    FixedBuffer(std::initializer_list<T> values)
+    FixedVector(std::initializer_list<T> values)
     {
         copy(values.begin(), values.end());
     }
 
-    FixedBuffer& operator=(const FixedBuffer<T, kSize>& other)
+    FixedVector& operator=(const FixedVector<T, kSize>& other)
     {
         copy(other.begin(), other.end());
         return *this;
     }
 
-    FixedBuffer& operator=(FixedBuffer<T, kSize>&& other)
+    FixedVector& operator=(FixedVector<T, kSize>&& other)
     {
         copy(other.begin(), other.end());
         return *this;
-    }
-
-    reference operator[](std::size_t index)
-    {
-        SHELL_ASSERT(index < size());
-        return _stack[index];
-    }
-
-    const_reference operator[](std::size_t index) const
-    {
-        SHELL_ASSERT(index < size());
-        return _stack[index];
     }
 
     constexpr std::size_t capacity() const
@@ -74,6 +63,11 @@ public:
     std::size_t size() const
     {
         return _head - _stack;
+    }
+
+    bool empty() const
+    {
+        return _head == _stack;
     }
 
     pointer data()
@@ -135,10 +129,22 @@ public:
         return _head[-1];
     }
 
+    reference operator[](std::size_t index)
+    {
+        SHELL_ASSERT(index < size());
+        return _stack[index];
+    }
+
+    const_reference operator[](std::size_t index) const
+    {
+        SHELL_ASSERT(index < size());
+        return _stack[index];
+    }
+
     SHELL_FORWARD_ITERATORS(_stack, _head)
     SHELL_REVERSE_ITERATORS(_head, _stack)
 
-private:
+protected:
     template<typename Iterator>
     void copy(Iterator begin, Iterator end)
     {
@@ -149,8 +155,8 @@ private:
     T _stack[kSize];
 };
 
-template<typename T, std::size_t kSize>
-class SmallBuffer
+template<typename T, std::size_t kSize = kSmallSizeOptimization>
+class Vector
 {
 public:
     static_assert(kSize > 0);
@@ -165,51 +171,39 @@ public:
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    SmallBuffer() = default;
+    Vector() = default;
 
-    SmallBuffer(const SmallBuffer<T, kSize>& other)
+    Vector(const Vector<T, kSize>& other)
     {
         copy(other.begin(), other.end());
     }
 
-    SmallBuffer(SmallBuffer<T, kSize>&& other)
+    Vector(Vector<T, kSize>&& other)
     {
         move(std::move(other));
     }
 
-    SmallBuffer(std::initializer_list<T> values)
+    Vector(std::initializer_list<T> values)
     {
         copy(values.begin(), values.end());
     }
 
-    ~SmallBuffer()
+    ~Vector()
     {
         if (_data != _stack)
             delete[] _data;
     }
 
-    SmallBuffer& operator=(const SmallBuffer<T, kSize>& other)
+    Vector& operator=(const Vector<T, kSize>& other)
     {
         copy(other.begin(), other.end());
         return *this;
     }
 
-    SmallBuffer& operator=(SmallBuffer<T, kSize>&& other)
+    Vector& operator=(Vector<T, kSize>&& other)
     {
         move(std::move(other));
         return *this;
-    }
-
-    reference operator[](std::size_t index)
-    {
-        SHELL_ASSERT(index < size());
-        return _data[index];
-    }
-
-    const_reference operator[](std::size_t index) const
-    {
-        SHELL_ASSERT(index < size());
-        return _data[index];
     }
 
     std::size_t capacity() const
@@ -220,6 +214,11 @@ public:
     std::size_t size() const
     {
         return _head - _data;
+    }
+
+    bool empty() const
+    {
+        return _head == _stack;
     }
 
     pointer data()
@@ -289,10 +288,22 @@ public:
         return _head[-1];
     }
 
+    reference operator[](std::size_t index)
+    {
+        SHELL_ASSERT(index < size());
+        return _data[index];
+    }
+
+    const_reference operator[](std::size_t index) const
+    {
+        SHELL_ASSERT(index < size());
+        return _data[index];
+    }
+
     SHELL_FORWARD_ITERATORS(_data, _head)
     SHELL_REVERSE_ITERATORS(_head, _data)
 
-private:
+protected:
     void grow(std::size_t size)
     {
         std::size_t capacity_old = capacity();
@@ -317,7 +328,7 @@ private:
         _head = std::copy(begin, end, this->begin());
     }
 
-    void move(SmallBuffer<T, kSize>&& other)
+    void move(Vector<T, kSize>&& other)
     {
         if (other._data == other._stack)
         {

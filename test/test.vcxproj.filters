@@ -53,7 +53,7 @@
     <None Include="src\tests_ini.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="src\tests_buffer.inl">
+    <None Include="src\tests_vector.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="src\tests_parse.inl">

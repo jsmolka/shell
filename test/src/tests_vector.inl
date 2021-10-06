@@ -1,6 +1,6 @@
-TEST_CASE("buffer::FixedBuffer")
+TEST_CASE("buffer::FixedVector")
 {
-    FixedBuffer<int, 3> buffer;
+    FixedVector<int, 3> buffer;
     buffer.push_back(0);
     REQUIRE(buffer.size() == 1);
     REQUIRE(buffer.capacity() == 3);
@@ -11,9 +11,9 @@ TEST_CASE("buffer::FixedBuffer")
     REQUIRE(buffer.size() == 3);
     REQUIRE(buffer.capacity() == 3);
 
-    FixedBuffer<int, 3> a = { 1, 2 };
-    FixedBuffer<int, 3> b(a);
-    FixedBuffer<int, 3> c = a;
+    FixedVector<int, 3> a = { 1, 2 };
+    FixedVector<int, 3> b(a);
+    FixedVector<int, 3> c = a;
 
     REQUIRE(a.size() == 2);
     REQUIRE(b.size() == 2);
@@ -30,22 +30,22 @@ TEST_CASE("buffer::FixedBuffer")
     REQUIRE(c.back() == 2);
 
     int dc = 10;
-    FixedBuffer<int, 10> d = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    FixedVector<int, 10> d = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     for (const auto& v : reversed(d))
     {
         REQUIRE(v == --dc);
     }
     REQUIRE(dc == 0);
 
-    FixedBuffer<int, 5> e = { 0, 1, 2, 3, 4 };
+    FixedVector<int, 5> e = { 0, 1, 2, 3, 4 };
     REQUIRE(e.back() == 4);
     e.resize(3);
     REQUIRE(e.back() == 2);
 }
 
-TEST_CASE("buffer::SmallBuffer")
+TEST_CASE("buffer::Vector")
 {
-    SmallBuffer<int, 3> buffer;
+    Vector<int, 3> buffer;
     int* data = buffer.data();
     buffer.push_back(0);
     REQUIRE(buffer.size() == 1);
@@ -64,9 +64,9 @@ TEST_CASE("buffer::SmallBuffer")
     REQUIRE(buffer.capacity() == 6);
     REQUIRE(buffer.data() != data);
 
-    SmallBuffer<int, 3> a = { 1, 2 };
-    SmallBuffer<int, 3> b(a);
-    SmallBuffer<int, 3> c = a;
+    Vector<int, 3> a = { 1, 2 };
+    Vector<int, 3> b(a);
+    Vector<int, 3> c = a;
 
     REQUIRE(a.size() == 2);
     REQUIRE(b.size() == 2);
@@ -80,8 +80,8 @@ TEST_CASE("buffer::SmallBuffer")
     REQUIRE(a.front() == 1);
     REQUIRE(a.back() == 2);
 
-    SmallBuffer<int, 3> d(std::move(a));
-    SmallBuffer<int, 3> e = std::move(b);
+    Vector<int, 3> d(std::move(a));
+    Vector<int, 3> e = std::move(b);
 
     REQUIRE(d.size() == 2);
     REQUIRE(e.size() == 2);
@@ -90,20 +90,20 @@ TEST_CASE("buffer::SmallBuffer")
     REQUIRE(d[1] == 2);
     REQUIRE(e[1] == 2);
 
-    SmallBuffer<int, 3> f = { 0, 1, 2, 4 };
+    Vector<int, 3> f = { 0, 1, 2, 4 };
     auto fp = f.data();
-    SmallBuffer<int, 3> g = std::move(f);
+    Vector<int, 3> g = std::move(f);
     REQUIRE(g.data() == fp);
 
     int hc = 10;
-    SmallBuffer<int, 10> h = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    Vector<int, 10> h = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     for (const auto& v : reversed(h))
     {
         REQUIRE(v == --hc);
     }
     REQUIRE(hc == 0);
 
-    SmallBuffer<int, 5> i = { 0, 1, 2, 3, 4 };
+    Vector<int, 5> i = { 0, 1, 2, 3, 4 };
     REQUIRE(i.back() == 4);
     i.resize(3);
     REQUIRE(i.back() == 2);
