@@ -46,6 +46,7 @@ TEST_CASE("filesystem::isValidPath")
 {
     #if SHELL_OS_WINDOWS
     REQUIRE( filesystem::isValidPath("dir\\test.exe"));
+    REQUIRE( filesystem::isValidPath("dir\\test name.exe"));
     REQUIRE( filesystem::isValidPath("dir/test.exe"));
     REQUIRE( filesystem::isValidPath("C:/dir/test.exe"));
     REQUIRE(!filesystem::isValidPath("dir/test.exe?"));

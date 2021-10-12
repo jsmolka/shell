@@ -114,7 +114,7 @@ inline bool isValidPath(path path)
 
     for (const auto& c : native)
     {
-        if (c <= kMin || contains(kInvalid, c))
+        if (c < kMin || contains(kInvalid, c))
             return false;
     }
     return true;
