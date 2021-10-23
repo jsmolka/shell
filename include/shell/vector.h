@@ -35,7 +35,9 @@ public:
 
     FixedVector(FixedVector<T, kSize>&& other)
     {
-        copy(other.begin(), other.end());
+        copy(
+            std::make_move_iterator(other.begin()),
+            std::make_move_iterator(other.end()));
     }
 
     FixedVector(std::initializer_list<T> values)
@@ -51,7 +53,9 @@ public:
 
     FixedVector& operator=(FixedVector<T, kSize>&& other)
     {
-        copy(other.begin(), other.end());
+        copy(
+            std::make_move_iterator(other.begin()),
+            std::make_move_iterator(other.end()));
         return *this;
     }
 
@@ -327,7 +331,10 @@ protected:
         T* data_old = _data;
         T* data_new = new T[capacity_new];
 
-        _head = std::copy(begin(), end(), data_new);
+        _head = std::copy(
+            std::make_move_iterator(begin()),
+            std::make_move_iterator(end()),
+            data_new);
         _data = data_new;
         _last = data_new + capacity_new;
 
@@ -347,7 +354,9 @@ protected:
     {
         if (other._data == other._stack)
         {
-            copy(other.begin(), other.end());
+            copy(
+                std::make_move_iterator(other.begin()),
+                std::make_move_iterator(other.end()));
         }
         else
         {
