@@ -54,7 +54,7 @@ public:
     value_type popValue(std::size_t count = 1)
     {
         this->pop_back(count);
-        return *this->_head;
+        return std::move(*this->_head);
     }
 
     reference peek(std::size_t index)
