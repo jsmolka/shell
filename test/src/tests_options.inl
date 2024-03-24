@@ -3,7 +3,7 @@
 TEST_CASE("options::bool")
 {
     const char* argv[] =
-    { 
+    {
         "program.exe",
         "-b",
         "-g=true",
@@ -42,7 +42,7 @@ TEST_CASE("options::bool")
 TEST_CASE("options::int")
 {
     const char* argv[] =
-    { 
+    {
         "program.exe",
         "-b", "1",
         "-f=10",
@@ -59,7 +59,7 @@ TEST_CASE("options::int")
     options.add({  "e", "" }, Options::value<int>()->positional());
     options.add({ "-f", "" }, Options::value<int>());
     options.add({ "-g", "" }, Options::value<int>());
-    
+
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
     REQUIRE(*result.find<int>("-b") == 1);
@@ -73,7 +73,7 @@ TEST_CASE("options::int")
 TEST_CASE("options::double")
 {
     const char* argv[] =
-    { 
+    {
         "program.exe",
         "-b", "1.1",
         "-f=0.1",
@@ -90,7 +90,7 @@ TEST_CASE("options::double")
     options.add({  "e", "" }, Options::value<double>()->positional());
     options.add({ "-f", "" }, Options::value<double>());
     options.add({ "-g", "" }, Options::value<double>());
-    
+
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
     REQUIRE(*result.find<double>("-b") == 1.1);
@@ -104,7 +104,7 @@ TEST_CASE("options::double")
 TEST_CASE("options::string")
 {
     const char* argv[] =
-    { 
+    {
         "program.exe",
         "-b", "test1",
         "-f=test5",
@@ -121,7 +121,7 @@ TEST_CASE("options::string")
     options.add({  "e", "" }, Options::value<std::string>()->positional());
     options.add({ "-f", "" }, Options::value<std::string>());
     options.add({ "-g", "" }, Options::value<std::string>());
-    
+
     OptionsResult result = options.parse(ARGC(argv), argv);
     REQUIRE(!result.has("-a"));
     REQUIRE(*result.find<std::string>("-b") == "test1");
@@ -171,7 +171,7 @@ TEST_CASE("options::help")
     options.add({   "d"    , "this is d" }, Options::value<std::string>()->positional());
     options.add({   "f"    , "this is f" }, Options::value<std::string>("test")->positional());
 
-    fmt::print(options.help());
+    fmt::print(fmt::runtime(options.help()));
 }
 
 #undef ARGC

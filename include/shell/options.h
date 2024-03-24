@@ -29,7 +29,7 @@ public:
         std::string_view format = _positional
             ? "<{}>" : name.size() ? "{} <{}>" : "{}";
 
-        return shell::format(format, opts.back(), name);
+        return fmt::format(fmt::runtime(format), opts.back(), name);
     }
 
     std::vector<std::string> opts;
@@ -71,7 +71,7 @@ public:
         _positional = true;
         return shared_from_this();
     }
-       
+
     virtual void parse() = 0;
     virtual void parse(const std::string& data) = 0;
     virtual bool isEmpty() const = 0;
@@ -122,8 +122,8 @@ public:
 
     std::string help() const
     {
-        if (_default)  return shell::format(" (default: {})", *_default);
-        if (_optional) return shell::format(" (optional)");
+        if (_default)  return fmt::format(" (default: {})", *_default);
+        if (_optional) return fmt::format(" (optional)");
 
         return std::string();
     }
@@ -168,11 +168,11 @@ public:
     std::string arguments() const
     {
         std::string args;
-        
+
         for (const auto& [spec, value] : *this)
         {
             std::string_view format = value->isOptional() ? " [{}]" : " {}";
-            args.append(shell::format(format, spec.argument()));
+            args.append(fmt::format(fmt::runtime(format), spec.argument()));
         }
         return args;
     }
@@ -185,18 +185,18 @@ public:
         std::size_t padding = 0;
         std::vector<std::string> keys;
         keys.reserve(size());
-        
+
         for (const auto& [spec, value] : *this)
         {
             keys.push_back(join(spec.opts, ", "));
             padding = std::max(padding, keys.back().size());
         }
 
-        std::string help = shell::format("\n{} arguments:\n", _name);
+        std::string help = fmt::format("\n{} arguments:\n", _name);
 
         for (const auto [option, key] : zip(*this, keys))
         {
-            help.append(shell::format(
+            help.append(fmt::format(
                 "  {:<{}}{}{}\n",
                 key,
                 padding + 4,
@@ -297,7 +297,7 @@ public:
 
             if (arg == "-?" || arg == "-h" || arg == "--help")
             {
-                shell::print(help());
+                fmt::print(fmt::runtime(help()));
                 std::exit(0);
             }
 
@@ -326,7 +326,7 @@ public:
 
     std::string help() const
     {
-        return shell::format(
+        return fmt::format(
             "usage:\n  {}{}{}\n{}{}",
             _program,
             _keyword.arguments(),

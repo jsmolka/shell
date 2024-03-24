@@ -115,7 +115,7 @@ public:
 
     std::string string() const final
     {
-        return shell::format("# {}", comment);
+        return fmt::format("# {}", comment);
     }
 
     std::string comment;
@@ -151,7 +151,7 @@ public:
 
     std::string string() const final
     {
-        return shell::format("[{}]", section);
+        return fmt::format("[{}]", section);
     }
 
     std::string section;
@@ -189,9 +189,9 @@ public:
     std::string string() const final
     {
         if (value.empty())
-            return shell::format("{} =", key);
+            return fmt::format("{} =", key);
         else
-            return shell::format("{} = {}", key, value);
+            return fmt::format("{} = {}", key, value);
     }
 
     std::string key;
@@ -346,7 +346,7 @@ private:
 
         if (active != section)
             _tokens.push_back(std::make_shared<detail::SectionToken>(section));
-        
+
         return insert(_tokens.end());
     }
 

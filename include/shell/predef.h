@@ -53,7 +53,7 @@
 #ifdef __linux__
 #  define SHELL_OS_LINUX 1
 #else
-#  define SHELL_OS_LINUX 0 
+#  define SHELL_OS_LINUX 0
 #endif
 
 #ifdef __unix__
@@ -78,4 +78,10 @@
 #  define SHELL_OS_BSD_DRAGONFLY 1
 #else
 #  define SHELL_OS_BSD_DRAGONFLY 0
+#endif
+
+#if defined(_M_X86) || defined(__i386__)
+#  define SHELL_ARCH_X86 1
+#else
+#  define SHELL_ARCH_X86 0
 #endif

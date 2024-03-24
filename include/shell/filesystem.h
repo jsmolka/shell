@@ -98,16 +98,16 @@ Status write(const path& file, const Container& src)
 inline bool isValidPath(path path)
 {
     path.make_preferred();
-    
+
     #if SHELL_OS_WINDOWS
     auto native(path.native());
     replaceFirst(native, path.root_name().native(), L"");
-    
+
     constexpr wchar_t kMin = 32;
     constexpr wchar_t kInvalid[] = { L'<', L'>', L':', L'"', L'/', L'?', L'*' };
     #else
     const auto& native = path.native();
-    
+
     constexpr char kMin = 1;
     constexpr char kInvalid[] = { '\0' };
     #endif
@@ -266,7 +266,7 @@ struct fmt::formatter<shell::filesystem::path>
     }
 
     template<typename FormatContext>
-    auto format(const shell::filesystem::path& path, FormatContext& ctx)
+    auto format(const shell::filesystem::path& path, FormatContext& ctx) const
     {
         return fmt::format_to(ctx.out(), path.u8string());
     }

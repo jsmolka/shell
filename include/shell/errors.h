@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-#include <shell/format.h>
+#include <shell/fmt.h>
 
 namespace shell
 {
@@ -17,7 +17,7 @@ public:
 
     template<typename... Args>
     Error(std::string_view format, Args&&... args)
-        : _message(shell::format(format, std::forward<Args>(args)...)) {}
+        : _message(fmt::format(fmt::runtime(format), std::forward<Args>(args)...)) {}
 
     const char* what() const noexcept override
     {

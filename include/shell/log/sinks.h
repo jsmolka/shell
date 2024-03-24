@@ -5,7 +5,7 @@
 #include <type_traits>
 
 #include <shell/filesystem.h>
-#include <shell/format.h>
+#include <shell/fmt.h>
 #include <shell/macros.h>
 #include <shell/windows.h>
 
@@ -47,12 +47,12 @@ class ConsoleSink : public BasicSink
 public:
     void sink(const std::string& message, Level level)
     {
-        shell::print("{} {}\n", prefix(level), message);
+        fmt::print("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        shell::print("{} {}: {}\n", prefix(level), location, message);
+        fmt::print("{} {}: {}\n", prefix(level), location, message);
     }
 };
 
@@ -74,12 +74,12 @@ public:
 
     void sink(const std::string& message, Level level)
     {
-        shell::print(style(level), "{} {}\n", prefix(level), message);
+        fmt::print(style(level), "{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
-        shell::print(style(level), "{} {}: {}\n", prefix(level), location, message);
+        fmt::print(style(level), "{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
@@ -105,13 +105,13 @@ public:
     void sink(const std::string& message, Level level)
     {
         if (_stream && _stream.is_open())
-            _stream << shell::format("{} {}\n", prefix(level), message);
+            _stream << fmt::format("{} {}\n", prefix(level), message);
     }
 
     void sink(const std::string& message, Level level, const std::string& location)
     {
         if (_stream && _stream.is_open())
-            _stream << shell::format("{} {}: {}\n", prefix(level), location, message);
+            _stream << fmt::format("{} {}: {}\n", prefix(level), location, message);
     }
 
 private:
@@ -158,40 +158,40 @@ void setSink(Sink&& sink, Sinks&&... sinks)
 
     if constexpr (sizeof...(Sinks) == 0)
         detail::sink = std::make_shared<Sink>(std::move(sink));
-    else 
+    else
         detail::sink = std::make_shared<MultiSink<Sink, Sinks...>>(std::move(sink), std::move(sinks)...);
 }
 
 template<typename... Args>
 void debug(const std::string& format, Args&&... args)
 {
-    detail::sink->sink(shell::format(format, std::forward<Args>(args)...), Level::Debug);
+    detail::sink->sink(fmt::format(fmt::runtime(format), std::forward<Args>(args)...), Level::Debug);
 }
 
 template<typename... Args>
 void info(const std::string& format, Args&&... args)
 {
-    detail::sink->sink(shell::format(format, std::forward<Args>(args)...), Level::Info);
+    detail::sink->sink(fmt::format(fmt::runtime(format), std::forward<Args>(args)...), Level::Info);
 }
 
 template<typename... Args>
 void warn(const std::string& format, Args&&... args)
 {
-    detail::sink->sink(shell::format(format, std::forward<Args>(args)...), Level::Warn);
+    detail::sink->sink(fmt::format(fmt::runtime(format), std::forward<Args>(args)...), Level::Warn);
 }
 
 template<typename... Args>
 void error(const std::string& format, Args&&... args)
 {
-    detail::sink->sink(shell::format(format, std::forward<Args>(args)...), Level::Error);
+    detail::sink->sink(fmt::format(fmt::runtime(format), std::forward<Args>(args)...), Level::Error);
 }
 
 template<typename... Args>
 void fatal(const std::string& format, Args&&... args)
 {
-    detail::sink->sink(shell::format(format, std::forward<Args>(args)...), Level::Fatal);
+    detail::sink->sink(fmt::format(fmt::runtime(format), std::forward<Args>(args)...), Level::Fatal);
 }
 
 }  // namespace shell
 
-#define SHELL_LOG(level, ...) shell::detail::sink->sink(shell::format(__VA_ARGS__), level, SHELL_FUNCTION)
+#define SHELL_LOG(level, ...) shell::detail::sink->sink(fmt::format(__VA_ARGS__), level, SHELL_FUNCTION)

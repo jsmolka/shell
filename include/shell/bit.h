@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <climits>
 
 #include <shell/int.h>
@@ -7,10 +8,12 @@
 #include <shell/predef.h>
 #include <shell/ranges.h>
 
-#if SHELL_CC_MSVC
-#  include <intrin.h>
-#elif !SHELL_CC_EMSCRIPTEN 
-#  include <x86intrin.h>
+#if SHELL_ARCH_X86
+#  if SHELL_CC_MSVC
+#    include <intrin.h>
+#  elif !SHELL_CC_EMSCRIPTEN
+#    include <x86intrin.h>
+#  endif
 #endif
 
 namespace shell::bit
@@ -233,7 +236,7 @@ Integral ror(Integral value, uint amount)
     if constexpr (sizeof(Integral) == 2) return _rotr16(value, amount);
     if constexpr (sizeof(Integral) == 4) return _rotr  (value, amount);
     if constexpr (sizeof(Integral) == 8) return _rotr64(value, amount);
-    #elif SHELL_CC_CLANG
+    #elif SHELL_CC_CLANG && SHELL_ARCH_X86
     if constexpr (sizeof(Integral) == 1) return __builtin_rotateright8 (value, amount);
     if constexpr (sizeof(Integral) == 2) return __builtin_rotateright16(value, amount);
     if constexpr (sizeof(Integral) == 4) return __builtin_rotateright32(value, amount);
@@ -256,7 +259,7 @@ Integral rol(Integral value, uint amount)
     if constexpr (sizeof(Integral) == 2) return _rotl16(value, amount);
     if constexpr (sizeof(Integral) == 4) return _rotl  (value, amount);
     if constexpr (sizeof(Integral) == 8) return _rotl64(value, amount);
-    #elif SHELL_CC_CLANG
+    #elif SHELL_CC_CLANG && SHELL_ARCH_X86
     if constexpr (sizeof(Integral) == 1) return __builtin_rotateleft8 (value, amount);
     if constexpr (sizeof(Integral) == 2) return __builtin_rotateleft16(value, amount);
     if constexpr (sizeof(Integral) == 4) return __builtin_rotateleft32(value, amount);
@@ -318,9 +321,11 @@ uint popcnt(Integral value)
     if constexpr (sizeof(Integral) <= 2) return __popcnt16(value);
     if constexpr (sizeof(Integral) == 4) return __popcnt  (value);
     if constexpr (sizeof(Integral) == 8) return __popcnt64(value);
-    #else
+    #elif SHELL_ARCH_X86
     if constexpr (sizeof(Integral) <= 4) return __builtin_popcount  (value);
     if constexpr (sizeof(Integral) == 8) return __builtin_popcountll(value);
+    #else
+    return std::popcount(static_cast<std::make_unsigned_t<Integral>>(value));
     #endif
 }
 
@@ -335,11 +340,13 @@ uint clz(Integral value)
     if constexpr (sizeof(Integral) <= 4) _BitScanReverse  (&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanReverse64(&index, value);
     return bits_v<Integral> - static_cast<uint>(index) - 1;
-    #else
+    #elif SHELL_ARCH_X86
     if constexpr (sizeof(Integral) == 1) return __builtin_clz  (value) - 24;
     if constexpr (sizeof(Integral) == 2) return __builtin_clz  (value) - 16;
     if constexpr (sizeof(Integral) == 4) return __builtin_clz  (value);
     if constexpr (sizeof(Integral) == 8) return __builtin_clzll(value);
+    #else
+    return std::countl_zero(static_cast<std::make_unsigned_t<Integral>>(value));
     #endif
 }
 
@@ -365,9 +372,11 @@ uint ctz(Integral value)
     if constexpr (sizeof(Integral) <= 4) _BitScanForward  (&index, value);
     if constexpr (sizeof(Integral) == 8) _BitScanForward64(&index, value);
     return static_cast<uint>(index);
-    #else
+    #elif SHELL_ARCH_X86
     if constexpr (sizeof(Integral) <= 4) return __builtin_ctz  (value);
     if constexpr (sizeof(Integral) == 8) return __builtin_ctzll(value);
+    #else
+    return std::countr_zero(static_cast<std::make_unsigned_t<Integral>>(value));
     #endif
 }
 
@@ -434,7 +443,7 @@ public:
     {
         return _value == other._value;
     }
-    
+
     bool operator!=(BitIterator other) const
     {
         return !(*this == other);
