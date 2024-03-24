@@ -17,14 +17,14 @@ jobs:
 
       - name: Build Debug
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           msbuild /property:Configuration=Debug shell.sln
       - name: Test Debug
         run: bin\Debug\test.exe
 
       - name: Build Release
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           msbuild /property:Configuration=Release shell.sln
       - name: Test Release
         run: bin\Release\test.exe
